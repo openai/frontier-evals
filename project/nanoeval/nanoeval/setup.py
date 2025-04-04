@@ -9,10 +9,9 @@ from contextlib import AsyncExitStack, contextmanager
 from typing import Any, Coroutine, Generator
 
 import structlog
-from structlog.contextvars import bound_contextvars
-
 from nanoeval._aiomonitor import start_aiomonitor
 from nanoeval.library_config import get_library_config
+from structlog.contextvars import bound_contextvars
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

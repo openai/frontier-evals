@@ -10,12 +10,9 @@ from collections import defaultdict
 from contextlib import asynccontextmanager, contextmanager
 from typing import Any, AsyncGenerator, Generator, Sequence
 
+import chz
 import numpy as np
 import structlog.stdlib
-from pydantic import BaseModel
-from typing_extensions import override
-
-import chz
 from nanoeval.asyncio_utils import HasAsyncContextManager, generator_with_cleanup
 from nanoeval.eval import Eval, RetryableSystemError
 from nanoeval.metrics.agents import get_summary_error_aware
@@ -27,6 +24,8 @@ from nanoeval.solvers.computer_tasks.steps import (
     Step,
 )
 from nanoeval.solvers.computer_tasks.task import ComputerTask, Grade
+from pydantic import BaseModel
+from typing_extensions import override
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

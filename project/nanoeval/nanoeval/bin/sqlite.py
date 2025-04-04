@@ -1,9 +1,8 @@
 import logging
 import subprocess
 
-import litecli
-
 import chz
+import litecli
 from nanoeval._db import open_run_set_db
 from nanoeval.setup import nanoeval_entrypoint
 

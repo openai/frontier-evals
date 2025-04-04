@@ -4,7 +4,6 @@ from typing import Any, Awaitable, Callable, Sequence, cast
 
 import pandas as pd
 from more_itertools import flatten
-
 from nanoeval.eval import RetryableSystemError, TResult, TTask
 from nanoeval.library_config import get_library_config
 

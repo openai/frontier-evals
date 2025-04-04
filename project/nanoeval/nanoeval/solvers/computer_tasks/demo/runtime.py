@@ -1,8 +1,7 @@
 import os
 
-import structlog.stdlib
-
 import chz
+import structlog.stdlib
 from nanoeval.async_breakpoint import abreakpoint
 from nanoeval.setup import nanoeval_entrypoint
 from nanoeval.solvers.computer_tasks.code_execution_interface import (

@@ -5,14 +5,13 @@ import random
 import re
 from typing import Sequence
 
+import chz
 import jinja2
 import openai
-from openai.types.chat import ChatCompletionMessageParam
-from typing_extensions import override
-
-import chz
 from nanoeval.recorder import get_recorder
 from nanoeval.solvers.mcq import Answer, MCQSolver, MCQTask, Question
+from openai.types.chat import ChatCompletionMessageParam
+from typing_extensions import override
 
 logger = logging.getLogger(__name__)
 

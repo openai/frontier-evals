@@ -4,11 +4,10 @@ from functools import cached_property
 from pathlib import Path
 from typing import Any, AsyncContextManager, Literal, Sequence
 
+import chz
 from IPython.core.inputtransformer2 import TransformerManager
 from pydantic import BaseModel, field_validator
 from typing_extensions import deprecated
-
-import chz
 
 
 class JupyterExecutionResult(BaseModel):

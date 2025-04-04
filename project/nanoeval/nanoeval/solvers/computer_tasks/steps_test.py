@@ -4,7 +4,6 @@ from datetime import timedelta
 from typing import Any
 
 import pytest
-
 from nanoeval.solvers.computer_tasks.steps import FinalResultWithException, Step
 from nanoeval.solvers.computer_tasks.task import Grade
 

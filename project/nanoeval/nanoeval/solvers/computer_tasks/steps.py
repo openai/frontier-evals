@@ -5,12 +5,11 @@ from abc import ABC
 from datetime import timedelta
 from typing import Any, ClassVar, Literal
 
+from nanoeval.solvers.computer_tasks._versioning import Migration, VersionedModel
+from nanoeval.solvers.computer_tasks.task import Grade
 from pydantic import ConfigDict
 from pydantic.v1.json import timedelta_isoformat
 from typing_extensions import deprecated
-
-from nanoeval.solvers.computer_tasks._versioning import Migration, VersionedModel
-from nanoeval.solvers.computer_tasks.task import Grade
 
 
 def _step_0_to_1(values: dict[str, Any]) -> dict[str, Any]:

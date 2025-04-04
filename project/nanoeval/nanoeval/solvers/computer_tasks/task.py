@@ -5,10 +5,6 @@ from abc import ABC, abstractmethod
 from typing import ClassVar
 
 import structlog
-from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
-from pydantic import BaseModel, ConfigDict, field_validator
-from typing_extensions import override
-
 from nanoeval.evaluation import Task
 from nanoeval.solvers.computer_tasks._serializable_base_model import SerializableBaseModel
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
@@ -17,6 +13,9 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
     JupyterComputerInterface,
     valid_ipython_code,
 )
+from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+from pydantic import BaseModel, ConfigDict, field_validator
+from typing_extensions import override
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

@@ -17,14 +17,13 @@ from typing import (
     final,
 )
 
-from pydantic import BaseModel, field_validator, model_validator
-from tqdm import tqdm
-
 import chz
 from chz.factories import function
 from nanoeval._multiprocessing_utils import check_multiprocess_safe
 from nanoeval.asyncio_utils import HasAsyncContextManager
 from nanoeval.recorder_protocol import RecorderConfig
+from pydantic import BaseModel, field_validator, model_validator
+from tqdm import tqdm
 
 
 class Task(BaseModel):

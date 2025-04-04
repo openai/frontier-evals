@@ -1,16 +1,15 @@
 from tempfile import NamedTemporaryFile
 
-import pytest
-from typing_extensions import override
-
 import chz
 import nanoeval
+import pytest
 from nanoeval._db import conn, open_run_set_db
 from nanoeval.bin.resume import resume
 from nanoeval.eval import EvalSpec, RunnerArgs
 from nanoeval.examples._gpqa import GPQAEval
 from nanoeval.setup import global_exit_stack
 from nanoeval.solvers.mcq import Answer, MCQSolver, MCQTask
+from typing_extensions import override
 
 
 @chz.chz

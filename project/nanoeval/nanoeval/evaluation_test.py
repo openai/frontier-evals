@@ -5,18 +5,17 @@ import os
 from typing import Any
 from unittest.mock import patch
 
-import numpy as np
-import pytest
-from typing_extensions import override
-
 import chz
 import nanoeval
 import nanoeval._db as db
+import numpy as np
+import pytest
 from nanoeval.asyncio_utils import cancel_task
 from nanoeval.evaluation import EvalSpec, RetryableSystemError, RunnerArgs, Task
 from nanoeval.examples._gpqa import GPQAEval
 from nanoeval.setup import global_exit_stack
 from nanoeval.solvers.mcq import Answer, MCQSolver, MCQTask, MockSolver
+from typing_extensions import override
 
 
 @pytest.mark.asyncio

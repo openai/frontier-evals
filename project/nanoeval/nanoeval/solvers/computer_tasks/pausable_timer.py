@@ -7,9 +7,8 @@ from contextvars import ContextVar
 from functools import cached_property
 from typing import AsyncGenerator, Generator
 
-from typing_extensions import override
-
 from nanoeval.asyncio_utils import HasAsyncContextManager
+from typing_extensions import override
 
 logger = logging.getLogger(__name__)
 

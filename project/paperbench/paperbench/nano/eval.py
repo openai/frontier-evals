@@ -5,7 +5,6 @@ import os
 import subprocess
 import tempfile
 import time
-from abc import ABC
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import timedelta
@@ -35,7 +34,14 @@ from paperbench.agents.run import (
 )
 from paperbench.agents.utils import AgentDirConfig, prepare_agent_dir_config
 from paperbench.constants import AGENT_DIR, CODE_DIR, LOGS_DIR, SUBMISSION_DIR, WORKSPACE_BASE
-from paperbench.nano.utils import file_processor, filter_processor, get_file_at_duration
+from paperbench.metrics import compute_agg_stats, per_paper_results
+from paperbench.nano.utils import (
+    SPLIT_TO_EXPECTED_PAPERS,
+    file_processor,
+    filter_processor,
+    gather_eval_runs,
+    get_file_at_duration,
+)
 from paperbench.paper_registry import paper_registry
 from paperbench.scripts.alcatraz_services import grade_on_computer, reproduce_on_computer
 from paperbench.scripts.run_judge import JudgeOutput
@@ -150,6 +156,7 @@ class ReproductionOutput(BaseModel):
 @dataclass(frozen=False)
 class PaperBenchResult:
     paper_id: str
+    run_id: str
     submission_exists: bool
     skipped_reproduction: bool
     code_only: bool
@@ -318,6 +325,7 @@ class PBTask(ComputerTask):
             return PaperBenchGrade(
                 paperbench_result=PaperBenchResult(
                     paper_id=self.paper_id,
+                    run_id=self.run_id,
                     submission_exists=False,
                     skipped_reproduction=self.reproduction.skip_reproduction,
                     code_only=self.judge.code_only,
@@ -406,6 +414,7 @@ class PBTask(ComputerTask):
         grade = PaperBenchGrade(
             paperbench_result=PaperBenchResult(
                 paper_id=self.paper_id,
+                run_id=self.run_id,
                 submission_exists=True,
                 skipped_reproduction=self.reproduction.skip_reproduction,
                 code_only=self.judge.code_only,
@@ -708,6 +717,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                     grade = PaperBenchGrade(
                         paperbench_result=PaperBenchResult(
                             paper_id=task.paper_id,
+                            run_id=task.run_id,
                             submission_exists=grade.paperbench_result.submission_exists,
                             skipped_reproduction=task.reproduction.skip_reproduction,
                             code_only=task.judge.code_only,
@@ -923,6 +933,7 @@ class PaperBench(PythonCodingEval):
     paper_split: Literal["debug", "dev", "human", "all"] = chz.field(
         default="all",
         doc="Paper split to use. One of 'debug' (rice only), 'dev' (two papers), 'human' (papers used in human baseline), 'all' (full set)",
+        # should match what is in experiments/splits/
     )
     resume_run_group_id: Optional[str] = chz.field(default=None)
     resume_no_extend: bool = chz.field(
@@ -1082,29 +1093,15 @@ class PaperBench(PythonCodingEval):
             ),
         }
 
-        # metrics
-        mean_score = float(
-            np.mean(
-                [
-                    r.judge_output.score
-                    for r in results_clean
-                    if r.judge_output and r.judge_output.success
-                ]
-            )
-        )
-        mean_score_by_paper = {}
-
-        for paper_id in sorted({t.paper_id for t in tasks}):
-            scores = [
-                r.judge_output.score
-                for r in results_clean
-                if r.judge_output and r.judge_output.success and r.paper_id == paper_id
-            ]
-
-            mean_score_by_paper[paper_id] = float(np.mean(scores)) if scores else 0.0
+        eval_runs = gather_eval_runs(results_clean, self.n_tries)
+        expected_papers = SPLIT_TO_EXPECTED_PAPERS[self.paper_split]
+        overall_results = compute_agg_stats(eval_runs, expected_papers=expected_papers)
+        mean_score_by_paper = per_paper_results(eval_runs, self.n_tries)
 
         metrics = {
-            "mean_score": mean_score,
+            "mean_score": overall_results.mean,
+            "std_err": overall_results.std_err,
+            "n_complete_tries": overall_results.n_runs,
             "mean_score_by_paper": mean_score_by_paper,
         }
 

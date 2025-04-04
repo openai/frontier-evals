@@ -25,13 +25,13 @@ class EvaluationRun:
     """A single run of the Evaluation, i.e. where all papers have been evaluated"""
 
     seed: Hashable
-    paper_evaluations: list[PaperEvaluation]
+    paper_evaluations: dict[str, PaperEvaluation]
 
-    def is_complete(self) -> bool:
-        return len(self.paper_evaluations) == EXPECTED_PAPERS
+    def is_complete(self, expected_papers: int = EXPECTED_PAPERS) -> bool:
+        return len(self.paper_evaluations) == expected_papers
 
     def is_valid(self) -> bool:
-        paper_ids = [pe.paper_id for pe in self.paper_evaluations]
+        paper_ids = [pe.paper_id for pe in self.paper_evaluations.values()]
         return len(paper_ids) == len(set(paper_ids))
 
 
@@ -60,15 +60,11 @@ def compute_ars(
     """
     Computes the average replication score (ARS) for a single evaluation run
     """
-    assert (
-        eval_run.is_complete()
-    ), f"Evaluation run is not complete: less than {EXPECTED_PAPERS} papers have been evaluated"
-
     assert eval_run.is_valid(), "Evaluation run contains duplicate paper evaluations"
 
     scores = []
 
-    for paper_eval in eval_run.paper_evaluations:
+    for paper_eval in eval_run.paper_evaluations.values():
         graded_task_node = paper_eval.graded_task_node
         if task_node_transform is not None:
             graded_task_node = task_node_transform(graded_task_node)
@@ -80,24 +76,66 @@ def compute_ars(
 
 def compute_agg_stats(
     evaluation_runs: list[EvaluationRun],
-    compute_ars_kwargs: dict | None = None,
+    compute_ars_kwargs: dict = {},
+    expected_papers: int = EXPECTED_PAPERS,
 ) -> MetricResult:
     """
     Computes aggregate statistics for replication scores across multiple eval runs.
     Returns the mean score, standard error, and number of valid seeds.
     """
     # Filter for complete evaluations (i.e. all papers have been evaluated)
-    if compute_ars_kwargs is None:
-        compute_ars_kwargs = {}
-    complete_evaluations = [eval for eval in evaluation_runs if eval.is_complete()]
+    complete_evaluations = [eval for eval in evaluation_runs if eval.is_complete(expected_papers)]
 
     scores = [compute_ars(eval_run, **compute_ars_kwargs) for eval_run in complete_evaluations]
 
     return MetricResult(
         mean=np.mean(scores).item(),
-        std_err=(np.std(scores) / np.sqrt(len(scores))).item() if scores else 0.0,
+        std_err=(np.std(scores, ddof=1) / np.sqrt(len(scores))).item() if scores else float("nan"),
         n_runs=len(complete_evaluations),
     )
+
+
+def per_paper_results(eval_runs: list[EvaluationRun], n_runs: int) -> dict[str, dict]:
+    """
+    Computes the mean and standard error of the replication score for each paper
+    over the expected number of runs.
+    """
+    paper_ids = {
+        pe.paper_id for eval_run in eval_runs for pe in eval_run.paper_evaluations.values()
+    }
+
+    def _init_result(num_runs) -> dict:
+        seeds = {f"run_{i}": None for i in range(1, num_runs + 1)}
+        results = {
+            "mean": None,
+            "std_err": None,
+            "n_runs": None,
+            **seeds,
+        }
+        return results
+
+    results = {paper_id: _init_result(n_runs) for paper_id in paper_ids}
+
+    # first, fill in the scores for each seed that's available
+    for i, eval_run in enumerate(eval_runs, start=1):
+        for paper_eval in eval_run.paper_evaluations.values():
+            paper_id = paper_eval.paper_id
+            score = paper_eval.graded_task_node.score
+            seed = f"run_{i}"
+            results[paper_id][seed] = score
+
+    # then compute the mean/stderr over the available seeds
+    for paper_id, paper_results in results.items():
+        avail_scores = [score for score in paper_results.values() if score is not None]
+        results[paper_id]["mean"] = np.mean(avail_scores).item()
+        results[paper_id]["n_runs"] = len(avail_scores)
+        results[paper_id]["std_err"] = (
+            (np.std(avail_scores, ddof=1) / np.sqrt(len(avail_scores))).item()
+            if avail_scores
+            else float("nan")
+        )
+
+    return results
 
 
 def check_disqualification(
@@ -215,13 +253,13 @@ def parse_run_data(
         # then, create the N EvaluationRun objects
         max_num_seeds = max([len(data) for data in filtered_paper_data.values()])
         for seed in range(max_num_seeds):
-            eval_run = EvaluationRun(seed=seed, paper_evaluations=[])
+            eval_run = EvaluationRun(seed=seed, paper_evaluations={})
             for paper_id, data in filtered_paper_data.items():
                 # some evaluation runs may not have all papers evaluated
                 if seed == len(data):
                     continue
                 paper_eval = data[seed]["paper_eval"]
-                eval_run.paper_evaluations.append(paper_eval)
+                eval_run.paper_evaluations[paper_eval.paper_id] = paper_eval
 
             agent_to_eval_runs[agent].append(eval_run)
 

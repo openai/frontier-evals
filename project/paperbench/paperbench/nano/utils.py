@@ -5,7 +5,60 @@ from pathlib import Path
 import structlog
 from alcatraz.clusters.local import LocalConfig
 from paperbench.constants import AGENT_DIR, SUBMISSION_DIR, WORKSPACE_BASE
-from paperbench.utils import get_default_runs_dir
+from paperbench.metrics import EvaluationRun, PaperEvaluation
+from paperbench.utils import get_default_runs_dir, get_experiments_dir
+
+
+def get_split_to_expected_papers() -> dict[str, int]:
+    """
+    Reads the split files in experiments/splits and returns a dictionary
+    mapping split names to the number of papers in each split.
+    """
+    split_to_expected_papers = {}
+    splits_dir = get_experiments_dir() / "splits"
+
+    for split_file in splits_dir.glob("*.txt"):
+        split_name = split_file.stem
+        with open(split_file, "r") as f:
+            # Count non-empty lines in the file
+            papers = [line.strip() for line in f if line.strip()]
+            split_to_expected_papers[split_name] = len(papers)
+
+    return split_to_expected_papers
+
+
+SPLIT_TO_EXPECTED_PAPERS = get_split_to_expected_papers()
+
+
+def gather_eval_runs(results: list["PaperBenchResult"], n_runs: int) -> list[EvaluationRun]:
+    """
+    Gathers succesfully graded results of nano/eval into a list of n_runs EvaluationRuns
+    where a single EvaluationRun does not contain more than one evaluation of the same paper.
+    """
+    seed_to_eval_run = {
+        seed: EvaluationRun(seed=seed, paper_evaluations={}) for seed in range(n_runs)
+    }
+    paper_to_cur_seed = {}
+
+    if not results:
+        return list(seed_to_eval_run.values())
+
+    for result in results:
+        if result.judge_output is None or result.judge_output.graded_task_tree is None:
+            continue
+        paper_id = result.paper_id
+        if paper_id not in paper_to_cur_seed:
+            paper_to_cur_seed[paper_id] = 0
+        seed = paper_to_cur_seed[paper_id]
+        paper_to_cur_seed[paper_id] += 1
+        paper_eval = PaperEvaluation(
+            paper_id=paper_id,
+            graded_task_node=result.judge_output.graded_task_tree,
+            paper_run_id=result.run_id,
+        )
+        seed_to_eval_run[seed].paper_evaluations[paper_id] = paper_eval
+
+    return list(seed_to_eval_run.values())
 
 
 def uses_local_config(paperbench: "PaperBench") -> bool:

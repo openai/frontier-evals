@@ -233,3 +233,19 @@ We've created an auxiliary evaluation, [JudgeEval](paperbench/judge/judge_eval),
 
 ## Authors
 Giulio Starace, Oliver Jaffe, Dane Sherburn, James Aung, Chan Jun Shern, Leon Maksin, Rachel Dias, Evan Mays, Benjamin Kinsella, Wyatt Thompson, Johannes Heidecke, Amelia Glaese, Tejal Patwardhan
+
+## Citation
+
+Please cite using the following BibTeX entry:
+
+```
+@misc{starace2025paperbenchevaluatingaisability,
+      title={PaperBench: Evaluating AI's Ability to Replicate AI Research}, 
+      author={Giulio Starace and Oliver Jaffe and Dane Sherburn and James Aung and Jun Shern Chan and Leon Maksin and Rachel Dias and Evan Mays and Benjamin Kinsella and Wyatt Thompson and Johannes Heidecke and Amelia Glaese and Tejal Patwardhan},
+      year={2025},
+      eprint={2504.01848},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2504.01848}, 
+}
+```

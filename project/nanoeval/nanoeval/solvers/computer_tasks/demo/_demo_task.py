@@ -1,8 +1,7 @@
-from openai.types.chat import ChatCompletionMessageParam
-from pydantic import Field
-
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from nanoeval.solvers.computer_tasks.task import ComputerTask, Grade
+from openai.types.chat import ChatCompletionMessageParam
+from pydantic import Field
 
 
 class DemoTask(ComputerTask):

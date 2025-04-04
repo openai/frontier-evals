@@ -10,12 +10,11 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generator, Literal, Self
 
+import chz
 import pandas as pd
 import structlog
-from structlog.typing import EventDict
-
-import chz
 from nanoeval.recorder_protocol import BasicRunSpec, RecorderConfig, RecorderProtocol
+from structlog.typing import EventDict
 
 if TYPE_CHECKING:
     from nanoeval.eval import EvalSpec

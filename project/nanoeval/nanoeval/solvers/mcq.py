@@ -7,16 +7,15 @@ from abc import ABC, abstractmethod
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator, Generic, Self, TypeVar
 
+import chz
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel, model_validator
-from typing_extensions import override
-
-import chz
 from nanoeval.asyncio_utils import HasAsyncContextManager
 from nanoeval.evaluation import Eval, Task
 from nanoeval.metrics.standard import compute_default_metrics
 from nanoeval.recorder import get_recorder
+from pydantic import BaseModel, model_validator
+from typing_extensions import override
 
 
 class Question(BaseModel):

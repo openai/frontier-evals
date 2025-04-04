@@ -3,7 +3,6 @@ from typing import Any, cast
 
 import pandas as pd
 import pytest
-
 from nanoeval.metrics.standard import (
     compute_default_metrics,
     compute_default_metrics_on_correctness_without_answer_groups,

@@ -11,7 +11,6 @@ import loky
 from loky import get_reusable_executor, set_loky_pickler
 from loky.backend import reduction
 from loky.backend.context import set_start_method
-
 from nanoeval.setup import global_exit_stack
 
 logger = logging.getLogger(__name__)

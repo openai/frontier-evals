@@ -8,9 +8,8 @@ from typing import Any, Generator
 
 import dill
 import pandas as pd
-from pyarrow import ArrowInvalid
-
 from nanoeval._persistent_db import database_dir
+from pyarrow import ArrowInvalid
 
 logger = logging.getLogger(__name__)
 

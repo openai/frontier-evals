@@ -10,19 +10,18 @@ from datetime import datetime
 from pprint import pformat
 from typing import Any
 
-import dill
-import structlog.stdlib
-from structlog.contextvars import bound_contextvars
-from tqdm import tqdm
-
 import chz
+import dill
 import nanoeval._db as db
+import structlog.stdlib
 from nanoeval._db import cached_deserialize, default_db, open_run_set_db
 from nanoeval._executor_worker import ExecutorExceptionWrapper, ensure_executor_workers_started
 from nanoeval.eval import Eval, EvalSpec, RetryableSystemError, RunnerArgs, Task
 from nanoeval.library_config import get_library_config
 from nanoeval.recorder import RecorderProtocol, dummy_recorder
 from nanoeval.setup import global_exit_stack
+from structlog.contextvars import bound_contextvars
+from tqdm import tqdm
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

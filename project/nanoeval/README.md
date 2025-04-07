@@ -88,7 +88,7 @@ You may import code from any `nanoeval.*` package that does not start with an un
 
 ## Handling closable state
 
-Many things you might want to use in an eval (e.g., external resources, tools) require one-time creation and cleanup. To accomodate this, `nanoeval.run` will `__aenter__` an eval on start and `__aexit__` on exit. We also have a simple wrapper for these functions called `HasAsyncContextManager` that lets you do something like this:
+Many things you might want to use in an eval (e.g., external resources, tools) require one-time creation and cleanup. To accommodate this, `nanoeval.run` will `__aenter__` an eval on start and `__aexit__` on exit. We also have a simple wrapper for these functions called `HasAsyncContextManager` that lets you do something like this:
 
 ```python
 from typing_extensions import override

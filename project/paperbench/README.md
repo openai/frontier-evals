@@ -69,13 +69,12 @@ For convenience, the table below lists which papers require a HuggingFace token 
 
 | **Paper ID**                   | **HF Token Needed?**          | **OpenAI API Needed?**                                |
 |-------------------------------|--------------------------------|-------------------------------------------------------|
-| **longlm**                    | Yes ([Llama-2](https://huggingface.co/meta-llama/Llama-2-7b))                  | No                                                    |
 | **lca‑on‑the‑line**           | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))                 | No                                                    |
 | **stochastic‑interpolants**   | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))                 | No                                                    |
 | **test‑time‑model‑adaptation**| Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))              | No                                                    |
 | **robust‑clip**               | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))                 | No                                                    |
-| **semantic‑self‑consistency** | No                             | Yes (`gpt‑3.5‑turbo` / `gpt‑4o‑mini`)                 |
 | **bbox** | No                             | Yes (`gpt‑3.5‑turbo` / `gpt-4`)                 |
+| **semantic‑self‑consistency** (dev set) | No                             | Yes (`gpt‑3.5‑turbo` / `gpt‑4o‑mini`)                 |
 
 ### Build Docker images
 

@@ -7,6 +7,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable, Optional
 
+import blobfile as bf
 import docker
 import openai
 import tenacity
@@ -136,23 +137,18 @@ def create_run_dir(
     run_group: str,
     run_id: str,
     runs_dir: str,
-) -> Path:
+) -> str:
     """Creates a directory for the run."""
 
-    run_dir = Path(runs_dir) / run_group / run_id
-
-    run_dir.mkdir(parents=True, exist_ok=True)
-
-    assert isinstance(run_dir, Path), f"Expected a `Path`, but got `{type(run_dir)}`."
-    assert run_dir.is_dir(), f"Expected a directory, but got `{run_dir}`."
-
+    run_dir = bf.join(runs_dir, run_group, run_id)
+    bf.makedirs(run_dir)
     return run_dir
 
 
-def get_default_runs_dir() -> Path:
+def get_default_runs_dir() -> str:
     """Returns an absolute path to the directory storing runs."""
 
-    return get_root().parent / "runs"
+    return str(get_root().parent / "runs")
 
 
 def path_to_tar(source_path: Path, arcname: str) -> io.BytesIO:

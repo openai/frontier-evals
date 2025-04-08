@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import blobfile as bf
 import structlog
 from alcatraz.clusters.local import LocalConfig
 from paperbench.constants import AGENT_DIR, SUBMISSION_DIR, WORKSPACE_BASE
@@ -66,7 +67,7 @@ def gather_eval_runs(results: list["PaperBenchResult"], n_runs: int) -> list[Eva
     return list(seed_to_eval_run.values())
 
 
-def uses_local_config(paperbench: "PaperBench") -> bool:
+def uses_local_config(paperbench: "PaperBench") -> bool:  # type: ignore
     """
     Check if any of paperbench.solver.cluster_config, paperbench.reproduction.cluster_config,
     or paperbench.judge.cluster_config is an instance of LocalConfig.
@@ -94,7 +95,7 @@ def uses_local_config(paperbench: "PaperBench") -> bool:
     return False
 
 
-def build_agent_command(agent: "Agent") -> str:
+def build_agent_command(agent: "Agent") -> str:  # type: ignore
     """Builds the command to run the agent."""
 
     cmd = ["bash", f"{AGENT_DIR}/start.sh"]
@@ -109,7 +110,7 @@ def build_agent_command(agent: "Agent") -> str:
     return " ".join(cmd)
 
 
-def build_reproduce_command(task: "PaperBenchTask") -> str:
+def build_reproduce_command(task: "PaperBenchTask") -> str:  # type: ignore
     """Builds the command to run the reproduction."""
 
     cmd = [
@@ -124,7 +125,7 @@ def build_reproduce_command(task: "PaperBenchTask") -> str:
     return " ".join(map(str, cmd))
 
 
-def build_judge_command(judge: "JudgeConfig", task: "PaperBenchTask") -> str:
+def build_judge_command(judge: "JudgeConfig", task: "PaperBenchTask") -> str:  # type: ignore
     """Builds the command to run the judge."""
 
     cmd = [
@@ -208,17 +209,13 @@ def file_processor(logger, method_name, original_event_dict):
     runs_dir = event_dict.pop("runs_dir", get_default_runs_dir())
 
     if "run" in destinations and run_group_id and run_id:
-        dst = Path(runs_dir) / run_group_id / run_id / "run.log"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-
-        with open(dst, "a") as f:
+        dst = bf.join(runs_dir, run_group_id, run_id, "run.log")
+        with bf.BlobFile(dst, "a") as f:
             f.write(str(event_dict) + "\n")
 
     if "group" in destinations and run_group_id:
-        dst = Path(runs_dir) / run_group_id / "group.log"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-
-        with open(dst, "a") as f:
+        dst = bf.join(runs_dir, run_group_id, "group.log")
+        with bf.BlobFile(dst, "a") as f:
             f.write(str(event_dict) + "\n")
 
     return original_event_dict

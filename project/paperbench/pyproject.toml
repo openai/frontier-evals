@@ -21,6 +21,7 @@ dependencies = [
     "drain3>=0.9.11",
     "chz@git+https://github.com/openai/chz.git#egg=97cc0dfb5934a4b99c3a96bdcadcfdbe14812fe8",
     "pre-commit>=4.1.0",
+    "blobfile>=3.0.0",
     "tiktoken>=0.9.0",
     "python-dateutil>=2.9.0",
     "unidecode>=1.3.8",

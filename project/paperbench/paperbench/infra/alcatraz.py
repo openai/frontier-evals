@@ -3,6 +3,9 @@ import time
 from pathlib import Path
 from typing import Optional
 
+import blobfile as bf
+import requests
+from alcatraz.clusters.local import BaseAlcatrazCluster
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
     ExecutionResult,
@@ -41,11 +44,10 @@ async def upload_sources(
     """
     Tars all source directories and files into a single tarball and uploads it
     """
-    run_dir_str = str(run_dir)
-
     if filename is None:
         filename = time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
-    file_path = Path(run_dir_str) / f"{filename}.tar.gz"
+    file_path = bf.join(run_dir, f"{filename}.tar.gz")
+
     container_tmp_dir = Path("/tmp") / f"{filename}"
     container_tar_path = Path("/tmp") / f"{filename}.tar.gz"
 
@@ -114,19 +116,17 @@ async def compute_aisi_basic_agent_runtime(
 async def tar_and_extract_from_computer(
     computer: ComputerInterface,
     dir_path_on_computer: Path,
-    tar_path_on_target: Path,
+    tar_path_on_computer: Path,
+    tar_path_on_target: str,
     logger: logging.Logger,
-    tar_path_on_computer: Optional[Path] = None,
     max_file_size: Optional[str] = None,
 ):
     """
-    Tars a dir on a computer and extracts that tar
+    1) Tars the dir at dir_path_on_computer to tar_path_on_computer
+    2) Uploads to tar_path_on_target. If uze_azure is True, it will upload directly from the
+        computer (i.e. file won't pass through host).
     """
-
     # extract the tar of the submission
-    if tar_path_on_computer is None:
-        tar_path_on_computer = Path("/tmp") / f"{dir_path_on_computer.name}.tar.gz"
-
     exclude_list_path = Path("/tmp") / "exclude.txt"
     if max_file_size is not None:
         await populate_exclude_list(

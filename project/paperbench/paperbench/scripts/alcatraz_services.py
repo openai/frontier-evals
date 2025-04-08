@@ -1,18 +1,24 @@
 import asyncio
 import json
 import logging
+import tarfile
+import tempfile
 import time
 from pathlib import Path
+from typing import Optional
 
+import blobfile as bf
 from dotenv import load_dotenv
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from paperbench.agents.registry import Agent
 from paperbench.infra.alcatraz import tar_and_extract_from_computer
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
 from paperbench.judge.judge import Judge
 from paperbench.paper_registry import paper_registry
 from paperbench.rubric.tasks import TaskNode
-from paperbench.scripts.run_judge import JudgeOutput
+from paperbench.scripts.run_judge import JudgeOutput, get_total_token_usage
 from paperbench.scripts.run_reproduce import reproduce
+from paperbench.utils import get_timestamp
 
 load_dotenv()
 
@@ -109,8 +115,7 @@ async def grade_on_computer(
     judge_type: str,
     model_name: str,
     logger: logging.Logger,
-    run_dir: Path,
-    timeout: int,
+    run_dir: str,
     code_only: bool = False,
     reasoning_effort: str | None = None,
 ) -> JudgeOutput | None:
@@ -157,15 +162,7 @@ async def grade_on_computer(
             paper_md=paper.paper_md,
         )
         logger.info(f"Judge created: {judge}")
-        try:
-            grader_output = await asyncio.wait_for(
-                # TODO: figure out better name for this method.
-                grade_on_cluster(judge, computer, logger, code_only),
-                timeout=timeout,
-            )
-        except (asyncio.TimeoutError, asyncio.CancelledError):
-            logger.error(f"Grading timed out for paper {paper_id}")
-            grader_output = None
+        grader_output = await grade_on_cluster(judge, computer, logger, code_only)
 
         logger.info(f"Graded {paper_id} at {submission_path}")
 
@@ -188,11 +185,102 @@ async def grade_on_computer(
     return grader_output
 
 
+async def grade_locally(
+    submission_path: str,
+    grader_upload_path: str,
+    paper_id: str,
+    judge_type: str,
+    model_name: str,
+    logger: logging.Logger,
+    code_only: bool = False,
+    reasoning_effort: str | None = None,
+) -> Optional[JudgeOutput]:
+    """
+    Grade a single submission locally
+
+    This script will:
+    - Extract the submission to a temporary directory
+    - Run the Judge on the submission
+    - Return/Upload the judge results
+    """
+
+    time_start = time.time()
+    logger.info(f"Grading {submission_path} for paper {paper_id}")
+
+    error_msg = token_usage = None
+    try:
+        # Step 1: Unzip submission from submission_path to tmp dir
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_dir = Path(tmp_dir)
+
+            logger.info(f"Unzipping submission to {tmp_dir}")
+            with bf.BlobFile(submission_path, "rb") as f:
+                with tarfile.open(fileobj=f, mode="r") as tar:
+                    tar.extractall(path=tmp_dir)
+
+            # Step 2: Run the judge
+            paper = paper_registry.get_paper(paper_id)
+            with open(paper.rubric, "r") as f:
+                task_tree = TaskNode.from_dict(json.load(f))
+            if code_only:
+                task_tree = task_tree.code_only() or task_tree.set_task_category(
+                    "Code Development"
+                ).set_sub_tasks([])
+            judge_kwargs = handle_judge_kwargs(
+                judge_type, code_only, paper, model_name, reasoning_effort
+            )
+            judge = create_judge(
+                judge_type=judge_type,
+                judge_kwargs=judge_kwargs,
+                paper_path=paper.paper_pdf,
+                rubric=task_tree,
+                addendum=paper.addendum.read_text() if paper.addendum else None,
+                judge_addendum=(
+                    paper.judge_addendum.read_text() if paper.judge_addendum.exists() else None
+                ),
+                submission_dir=tmp_dir,
+                paper_md=paper.paper_md,
+            )
+            logger.info(f"Judge created: {judge}")
+            graded_task_tree = await judge.grade()
+            if judge_type == "simple":
+                token_usage = get_total_token_usage(graded_task_tree)
+
+            logger.info(f"Graded {paper_id} at {submission_path}")
+
+            # Step 3: Upload /output/grader_output.json
+            bf.write_bytes(
+                grader_upload_path,
+                json.dumps(graded_task_tree.to_dict(), indent=4).encode("utf-8"),
+            )
+            logger.info(f"Grading results have been written to file: {grader_upload_path}")
+    except Exception as e:
+        error_msg = str(e)
+        logger.exception(f"Grading failed with error:\n{error_msg}")
+    finally:
+        time_end = time.time()
+        logger.info(f"Grading completed in {time_end - time_start:.2f} seconds.")
+
+        judge_output = JudgeOutput(
+            judge_type=judge_type,
+            model_name=model_name,
+            score=graded_task_tree.score,
+            num_leaf_nodes=len(graded_task_tree.get_leaf_nodes()),
+            num_invalid_leaf_nodes=(
+                len([node for node in graded_task_tree.get_leaf_nodes() if not node.valid_score])
+            ),
+            graded_at=get_timestamp(),
+            graded_task_tree=graded_task_tree,
+            token_usage=token_usage,
+        )
+        return judge_output
+
+
 async def reproduce_on_computer(
     computer: ComputerInterface,
     submission_path: str,
     logger: logging.Logger,
-    run_dir: Path,
+    run_dir: str,
     submission_cluster_path: Path = Path("/submission"),
     output_cluster_path: Path = Path("/output"),
     timeout: float | None = None,
@@ -238,25 +326,25 @@ async def reproduce_on_computer(
         )
 
         # Step 3: Save outputs
-        # extract metadata
-        upload_to = Path(submission_path).parent / f"{submission_stem}_repro_metadata.json"
-        with open(upload_to, "w") as f:
-            json.dump(repro_metadata, f, indent=4)
+        bf.write_bytes(
+            bf.join(run_dir, f"{submission_stem}_repro_metadata.json"),
+            json.dumps(repro_metadata).encode("utf-8"),
+        )
 
         # extract tar of the submission
         tar_path = output_cluster_path / f"{submission_stem}_repro.tar.gz"
-        upload_to = Path(submission_path).parent / f"{submission_stem}_repro.tar.gz"
+        upload_to_path = bf.join(run_dir, f"{submission_stem}_repro.tar.gz")
 
         await tar_and_extract_from_computer(
             computer=computer,
             dir_path_on_computer=submission_cluster_path,
-            tar_path_on_target=upload_to,
-            logger=logger,
             tar_path_on_computer=tar_path,
+            tar_path_on_target=upload_to_path,
             max_file_size="10M",
+            logger=logger,
         )
 
-        logger.info(f"Reproduced dir has been written: {upload_to}")
+        logger.info(f"Reproduced dir has been written: {upload_to_path}")
     except Exception as e:
         error_msg = str(e)
         logger.error(f"Reproduction failed with error:\n{error_msg}")

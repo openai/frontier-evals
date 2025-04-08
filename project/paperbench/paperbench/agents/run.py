@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
+import blobfile as bf
 from alcatraz.clusters.local import LocalConfig, VolumesConfig
 from nanoeval.eval import RetryableSystemError
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
@@ -63,21 +64,21 @@ class AgentOutput(BaseModel):
 
 async def run_agent_in_computer(
     computer: ComputerInterface,
-    task: ComputerTask,
+    task: "PBTask",  # type: ignore
     paper: Paper,
     agent: Agent,
-    run_dir: Path,
+    run_dir: str,
     logger: logging.Logger,
     agent_dir_config: AgentDirConfig,
     timeout: int,
     upload_interval_seconds: int = 1800,
     upload_interval_messages: int | None = None,
+    save_cluster_output_to_host: bool = True,
 ) -> AgentOutput:
     start = time.time()
     logger.info(purple(f"Run for `{agent.id}` agent attempting `{paper.id}`: {run_dir}"))
 
-    error: Exception | None = None
-    submission_exists: bool = False
+    error: Optional[Exception] = None
 
     try:
         await execute_agent_in_computer(
@@ -92,7 +93,10 @@ async def run_agent_in_computer(
         )
         logger.info("Done running agent in cluster")
 
-        submission_exists = await check_submission_exists(computer, logger)
+        if save_cluster_output_to_host:
+            await save_computer_output(
+                computer, run_dir, agent_dir_config.directories_to_save, logger=logger
+            )
     except Exception as e:
         error = e
         logger.exception(f"Run failed with error:\n{str(error)}")
@@ -104,10 +108,10 @@ async def run_agent_in_computer(
         end = time.time()
         logger.info(f"Run completed in {end - start:.2f} seconds.")
 
-        status_exists = os.path.exists(run_dir / "status.json")
+        status_exists = bf.exists(bf.join(run_dir, "status.json"))
 
         agent_output = AgentOutput(
-            run_id=run_dir.stem,
+            run_id=task.run_id,
             time_start=start,
             time_end=end,
             runtime_in_seconds=end - start,
@@ -115,7 +119,7 @@ async def run_agent_in_computer(
             status_exists=status_exists,
         )
 
-        with open(run_dir / "metadata.json", "w") as f:
+        with bf.BlobFile(bf.join(run_dir, "metadata.json"), "w") as f:
             json.dump(agent_output.model_dump(mode="json"), f, indent=4)
 
         return agent_output
@@ -153,7 +157,7 @@ async def start_periodic_heavy_log_upload(
     computer: ComputerInterface,
     agent_dir_config: AgentDirConfig,
     agent_start_time: int,
-    run_dir: Path,
+    run_dir: str,
     upload_interval_messages: int | None,
     upload_interval_seconds: int | None,
     logger: logging.Logger,
@@ -213,7 +217,7 @@ async def start_periodic_heavy_log_upload(
 
 async def start_periodic_light_log_upload(
     agent_start_time: int,
-    run_dir: Path,
+    run_dir: str,
     logger: logging.Logger,
 ) -> asyncio.Task:
     """
@@ -240,7 +244,7 @@ async def upload_heavy_logs(
     computer: ComputerInterface,
     agent_start_time: int,
     agent_dir_config: AgentDirConfig,
-    run_dir: Path,
+    run_dir: str,
     logger: logging.Logger,
     runtime: float | None = None,
     productive_runtime: float | None = None,
@@ -267,21 +271,19 @@ async def upload_heavy_logs(
         runtime=runtime,
         productive_runtime=productive_runtime,
         retry_time=retry_time,
-        logger=logger,
     )
     logger.info(f"Uploaded periodic heavy logs for run {run_dir}")
 
 
 async def upload_light_logs(
     agent_start_time: int,
-    run_dir: Path,
+    run_dir: str,
     logger: logging.Logger,
 ):
     await upload_status(
         start_time=agent_start_time,
         run_dir=run_dir,
         status="running",
-        logger=logger,
     )
     logger.info(f"Uploaded periodic light logs for run {run_dir}")
 
@@ -290,7 +292,7 @@ async def upload_light_and_heavy_logs(
     computer: ComputerInterface,
     agent_start_time: int,
     agent_dir_config: AgentDirConfig,
-    run_dir: Path,
+    run_dir: str,
     logger: logging.Logger,
 ):
     initial_upload_complete = asyncio.Event()
@@ -321,33 +323,31 @@ async def upload_light_and_heavy_logs(
 
 async def upload_status(
     start_time: int,
-    run_dir: Path,
+    run_dir: str,
     status: str,
-    logger: logging.Logger,
     end_time: int | None = None,
 ):
-    run_dir_str = str(run_dir)
     status_obj = {
         "status": status,
         "created_at": start_time,
         "agent_finished_at": end_time,
         "last_updated": int(time.time()),
     }
-    with open(Path(run_dir_str) / "status.json", "w") as f:
-        json.dump(status_obj, f, indent=4)
+    bf.write_bytes(
+        bf.join(run_dir, "status.json"),
+        json.dumps(status_obj, indent=4).encode("utf-8"),
+    )
 
 
 async def upload_log_info(
     start_time: int,
-    run_dir: Path,
+    run_dir: str,
     filename: str,
     num_messages: int,
     runtime: str,
     productive_runtime: str,
     retry_time: str,
-    logger: logging.Logger,
 ):
-    run_dir_str = str(run_dir)
     log_info = {
         "created_at": start_time,
         "num_messages": num_messages,
@@ -355,15 +355,17 @@ async def upload_log_info(
         "productive_runtime": productive_runtime,
         "retry_time": retry_time,
     }
-    with open(Path(run_dir_str) / f"{filename}.json", "w") as f:
-        json.dump(log_info, f, indent=4)
+    bf.write_bytes(
+        bf.join(run_dir, f"{filename}.json"),
+        json.dumps(log_info, indent=4).encode("utf-8"),
+    )
 
 
 async def execute_agent_in_computer(
     computer: ComputerInterface,
     agent: Agent,
     agent_dir_config: AgentDirConfig,
-    run_dir: Path,
+    run_dir: str,
     timeout: int,
     logger: logging.Logger,
     upload_interval_seconds: int | None = 1800,
@@ -467,7 +469,7 @@ def build_agent_command(agent: Agent, agent_dir: str) -> str:
 
 async def save_computer_output(
     computer: ComputerInterface,
-    save_dir: Path,
+    save_dir: str,
     directories_to_save: list[str],
     logger: logging.Logger,
 ):
@@ -503,7 +505,7 @@ async def check_submission_exists(computer: ComputerInterface, logger: logging.L
 async def extract_dir_from_computer(
     computer: ComputerInterface,
     path_on_cluster: str,
-    save_dir: Path,
+    save_dir: str,
     logger: logging.Logger,
 ):
     """

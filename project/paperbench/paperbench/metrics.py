@@ -1,7 +1,7 @@
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Callable, Hashable
+from typing import Callable, Hashable, Literal
 
 import dateutil.parser
 import numpy as np
@@ -177,28 +177,54 @@ def parse_run_data(
     """
     agent_runs = {}
 
-    # Helper function to validate and extract required data
-    def parse_jsonl_entry(entry: dict) -> ParsedEntry | None:
-        if not all(
+    # Helper function since we accidentally changed the format of nanoeval records
+    def detect_format(entry: dict) -> Literal["old", "new"] | None:
+        old_format = all(
             [
                 entry.get("record_type") == "extra",
                 entry.get("data", {}).get("pb_result", {}).get("grader_output"),
                 entry.get("data", {}).get("run_group_id"),
                 entry.get("timestamp"),
             ]
-        ):
+        )
+        new_format = all(
+            [
+                entry.get("record_type") == "extra",
+                entry.get("data", {})
+                .get("pb_result", {})
+                .get("paperbench_result", {})
+                .get("judge_output"),
+                entry.get("data", {}).get("run_group_id"),
+                entry.get("timestamp"),
+            ]
+        )
+        if old_format:
+            return "old"
+        elif new_format:
+            return "new"
+        else:
             return None
 
-        pb_result = entry["data"]["pb_result"]
-        if not pb_result.get("grader_success"):
-            return None
+    # Helper function to validate and extract required data
+    def parse_entry_by_format(entry: dict, format: Literal["old", "new"]) -> ParsedEntry | None:
+        if format == "old":
+            pb_result = entry["data"]["pb_result"]
+            if not pb_result.get("grader_success"):
+                return None
+            graded_task_tree = GradedTaskNode.from_dict(
+                pb_result["grader_output"]["graded_task_tree"]
+            )
+        elif format == "new":
+            pb_result = entry["data"]["pb_result"]["paperbench_result"]
+            graded_task_tree = GradedTaskNode.from_dict(
+                pb_result["judge_output"]["graded_task_tree"]
+            )
 
         run_group_id = entry["data"]["run_group_id"]
         paper_run_id = entry["data"]["run_id"]
         agent_id = run_group_id.split("_")[-1]
         paper_id = pb_result["paper_id"]
         timestamp = dateutil.parser.parse(entry["timestamp"]).timestamp()
-        graded_task_tree = GradedTaskNode.from_dict(pb_result["grader_output"]["graded_task_tree"])
 
         return ParsedEntry(
             agent_id=agent_id,
@@ -217,8 +243,11 @@ def parse_run_data(
         with open(file, "r") as f:
             for line in f:
                 entry = json.loads(line)
-                parsed_entry = parse_jsonl_entry(entry)
-                if not parsed_entry:
+                format = detect_format(entry)
+                if format is None:
+                    continue
+                parsed_entry = parse_entry_by_format(entry, format)
+                if parsed_entry is None:
                     continue
 
                 # Initialize agent and seed data structures if needed

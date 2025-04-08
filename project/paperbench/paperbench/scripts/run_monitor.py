@@ -25,7 +25,17 @@ async def monitor_single_log(
     Monitor a single run's log with the specified monitor.
     """
     run_id = run_dir.name
-    log_file = run_dir / "logs" / "agent.log"
+
+    # look at latest checkpoint
+    checkpoints = [
+        i for i in list(run_dir.glob("*-GMT")) + list(run_dir.glob("*-UTC")) if i.is_dir()
+    ]
+    if len(checkpoints) == 0:
+        logger.warning(f"No checkpoints found for {run_id}")
+        return None
+    latest_checkpoint = sorted(checkpoints, key=lambda x: x.stem)[-1]
+    log_file = latest_checkpoint / "logs" / "agent.log"
+
     paper_id = get_paper_id_from_run_id(run_id)
 
     if not log_file.exists():

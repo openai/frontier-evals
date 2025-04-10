@@ -18,14 +18,16 @@
                             "requirements": "Code has been implemented such that RoBERTa can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "result": "Pass"
                         },
                         {
                             "id": "fa5309a4-2d43-45ef-80f6-df26a5559be2",
                             "requirements": "Code has been implemented such that T5, specifically t5-lm-adapt, can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "result": "Pass"
                         }
                     ],
                     "task_category": null

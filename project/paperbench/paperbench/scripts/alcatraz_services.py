@@ -132,6 +132,7 @@ async def grade_on_computer(
     logger.info(f"Grading {submission_path} for paper {paper_id}")
 
     error_msg = None
+    grader_output = None
     try:
 
         # Step 1: Download submission to /submission

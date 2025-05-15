@@ -16,6 +16,7 @@ done
 
 ## Evals
 
-- [PaperBench](./project/paperbench/README.md)
-- SWELancer (Forthcoming)
-- MLE-bench (Forthcoming)
+- [PaperBench](./project/paperbench/README.md): based on [https://openai.com/index/paperbench/](https://openai.com/index/paperbench/)
+- SWELancer (Forthcoming): based on [https://openai.com/index/swe-lancer/](https://openai.com/index/swe-lancer/)
+- MLE-bench (Forthcoming): based on [https://openai.com/index/mle-bench/](https://openai.com/index/mle-bench/)
+- SWE-bench (Forthcoming): based on [https://openai.com/index/introducing-swe-bench-verified/](https://openai.com/index/introducing-swe-bench-verified/)

@@ -2,6 +2,31 @@
 
 This repo contains the dataset and code for the paper "PaperBench: Evaluating AI's Ability to Replicate AI Research".
 
+## Leaderboard
+
+### PaperBench Results
+
+| Agent                                   | Score (%)  | # runs | Date       |
+|-----------------------------------------|------------|--------|------------|
+| IterativeAgent o1-high (36h limit)      | 26.0 ± 0.3 |   3    | 2025-04-02 |
+| IterativeAgent o1-high (24h limit)      | 24.4 ± 0.7 |   3    | 2025-04-02 |
+| BasicAgent claude-3.5-sonnet            | 21.0 ± 0.8 |   3    | 2025-04-02 |
+| IterativeAgent claude-3.5-sonnet        | 16.1 ± 0.1 |   3    | 2025-04-02 |
+| BasicAgent o1-high                      | 13.2 ± 0.3 |   3    | 2025-04-02 |
+| IterativeAgent o3-mini-high             | 8.5 ± 0.8  |   3    | 2025-04-02 |
+| BasicAgent deepseek-r1                  | 6.0 ± 0.3  |   3    | 2025-04-02 |
+| BasicAgent gpt-4o                       | 4.1 ± 0.1  |   3    | 2025-04-02 |
+| BasicAgent gemini-2.0-flash             | 3.2 ± 0.2  |   3    | 2025-04-02 |
+| BasicAgent o3-mini-high                 | 2.6 ± 0.2  |   3    | 2025-04-02 |
+
+### PaperBench Code-Dev Results
+
+| Agent                       | Score (%)  | # runs | Date       |
+|-----------------------------|------------|--------|------------|
+| IterativeAgent o1-high      | 43.4 ± 0.8 |   3    | 2025-04-02 |
+
+## Introduction
+
 PaperBench evaluates AI agents on replicating 20 Spotlight and Oral papers from ICML 2024 from scratch.
 
 Each sample of PaperBench includes a research paper and a rubric that defines the requirements for a successful replication.
@@ -93,7 +118,7 @@ You will need to build the images for each agent that you want to run. We provid
 - [paperbench/agents/dummy/Dockerfile](paperbench/agents/dummy/Dockerfile): A agent for that creates a dummy submission, useful for testing the eval end-to-end.
 - [paperbench/agents/aisi-basic-agent/Dockerfile](paperbench/agents/aisi-basic-agent/Dockerfile): Simple ReAct style agents with tools available to them.
 
-For convenience, we’ve provided a [script](paperbench/scripts/build-docker-images.sh) that builds all the above images:
+For convenience, we've provided a [script](paperbench/scripts/build-docker-images.sh) that builds all the above images:
 
 ```bash
 bash paperbench/scripts/build-docker-images.sh
@@ -187,13 +212,13 @@ runs/
 
 ## PaperBench Code-Dev
 
-**PaperBench Code-Dev** is a lighter-weight variant of PaperBench. Unlike the full PaperBench pipeline -- which involves executing the agent’s submission in a separate reproduction step -- PaperBench Code-Dev skips the reproduction step and only grades the agent's submission on the **Code Development** requirements. This means:
+**PaperBench Code-Dev** is a lighter-weight variant of PaperBench. Unlike the full PaperBench pipeline -- which involves executing the agent's submission in a separate reproduction step -- PaperBench Code-Dev skips the reproduction step and only grades the agent's submission on the **Code Development** requirements. This means:
 
-- The Judge only checks **Code Development** requirements (e.g., “Is there an implementation of method X?”). It skips checking Execution requirements that check that the code runs correctly, and skips checking Result Match requirements that check that the paper’s empirical results have been replicated.
-- You **don’t need a GPU to run the reproduction step** where the agent's submission is executed. This often reduces cost and runtime significantly.
+- The Judge only checks **Code Development** requirements (e.g., "Is there an implementation of method X?"). It skips checking Execution requirements that check that the code runs correctly, and skips checking Result Match requirements that check that the paper's empirical results have been replicated.
+- You **don't need a GPU to run the reproduction step** where the agent's submission is executed. This often reduces cost and runtime significantly.
 - There is **less of a need to make a GPU available to the agent** when it is creating its submission. Although having access to a GPU is helpful for the agent to run intensive experiments that verify that its code is correct, the agent can get away with less end-to-end testing of its code since it is only graded on **Code Development** requirements.
 
-We think PaperBench Code-Dev offers a convenient, lower-cost, but less rigorous way of assessing paper replication. It doesn't require GPUs and typically cuts grading costs (we’ve seen around an 85% reduction in o3-mini SimpleJudge costs for the average submission), making it a accessible alternative for assessing models' abilities to replicate papers.
+We think PaperBench Code-Dev offers a convenient, lower-cost, but less rigorous way of assessing paper replication. It doesn't require GPUs and typically cuts grading costs (we've seen around an 85% reduction in o3-mini SimpleJudge costs for the average submission), making it a accessible alternative for assessing models' abilities to replicate papers.
 
 To run the Code-Dev variant, simply include the following flag:
 

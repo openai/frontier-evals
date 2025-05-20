@@ -27,7 +27,7 @@ async def populate_exclude_list(
     cmds = [
         f"MAX_SIZE={max_size}",
         f"EXCLUDE_LIST={exclude_list_path}",
-        f"find {dir_path_on_computer} -type f -size +$MAX_SIZE -printf '%P\\n' > $EXCLUDE_LIST",
+        f"find {dir_path_on_computer} -type f -not -name 'agent.log' -not -name 'inspect.log' -size +$MAX_SIZE -printf '%P\\n' > $EXCLUDE_LIST",
         "cat $EXCLUDE_LIST",
     ]
     excluded = await computer.check_shell_command(" && ".join(cmds))

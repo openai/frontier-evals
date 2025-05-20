@@ -195,6 +195,8 @@ def basic_agent_plus(
             model = get_model()
             setattr(model, "total_retry_time", 0)
             setattr(model, "generate", generate_patched)
+            if "o3" in model.api.model_name or "o4" in model.api.model_name:
+                model.api.responses_api = True
 
             # main loop (state.completed checks message_limit and token_limit)
             while not state.completed:

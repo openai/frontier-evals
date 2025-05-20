@@ -400,7 +400,7 @@ class PBTask(ComputerTask):
             judge_output = await self.grade_submission(
                 submission_to_grade_path,
                 self.paper_id,
-                Path(self.run_dir),
+                self.run_dir,
             )
 
             ctx_logger.info(
@@ -566,7 +566,7 @@ class PBTask(ComputerTask):
         self,
         submission_path: str,
         paper_id: str,
-        run_dir: Path,
+        run_dir: str,
     ) -> Optional[JudgeOutput]:
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id,

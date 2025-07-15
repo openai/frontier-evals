@@ -5,9 +5,11 @@ from typing import Callable, Hashable, Literal
 
 import dateutil.parser
 import numpy as np
+import structlog.stdlib
 from paperbench.judge.judge import GradedTaskNode, disqualify
 from tqdm import tqdm
 
+logger = structlog.stdlib.get_logger(component=__name__)
 EXPECTED_PAPERS = 20
 
 

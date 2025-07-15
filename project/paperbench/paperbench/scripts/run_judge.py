@@ -4,13 +4,14 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+import structlog.stdlib
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
 from paperbench.judge.judge import GradedTaskNode, TokenUsage, get_total_token_usage
 from paperbench.paper_registry import paper_registry
 from paperbench.rubric.tasks import TaskNode
-from paperbench.utils import get_logger, get_timestamp
+from paperbench.utils import get_timestamp
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 @dataclass(frozen=True)

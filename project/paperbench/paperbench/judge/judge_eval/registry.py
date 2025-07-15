@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from paperbench.utils import get_logger, get_paperbench_data_dir
+import structlog.stdlib
+from paperbench.utils import get_paperbench_data_dir
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 @dataclass(frozen=True)

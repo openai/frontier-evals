@@ -2,7 +2,10 @@ import os
 import re
 from dataclasses import dataclass
 
+import structlog.stdlib
 from paperbench.constants import AGENT_DIR, CODE_DIR, LOGS_DIR, SUBMISSION_DIR
+
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 @dataclass

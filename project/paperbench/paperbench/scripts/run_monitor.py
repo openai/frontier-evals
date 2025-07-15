@@ -4,12 +4,12 @@ import datetime
 import json
 from pathlib import Path
 
+import structlog.stdlib
 from paperbench.monitor.create_monitor import create_monitor
 from paperbench.paper_registry import paper_registry
-from paperbench.utils import get_logger
 from tqdm.asyncio import tqdm_asyncio
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 def get_paper_id_from_run_id(run_id: str) -> str:
@@ -106,7 +106,7 @@ async def monitor_multiple_run_groups(
 ) -> dict:
     """Run monitor on multiple run groups that are in a directory of run groups."""
     if not logs_dir.exists():
-        logger.error(f"Logs directory {logs_dir} does not exist")
+        logger.exception(f"Logs directory {logs_dir} does not exist")
         return None
 
     # Get all available run groups in the logs directory

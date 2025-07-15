@@ -1,8 +1,8 @@
+import structlog.stdlib
 from paperbench.judge.judge import GradedTaskNode
-from paperbench.utils import get_logger
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 def _get_leaf_node_scores(

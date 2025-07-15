@@ -6,11 +6,11 @@ import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
-from logging import Logger
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Sequence
 
 import openai
+import structlog.stdlib
 import tiktoken
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
@@ -22,13 +22,14 @@ from paperbench.judge.constants import (
 )
 from paperbench.judge.utils import format_file, get_model_context_window_length, reduce_log
 from paperbench.rubric.tasks import TASK_CATEGORY_QUESTIONS, TaskNode
-from paperbench.utils import get_logger, oai_completion_with_retry_async
+from paperbench.utils import oai_completion_with_retry_async
 from pydantic import BaseModel
+from structlog import wrap_logger
+from structlog.stdlib import BoundLogger
 from typing_extensions import override
 
+logger = structlog.stdlib.get_logger(component=__name__)
 load_dotenv()
-
-logger = get_logger(__name__)
 
 
 class ParsedJudgeResponseFloat(BaseModel):
@@ -352,22 +353,21 @@ class Judge(ABC):
         """Approximates the grade for an entire subtree when the max depth is reached."""
         raise NotImplementedError()
 
-    def get_logger(self, task: TaskNode) -> Logger:
+    def get_logger(self, task: TaskNode) -> BoundLogger:
         """Creates a logger for a specific task."""
 
         if not self.log_path:
             _logger = logging.getLogger("null_logger")
             _logger.addHandler(logging.NullHandler())
-            return _logger
+            return wrap_logger(_logger)
 
         run_logger = logging.getLogger(task.id)
         run_logger.setLevel(logging.DEBUG)
         log_file_handler = logging.FileHandler(self.log_path / f"{task.id}.log")
-        log_file_handler.setFormatter(logger.handlers[0].formatter)  # match the formatting we have
         run_logger.addHandler(log_file_handler)
         run_logger.propagate = False
 
-        return run_logger
+        return wrap_logger(run_logger)
 
 
 class DummyJudge(Judge):
@@ -813,7 +813,7 @@ class SimpleJudge(Judge):
     async def _prepare_relevant_files(
         self,
         task: TaskNode,
-        leaf_logger: logging.Logger,
+        leaf_logger: BoundLogger,
         max_files: int | None = 10,
     ) -> str:
         """
@@ -911,7 +911,7 @@ class SimpleJudge(Judge):
         return self.token_encoder.decode(selected_files_tokens).rsplit("\n", 1)[0]
 
     async def _construct_grade_leaf_messages(
-        self, task: TaskNode, leaf_logger: logging.Logger
+        self, task: TaskNode, leaf_logger: BoundLogger
     ) -> list[dict[str, Any]]:
         relevant_files = await self._prepare_relevant_files(task, leaf_logger)
         relevant_files_prompt = (
@@ -988,6 +988,7 @@ class SimpleJudge(Judge):
     async def grade_leaf(self, task: TaskNode) -> GradedTaskNode:
         async with self.leaf_semaphore:
             leaf_logger = self.get_logger(task)
+            leaf_std_logger = leaf_logger._logger
             try:
                 leaf_logger.info(f"Grading leaf: {task.requirements}")
                 if task.task_category == "Result Analysis" and not self.reproduce_touched_files:
@@ -1034,10 +1035,11 @@ class SimpleJudge(Judge):
                     # Dump full messages
                     if (
                         self.log_path
-                        and leaf_logger.handlers
-                        and isinstance(leaf_logger.handlers[0], logging.FileHandler)
+                        and leaf_std_logger is not None
+                        and leaf_std_logger.handlers
+                        and isinstance(leaf_std_logger.handlers[0], logging.FileHandler)
                     ):
-                        log_file_path = leaf_logger.handlers[0].baseFilename
+                        log_file_path = leaf_std_logger.handlers[0].baseFilename
                         with open(
                             Path(log_file_path).parent / f"{task.id}_messages.jsonl", "w"
                         ) as f:
@@ -1046,9 +1048,9 @@ class SimpleJudge(Judge):
 
                 return graded_task_node
             finally:
-                for handler in leaf_logger.handlers:
+                for handler in leaf_std_logger.handlers:
                     handler.close()
-                    leaf_logger.removeHandler(handler)
+                    leaf_std_logger.removeHandler(handler)
 
     @override
     async def grade_subtree(self, task: TaskNode) -> GradedTaskNode:

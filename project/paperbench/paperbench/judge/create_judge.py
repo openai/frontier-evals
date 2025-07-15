@@ -1,9 +1,9 @@
 # separate file to avoid circular imports when other files import base Judge class
+import structlog.stdlib
 from paperbench.judge.judge import DummyJudge, Judge, RandomJudge, SimpleJudge
 from paperbench.paper_registry import Paper
-from paperbench.utils import get_logger
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 def can_model_reason(model_name: str) -> bool:

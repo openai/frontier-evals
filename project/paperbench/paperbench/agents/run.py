@@ -1,18 +1,15 @@
 import asyncio
 import io
 import json
-import logging
 import os
 import tarfile
 import time
-from pathlib import Path
 from typing import Optional
 
 import blobfile as bf
 from alcatraz.clusters.local import LocalConfig, VolumesConfig
 from nanoeval.eval import RetryableSystemError
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
-from nanoeval.solvers.computer_tasks.task import ComputerTask
 from paperbench.agents.registry import Agent
 from paperbench.agents.utils import AgentDirConfig
 from paperbench.constants import SUBMISSION_DIR
@@ -24,6 +21,7 @@ from paperbench.infra.alcatraz import (
 from paperbench.paper_registry import Paper
 from paperbench.utils import purple
 from pydantic import BaseModel
+from structlog.stdlib import BoundLogger
 
 
 class AgentOutput(BaseModel):
@@ -68,7 +66,7 @@ async def run_agent_in_computer(
     paper: Paper,
     agent: Agent,
     run_dir: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
     agent_dir_config: AgentDirConfig,
     timeout: int,
     upload_interval_seconds: int = 1800,
@@ -160,7 +158,7 @@ async def start_periodic_heavy_log_upload(
     run_dir: str,
     upload_interval_messages: int | None,
     upload_interval_seconds: int | None,
-    logger: logging.Logger,
+    logger: BoundLogger,
 ) -> asyncio.Task:
     """
     Uploads heavy logs periodically. Returns the periodic upload task
@@ -218,7 +216,7 @@ async def start_periodic_heavy_log_upload(
 async def start_periodic_light_log_upload(
     agent_start_time: int,
     run_dir: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
 ) -> asyncio.Task:
     """
     Uploads light logs periodically. Returns the periodic upload task
@@ -245,7 +243,7 @@ async def upload_heavy_logs(
     agent_start_time: int,
     agent_dir_config: AgentDirConfig,
     run_dir: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
     runtime: float | None = None,
     productive_runtime: float | None = None,
     retry_time: float | None = None,
@@ -278,7 +276,7 @@ async def upload_heavy_logs(
 async def upload_light_logs(
     agent_start_time: int,
     run_dir: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
 ):
     await upload_status(
         start_time=agent_start_time,
@@ -293,7 +291,7 @@ async def upload_light_and_heavy_logs(
     agent_start_time: int,
     agent_dir_config: AgentDirConfig,
     run_dir: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
 ):
     initial_upload_complete = asyncio.Event()
 
@@ -367,7 +365,7 @@ async def execute_agent_in_computer(
     agent_dir_config: AgentDirConfig,
     run_dir: str,
     timeout: int,
-    logger: logging.Logger,
+    logger: BoundLogger,
     upload_interval_seconds: int | None = 1800,
     upload_interval_messages: int | None = None,
 ):
@@ -449,7 +447,7 @@ async def execute_agent_in_computer(
                         await task
                     except (asyncio.CancelledError, Exception) as e:
                         if not isinstance(e, asyncio.CancelledError):
-                            logger.error(f"Task failed with error: {e}")
+                            logger.exception(f"Task failed with error: {e}")
 
 
 def build_agent_command(agent: Agent, agent_dir: str) -> str:
@@ -471,7 +469,7 @@ async def save_computer_output(
     computer: ComputerInterface,
     save_dir: str,
     directories_to_save: list[str],
-    logger: logging.Logger,
+    logger: BoundLogger,
 ):
     """
     Extracts the submission, logs, and code directories from the cluster container to the host
@@ -486,7 +484,7 @@ async def save_computer_output(
         await extract_dir_from_computer(computer, dir_to_save, save_dir, logger=logger)
 
 
-async def check_submission_exists(computer: ComputerInterface, logger: logging.Logger):
+async def check_submission_exists(computer: ComputerInterface, logger: BoundLogger):
     """
     Checks if there is at least one file in the submission directory in the cluster.
 
@@ -497,7 +495,7 @@ async def check_submission_exists(computer: ComputerInterface, logger: logging.L
     res = await computer.send_shell_command(f"ls -A {SUBMISSION_DIR} | wc -l")
     num_files = int(res.output.decode("utf-8").strip())
     if res.exit_code != 0 or num_files <= 1:  # we expect the initial .git file
-        logger.error(f"No files found in submission directory\n{num_files}")
+        logger.exception(f"No files found in submission directory\n{num_files}")
         return False
     return True
 
@@ -506,7 +504,7 @@ async def extract_dir_from_computer(
     computer: ComputerInterface,
     path_on_cluster: str,
     save_dir: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
 ):
     """
     Extracts a directory from a computer to a specified local directory.
@@ -518,7 +516,7 @@ async def extract_dir_from_computer(
     """
     res = await computer.send_shell_command(f"ls -l {path_on_cluster}")
     if res.exit_code != 0:
-        logger.error(f"Directory {path_on_cluster} does not exist\n{res.output}")
+        logger.exception(f"Directory {path_on_cluster} does not exist\n{res.output}")
         return
 
     target_dir_name = os.path.basename(path_on_cluster.rstrip("/"))
@@ -538,7 +536,7 @@ async def extract_dir_from_computer(
             tar.extractall(path=save_dir)
         logger.info(f"Extracted contents to: {save_dir}/")
     except tarfile.TarError as e:
-        logger.error(f"Error extracting tar file: {e}")
+        logger.exception(f"Error extracting tar file: {e}")
         return
     finally:
         # cleanup

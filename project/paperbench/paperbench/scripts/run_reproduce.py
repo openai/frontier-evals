@@ -1,10 +1,14 @@
 import asyncio
-import logging
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from typing import Optional
 
+import structlog.stdlib
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from structlog.stdlib import BoundLogger
+
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 @dataclass(frozen=True)
@@ -51,7 +55,7 @@ class ReproScriptRunOutcome:
 
 async def run_reproduce_script(
     computer: ComputerInterface,
-    logger: logging.Logger,
+    logger: BoundLogger,
     submission_path: Path,
     timeout: float | None,
     use_py3_11: bool = False,  # defaults to 3.12
@@ -99,8 +103,8 @@ async def run_reproduce_script(
 async def reproduce(
     computer: ComputerInterface,
     submission_path: Path,
-    logger: logging.Logger,
-    timeout: float | None = None,
+    logger: BoundLogger,
+    timeout: Optional[float] = None,
     retry_threshold: float = 0,
 ) -> dict:
     """

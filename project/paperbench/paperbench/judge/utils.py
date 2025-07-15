@@ -1,10 +1,10 @@
 import re
 from pathlib import Path
 
+import structlog.stdlib
 from drain3 import TemplateMiner
-from paperbench.utils import get_logger
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 def get_model_context_window_length(model: str) -> int:

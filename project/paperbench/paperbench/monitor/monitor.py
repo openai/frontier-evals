@@ -1,15 +1,14 @@
-import logging
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
+import structlog.stdlib
 from paperbench.paper_registry import Paper
-from paperbench.utils import get_logger
 from unidecode import unidecode
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 @dataclass

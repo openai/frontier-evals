@@ -1,8 +1,11 @@
 from dataclasses import dataclass, field, replace
 from typing import Optional, Sequence, TypeVar, cast
 
+import structlog.stdlib
 from paperbench.rubric.utils import get_openai_client, random_id
-from paperbench.utils import get_logger, oai_completion_with_retry
+from paperbench.utils import oai_completion_with_retry
+
+logger = structlog.stdlib.get_logger(component=__name__)
 
 VALID_TASK_CATEGORIES = {
     "Code Development",
@@ -22,7 +25,6 @@ TASK_CATEGORY_QUESTIONS = {
     "Subtree": "What is the weighted score of all the criteria in the subtree?",
 }
 
-logger = get_logger(__name__)
 
 T = TypeVar("T", bound="TaskNode")  # This can be TaskNode or any subclass of TaskNode
 

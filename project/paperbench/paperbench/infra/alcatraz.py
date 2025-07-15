@@ -1,16 +1,15 @@
-import logging
 import time
 from pathlib import Path
 from typing import Optional
 
 import blobfile as bf
 import requests
-from alcatraz.clusters.local import BaseAlcatrazCluster
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
     ExecutionResult,
 )
 from paperbench.constants import LOGS_DIR
+from structlog.stdlib import BoundLogger
 
 
 async def populate_exclude_list(
@@ -38,7 +37,7 @@ async def upload_sources(
     computer: ComputerInterface,
     sources: list[str],
     run_dir: Path | str,
-    logger: logging.Logger,
+    logger: BoundLogger,
     filename: str | None = None,
 ):
     """
@@ -118,13 +117,12 @@ async def tar_and_extract_from_computer(
     dir_path_on_computer: Path,
     tar_path_on_computer: Path,
     tar_path_on_target: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
     max_file_size: Optional[str] = None,
 ):
     """
     1) Tars the dir at dir_path_on_computer to tar_path_on_computer
-    2) Uploads to tar_path_on_target. If uze_azure is True, it will upload directly from the
-        computer (i.e. file won't pass through host).
+    2) Uploads to tar_path_on_target
     """
     # extract the tar of the submission
     exclude_list_path = Path("/tmp") / "exclude.txt"

@@ -1,20 +1,20 @@
 import argparse
 import asyncio
 import json
-import logging
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
+import structlog.stdlib
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
 from paperbench.judge.judge import GradedTaskNode, TokenUsage, get_total_token_usage
 from paperbench.judge.judge_eval.evaluate import calculate_judge_scores, compute_metrics
 from paperbench.judge.judge_eval.registry import example_registry
 from paperbench.paper_registry import paper_registry
-from paperbench.utils import get_logger
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 async def evaluate_single_example(
@@ -96,8 +96,7 @@ async def main(
     output_dir: Path,
     model_name: str | None = None,
     code_only: bool = False,
-    reasoning_effort: str | None = None,
-    verbose: bool = False,
+    reasoning_effort: Optional[str] = None,
 ):
     """
     Run judge evaluation on specified example runs.
@@ -107,9 +106,7 @@ async def main(
         judge_type: Type of judge to evaluate
         model_name: Name of model to use (for non-dummy judges)
         output_dir: Directory to write evaluation results to
-        verbose: Whether to enable verbose logging
     """
-    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_dir_prefix = f"{judge_type}_{model_name}" if model_name is not None else judge_type
@@ -137,7 +134,7 @@ async def main(
                 all_scores[kind][0].extend(y_pred)
                 all_scores[kind][1].extend(y_true)
         except Exception as e:
-            logger.error(f"Failed to evaluate example {example_id}: {e}", exc_info=True)
+            logger.exception(f"Failed to evaluate example {example_id}: {e}", exc_info=True)
             continue
 
     # Calculate aggregate metrics by combining scores from all examples
@@ -223,12 +220,6 @@ if __name__ == "__main__":
         default="high",
         help="Reasoning effort to use for the completion, if using a model/judge that supports it.",
     )
-    parser.add_argument(
-        "--verbose",
-        "-v",
-        action="store_true",
-        help="Enable verbose logging.",
-    )
 
     args = parser.parse_args()
 
@@ -247,6 +238,5 @@ if __name__ == "__main__":
             output_dir=args.output_dir,
             code_only=args.code_only,
             reasoning_effort=args.reasoning_effort,
-            verbose=args.verbose,
         )
     )

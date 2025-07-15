@@ -1,18 +1,14 @@
-import logging
 from datetime import datetime, timedelta
-from pathlib import Path
+from typing import Tuple
 
-import blobfile as bf
-import structlog
+import structlog.stdlib
 from alcatraz.clusters.local import LocalConfig
 from paperbench.constants import AGENT_DIR, SUBMISSION_DIR, WORKSPACE_BASE
 from paperbench.metrics import EvaluationRun, PaperEvaluation
-from paperbench.utils import (
-    get_default_runs_dir,
-    get_experiments_dir,
-    get_paperbench_data_dir,
-    is_docker_running,
-)
+from paperbench.utils import get_experiments_dir, get_paperbench_data_dir, is_docker_running
+from structlog.stdlib import BoundLogger
+
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 def get_split_to_expected_papers() -> dict[str, int]:
@@ -153,8 +149,8 @@ def build_judge_command(judge: "JudgeConfig", task: "PaperBenchTask") -> str:  #
 
 
 def get_file_at_duration(
-    files: list[str], duration_hr: int, logger: logging.Logger
-) -> tuple[str, timedelta]:
+    files: list[str], duration_hr: int, logger: BoundLogger
+) -> Tuple[str, timedelta]:
     """
     Given a list of files with timestamped names, return the file closest to `duration_hr`-hours
     after the earliest file in the list.
@@ -198,39 +194,6 @@ def get_file_at_duration(
     retrieved_file = closest_file[0]
     retrieved_duration = closest_file[1] - earliest
     return retrieved_file, retrieved_duration
-
-
-def file_processor(logger, method_name, original_event_dict):
-    event_dict = original_event_dict.copy()  # Avoid mutating the original
-
-    destinations = event_dict.pop("destinations", [])
-    run_group_id = event_dict.pop("run_group_id", None)
-    run_id = event_dict.pop("run_id", None)
-    runs_dir = event_dict.pop("runs_dir", get_default_runs_dir())
-
-    if "run" in destinations and run_group_id and run_id:
-        dst = bf.join(runs_dir, run_group_id, run_id, "run.log")
-        with bf.BlobFile(dst, "a") as f:
-            f.write(str(event_dict) + "\n")
-
-    if "group" in destinations and run_group_id:
-        dst = bf.join(runs_dir, run_group_id, "group.log")
-        with bf.BlobFile(dst, "a") as f:
-            f.write(str(event_dict) + "\n")
-
-    return original_event_dict
-
-
-def filter_processor(logger, method_name, event_dict):
-    destinations = event_dict.pop("destinations", [])
-    event_dict.pop("run_group_id", None)
-    event_dict.pop("run_id", None)
-    event_dict.pop("runs_dir", None)
-
-    if "console" not in destinations:
-        raise structlog.DropEvent()
-
-    return event_dict
 
 
 def run_sanity_checks(paperbench: "PaperBench"):

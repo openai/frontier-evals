@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import tarfile
 import tempfile
 import time
@@ -8,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 import blobfile as bf
+import structlog
 from dotenv import load_dotenv
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.agents.registry import Agent
@@ -19,12 +19,14 @@ from paperbench.rubric.tasks import TaskNode
 from paperbench.scripts.run_judge import JudgeOutput, get_total_token_usage
 from paperbench.scripts.run_reproduce import reproduce
 from paperbench.utils import get_timestamp
+from structlog.stdlib import BoundLogger
 
+logger = structlog.stdlib.get_logger(component=__name__)
 load_dotenv()
 
 
 async def download_submission_to_container(
-    computer: ComputerInterface, submission_path: str, logger: logging.Logger
+    computer: ComputerInterface, submission_path: str, logger: BoundLogger
 ):
     logger.info(f"Downloading submission from: {submission_path}")
     # Download the tar.gz to the container
@@ -55,7 +57,7 @@ async def download_submission_to_container(
 
 
 async def grade_on_cluster(
-    judge: Judge, computer: ComputerInterface, logger: logging.Logger, code_only: bool
+    judge: Judge, computer: ComputerInterface, logger: BoundLogger, code_only: bool
 ) -> JudgeOutput:
     # If the judge has a custom grade_on_cluster method, use it
     if hasattr(judge, "grade_on_cluster") and callable(getattr(judge, "grade_on_cluster", None)):
@@ -114,8 +116,8 @@ async def grade_on_computer(
     paper_id: str,
     judge_type: str,
     model_name: str,
-    logger: logging.Logger,
-    run_dir: str,
+    logger: BoundLogger,
+    run_dir: Path,
     code_only: bool = False,
     reasoning_effort: str | None = None,
 ) -> JudgeOutput | None:
@@ -192,7 +194,7 @@ async def grade_locally(
     paper_id: str,
     judge_type: str,
     model_name: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
     code_only: bool = False,
     reasoning_effort: str | None = None,
 ) -> Optional[JudgeOutput]:
@@ -280,7 +282,7 @@ async def grade_locally(
 async def reproduce_on_computer(
     computer: ComputerInterface,
     submission_path: str,
-    logger: logging.Logger,
+    logger: BoundLogger,
     run_dir: str,
     submission_cluster_path: Path = Path("/submission"),
     output_cluster_path: Path = Path("/output"),
@@ -348,7 +350,7 @@ async def reproduce_on_computer(
         logger.info(f"Reproduced dir has been written: {upload_to_path}")
     except Exception as e:
         error_msg = str(e)
-        logger.error(f"Reproduction failed with error:\n{error_msg}")
+        logger.exception(f"Reproduction failed with error:\n{error_msg}")
     finally:
         time_end = time.time()
         logger.info(f"Run completed in {time_end - time_start:.2f} seconds.")

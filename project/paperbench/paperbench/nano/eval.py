@@ -1,8 +1,6 @@
 import asyncio
 import json
-import logging
 import os
-import subprocess
 import tempfile
 import time
 from contextlib import asynccontextmanager
@@ -15,7 +13,7 @@ import blobfile as bf
 import chz
 import dotenv
 import numpy as np
-import structlog
+import structlog.stdlib
 from alcatraz.clusters.local import ClusterConfig, LocalConfig
 from nanoeval.eval import RetryableSystemError
 from nanoeval.recorder import get_recorder
@@ -36,13 +34,7 @@ from paperbench.agents.run import (
 from paperbench.agents.utils import AgentDirConfig, prepare_agent_dir_config
 from paperbench.constants import AGENT_DIR, CODE_DIR, LOGS_DIR, SUBMISSION_DIR, WORKSPACE_BASE
 from paperbench.metrics import compute_agg_stats, per_paper_results
-from paperbench.nano.utils import (
-    SPLIT_TO_EXPECTED_PAPERS,
-    file_processor,
-    filter_processor,
-    gather_eval_runs,
-    get_file_at_duration,
-)
+from paperbench.nano.utils import SPLIT_TO_EXPECTED_PAPERS, gather_eval_runs, get_file_at_duration
 from paperbench.paper_registry import paper_registry
 from paperbench.scripts.alcatraz_services import (
     grade_locally,
@@ -60,6 +52,7 @@ from paperbench.utils import (
     purple,
 )
 from pydantic import BaseModel
+from structlog.stdlib import BoundLogger
 from typing_extensions import override
 
 dotenv.load_dotenv()
@@ -67,23 +60,11 @@ dotenv.load_dotenv()
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
-structlog.configure(
-    processors=[
-        # Standard processors
-        structlog.processors.TimeStamper(fmt="%Y-%m-%dT%H:%M:%S.%fZ"),
-        structlog.processors.add_log_level,
-        # Custom processors
-        file_processor,
-        filter_processor,
-        # Rendering
-        structlog.dev.ConsoleRenderer(),
-    ],
-)
 
-logger = structlog.stdlib.get_logger().bind(component=__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
-async def check_submission_exists(computer: ComputerInterface, logger: logging.Logger):
+async def check_submission_exists(computer: ComputerInterface, logger: BoundLogger):
     """
     Checks if there is at least one file in the submission directory in the cluster.
 
@@ -94,7 +75,7 @@ async def check_submission_exists(computer: ComputerInterface, logger: logging.L
     res = await computer.send_shell_command(f"ls -A {SUBMISSION_DIR} | wc -l")
     num_files = int(res.output.decode("utf-8").strip())
     if res.exit_code != 0 or num_files <= 1:  # we expect the initial .git file
-        logger.error(f"No files found in submission directory\n{num_files}")
+        logger.exception(f"No files found in submission directory\n{num_files}")
         return False
     return True
 
@@ -277,7 +258,8 @@ class PBTask(ComputerTask):
                 ctx_logger.warning(
                     f"agent.env not found at: {agent_env_path} agent.env should be created by copying agent.env.example"
                     f"to agent.env and populating the necessary keys. agent.env is necessary for replicating some papers when using a non-dummy agent",
-                    destinations=["console", "run"],
+                    destinations=["run"],
+                    _print=True,
                 )
 
         for asset in paper.assets.glob("*"):
@@ -319,13 +301,13 @@ class PBTask(ComputerTask):
                     status="done",
                 )
             except Exception as e:
-                ctx_logger.error(
+                ctx_logger.exception(
                     f"Exception uploading final logs before grading: {e}", destinations=["run"]
                 )
 
         checkpoint = await self._select_checkpoint()
         if not checkpoint:
-            ctx_logger.error("No checkpoint exists, skipping grading!", destinations=["run"])
+            ctx_logger.exception("No checkpoint exists, skipping grading!", destinations=["run"])
 
             return PaperBenchGrade(
                 paperbench_result=PaperBenchResult(
@@ -354,7 +336,8 @@ class PBTask(ComputerTask):
 
             ctx_logger.info(
                 f"Starting the reproduction process for `{self.question_id}.{self.attempt_id}`...",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
 
             async with self._start_computer(
@@ -364,7 +347,8 @@ class PBTask(ComputerTask):
 
             ctx_logger.info(
                 f"The reproduction process for {self.question_id}.{self.attempt_id} has finished!",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
 
             get_recorder().record_extra(
@@ -390,7 +374,8 @@ class PBTask(ComputerTask):
         ):
             ctx_logger.info(
                 f"Grading the submission for {self.question_id}.{self.attempt_id}...",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
 
             ctx_logger.info(
@@ -405,7 +390,8 @@ class PBTask(ComputerTask):
 
             ctx_logger.info(
                 f"Grading for {self.question_id}.{self.attempt_id} finished!",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
 
             get_recorder().record_extra(
@@ -444,8 +430,7 @@ class PBTask(ComputerTask):
         pb_result_path = bf.join(self.run_dir, "pb_result.json")
         bf.write_bytes(pb_result_path, json.dumps(grade.to_dict(), indent=2).encode("utf-8"))
         ctx_logger.info(
-            purple(f"Grades saved to {pb_result_path}"),
-            destinations=["console", "group", "run"],
+            purple(f"Grades saved to {pb_result_path}"), destinations=["group", "run"], _print=True
         )
 
         return grade
@@ -460,7 +445,9 @@ class PBTask(ComputerTask):
         checkpoint = await self._select_checkpoint()
 
         if not checkpoint:
-            ctx_logger.error("No checkpoint exists, skipping reproduction!", destinations=["run"])
+            ctx_logger.exception(
+                "No checkpoint exists, skipping reproduction!", destinations=["run"]
+            )
 
             return ReproductionOutput(
                 executed_submission=None,
@@ -504,18 +491,20 @@ class PBTask(ComputerTask):
         repro_output_exists = bf.exists(reproduce_output_path)
         repro_metadata_exists = bf.exists(repro_metadata_path)
         if not repro_output_exists:
-            ctx_logger.error(
+            ctx_logger.exception(
                 f"Reproduction failed to produce output: {reproduce_output_path}",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
             return ReproductionOutput(
                 executed_submission=reproduce_output_path,
                 metadata=None,
             )
         if not repro_metadata_exists:
-            ctx_logger.error(
+            ctx_logger.exception(
                 f"Reproduction failed to produce metadata: {repro_metadata_path}",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
             return ReproductionOutput(
                 executed_submission=reproduce_output_path,
@@ -586,7 +575,8 @@ class PBTask(ComputerTask):
                     grader_output = json.loads(f.read())
                 ctx_logger.info(
                     f"Skipping grading for {self.question_id}.{self.attempt_id} because an existing grader output was found.",
-                    destinations=["console", "group", "run"],
+                    destinations=["group", "run"],
+                    _print=True,
                 )
 
                 ctx_logger.info(
@@ -599,7 +589,8 @@ class PBTask(ComputerTask):
         if not self.judge.grade:
             ctx_logger.info(
                 f"Skipping grading for {self.question_id}.{self.attempt_id} because grade is set to `False`",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
             return None
 
@@ -681,7 +672,8 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         if task.reproduction.timeout < self.timeout:
             ctx_logger.warning(
                 f"Reproduction timeout ({task.reproduction.timeout}) should be at least as large as agent timeout ({self.timeout}), is this a mistake?",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
 
         if isinstance(self.cluster_config, LocalConfig):
@@ -754,14 +746,16 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
 
         ctx_logger.info(
             f"Agent `{self.agent_id}` is attempting to replicate the `{task.paper_id}` paper...",
-            destinations=["console", "group", "run"],
+            destinations=["group", "run"],
+            _print=True,
         )
 
         ctx_logger.info(
             purple(
                 f"Writing logs for run to {bf.join(task.local_runs_dir, task.run_group_id, task.run_id, 'run.log')}"
             ),
-            destinations=["console", "group"],
+            destinations=["group"],
+            _print=True,
         )
 
         if self.agent_id == "human":
@@ -862,9 +856,10 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             )
         except (asyncio.TimeoutError, asyncio.CancelledError) as e:
             end = time.time()
-            ctx_logger.error(
+            ctx_logger.exception(
                 f"Agent timed out for task {task.question_id}.{task.attempt_id}",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
             get_recorder().record_match(correct=False)
 
@@ -879,7 +874,8 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
 
         ctx_logger.info(
             f"Agent `{self.agent_id}` finished running for `{task.question_id}.{task.attempt_id}`!",
-            destinations=["console", "group", "run"],
+            destinations=["group", "run"],
+            _print=True,
         )
 
         with bf.BlobFile(bf.join(task.run_dir, "metadata.json"), "w") as f:
@@ -890,9 +886,10 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         ctx_logger.info(f"Found {num_tars} tars for {task.run_id}", destinations=["run"])
 
         if num_tars < 1:
-            ctx_logger.error(
+            ctx_logger.exception(
                 f"Rollout failed to produce at least one tar for {task.run_id}",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
             get_recorder().record_extra(
                 {
@@ -905,9 +902,10 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             return agent_output
 
         if not agent_output.status_exists:
-            ctx_logger.error(
+            ctx_logger.exception(
                 f"Rollout failed to produce status.json for {task.run_id}",
-                destinations=["console", "group", "run"],
+                destinations=["group", "run"],
+                _print=True,
             )
             get_recorder().record_extra(
                 {
@@ -995,7 +993,7 @@ class PaperBench(PythonCodingEval):
             purple(
                 f"Writing run group logs to {bf.join(self.local_runs_dir, self.run_group_id, 'group.log')}"
             ),
-            destinations=["console"],
+            _print=True,
         )
 
         tasks = []
@@ -1059,7 +1057,7 @@ class PaperBench(PythonCodingEval):
                 )
 
         ctx_logger.info(
-            f"Preparing to run {len(tasks)} tasks...", destinations=["console", "group"]
+            f"Preparing to run {len(tasks)} tasks...", destinations=["group"], _print=True
         )
 
         return tasks
@@ -1179,7 +1177,8 @@ class PaperBench(PythonCodingEval):
 
         ctx_logger.info(
             f"Found {len(run_ids)} existing run_ids in {run_group_id}",
-            destinations=["console", "group"],
+            destinations=["group"],
+            _print=True,
         )
 
         return run_ids

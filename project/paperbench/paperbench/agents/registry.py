@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+import structlog.stdlib
 import yaml
 from paperbench.agents.utils import parse_env_var_values
-from paperbench.utils import get_logger
 
-logger = get_logger(__name__)
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 @dataclass(frozen=True)

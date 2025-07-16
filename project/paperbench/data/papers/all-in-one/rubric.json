@@ -13,45 +13,52 @@
                     "requirements": "The drift term for Variance Exploding SDE is defined as $f(x, t)=0$",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "1402caf0-ee17-48a4-b0f5-ee4523807747",
                     "requirements": "The diffusion term for Variance Exploding SDE is defined as $g(t)=\\sigma_{min} \\cdot (\\frac{\\sigma_{max}}{\\sigma_{min}})^t \\cdot \\sqrt{2 \\log \\frac{\\sigma_{max}}{\\sigma_{min}}}$",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "396c0b27-9d8c-49d4-a9e8-667b7c1a9e5c",
                     "requirements": "The perturbation kernel for the Variance Exploding SDE is defined as $p(x_t|x_0) = \\mathcal{N}(x_t, x_t, \\sigma(t)I)$ where $\\sigma(t) = \\sigma_{min}^2\\left( \\frac{\\sigma_{max}}{\\sigma_{min}} \\right)^{2t}$",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "07f7aac1-c623-46e0-b7cc-3991331cbd9c",
                     "requirements": "The constant $\\sigma_{max}$ for VESDE is set to 15",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "c6cd56ae-e565-4512-978e-80a8afaae037",
                     "requirements": "The constant $\\sigma_{min}$ for VESDE is set to 0.0001",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "ac3759f1-14f6-4859-a64f-84db470eb2db",
                     "requirements": "In VESDE, samples are drawn from the time interval [1e-5, 1]",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "a439cf9c-8942-4211-a74c-5bf1eae37b3b",
@@ -78,55 +85,64 @@
                                             "requirements": "Each unique variable has an integer identifier. Multiple observations of the same variable share the same identifier",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "714bdd7e-b21c-4407-aa3d-f50307633bb4",
                                             "requirements": "The tokenizer uses learnable vector embeddings to embed each identifier",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "af5cd308-83c7-4b2b-bc9f-b006183ea3ed",
                                     "requirements": "The embedding for a single value is created by repeating the scalar value to match the desired dimensionality. For example, to embed the value 1 to desired dimensionality N, we would have a vector [1, 1, ...., 1] of length N",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "2e46fc8d-2ecb-46f3-86b1-0c80fceec733",
                                     "requirements": "The tokenizer correctly tokenizes and embeds the metadata (if required); the tokenizer applies a learnable linear mapping of a random Fourier embedding of the elements in the index set to the desired dimensionality.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "2ff0a481-00b4-47e9-939a-4dd7f7a00361",
                                     "requirements": "The tokenizer uses learnable vector embeddings to embed each value in a condition state - \"True\" values are mapped to a shared learnable vector embedding, whereas \"False\" values are mapped to zeros (of the desired dimensionality)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "407dcc3b-5f84-48b4-b5e5-730336b97fbe",
                                     "requirements": "For each input, the tokenizer concatenates the embeddings of the identifier, value, metadata (if used), and condition state in that order",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "c6eb15a5-65f9-4ac9-9927-f50f3118d8fe",
                                     "requirements": "The tokenizer takes inputs: a sequence of scalar values, a sequence of integer variable identifiers, a condition mask $M_C$, and optional metadata if required. It embeds these inputs into a sequence of tokens, each of equal dimensionality",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "518fdd2a-c60f-4bbe-b12a-ae0fc80a98d4",
@@ -138,27 +154,32 @@
                                     "requirements": "The Simformer model is a slightly modified vanilla encoder-only transformer following the implementation proposed by (Vaswani et al., 2017). The only modification is that the decoder is a single linear layer that produces a single scalar score for each variable token in the input sequence. The Simformer model is described in Section 3, Figure 2, and Appendix A.1",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "b1b80f04-e17c-49f6-831c-3cd3d15acf26",
                                     "requirements": "Diffusion time is embedded as a random Gaussian Fourier embedding, and a linear projection of diffusion time is added to the output of each feed-forward block in the transformer",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "25eecc1a-cc2c-48e5-addc-082fdb7f638b",
                                     "requirements": "The Simformer takes inputs: the diffusion time $t$, a sequence of tokens from the tokenizer, and an attention mask. These are projected to a sequence of scalar outputs, representing the marginal scores of the diffusion process at time $t$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "99653fba-a2b3-4f81-bf6a-41d49c939527",
@@ -170,7 +191,8 @@
                             "requirements": "During training, for each training sample, the condition mask $M_C$ is randomly sampled as either 1) the joint distribution, where $M_C=[0, 0, ..., 0]$, 2) the posterior distribution where data variables are observed and parameters are unobserved, 3) the likelihood function where data variables are unobserved and parameter variables are observed, 4) a Bernoulli distribution with p=0.3 (resampled for each element), 5) a Bernoulli distribution with p=0.7 (resampled for each element)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "dbb4968e-bfba-45c3-9c54-45879fefbd9c",
@@ -182,14 +204,16 @@
                                     "requirements": "$M_E$ is selected to be undirected, directed, or fully dense",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "8e07cc4f-6176-4391-a8bb-578831aa3aa4",
                                     "requirements": "If $M_E$ is selected to be fully dense, every token is allowed to attend to every other token",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "0cb084f8-8c30-4111-8822-b6f8aa7967b2",
@@ -201,23 +225,28 @@
                                             "requirements": "For both undirected and directed cases, the attention mask $M_E$ is computed to capture the known dependencies of the current task. Specifically, each task provides $M_E$ as given by the adjacency matrix of a directed/undirected graphical model with the diagonal set to True.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "6f05f0cf-c61a-4ad9-b2b0-a353b7cab492",
                                             "requirements": "If $M_E$ is directed it must be updated for a given $M_C$. The algorithm proposed by Webb at al. (2018) is used to add the minimal number of edges required to represent additional dependencies from conditioning as specified in $M_C$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "2c102351-18e1-4eb5-9812-9eea70a83e88",
@@ -229,7 +258,8 @@
                             "requirements": "When training the Simformer, for each training sample $\\hat{x}_0$, the noise level $t$ is sampled in the range [1e-5, 1] to generate a (partially) noisy sample $\\hat{\\mathbf{x}}_t^{M_C} = (1 - M_C) \\cdot \\hat{\\mathbf{x}}_t + M_C \\cdot \\hat{\\mathbf{x}}_0$ i.e. variables that we want to condition on remain clean.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "284fd942-573c-4da6-81bd-2f92cdc4f2b7",
@@ -241,34 +271,40 @@
                                     "requirements": "A diffusion model loss is used that targets (un)conditional marginal score $\\nabla_{\\mathbf{x}_t^{\\text{unobserved}}}\\,\\log p_t(\\mathbf{x}_t^{\\text{unobserved}} \\mid \\mathbf{x}^{\\text{observed}})$ as defined by the condition mask $M_C$ and p(x).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "b3e915ef-1f57-4b70-b3da-546947d6c1b5",
                                     "requirements": "As defined in Section 3.3, for each (partially) noisy training sample $\\hat{x}_t^{M_c}$, the Simformer loss is defined as: $\\ell(\\phi, M_C, t, \\hat{\\mathbf{x}}_0, \\hat{\\mathbf{x}}_t) = (1-M_C)\\cdot \\left(s_\\phi^{M_E}(\\hat{\\mathbf{x}}_t^{M_C}, t) - \\nabla_{\\hat{\\mathbf{x}}_t} \\log p_t(\\hat{\\mathbf{x}}_t|\\hat{\\mathbf{x}}_0)\\right)$, where $s_\\phi^{M_E}$ denotes the score model equipped with a specific attention mask $M_E$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "e3cd228e-467b-4c47-a23d-6e212249115e",
                                     "requirements": "The Simformer loss is only computed over samples that are unobserved, i.e., they have a value of 0 in $M_C$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "2cb4d86f-19c4-438f-b6f1-52c588ba9d09",
                                     "requirements": "The total Simformer loss per mini-match is given by a weighted sum, as given by a positive weighting function $\\lambda(t)$ e.g. $\\lambda(t)=g(t)^2$ where $g(t)$ is the diffusion coefficient of the VESDE.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "2165e285-6f2c-4257-bb16-802ffb1c30a4",
@@ -280,7 +316,8 @@
                             "requirements": "When performing inference using Simformer, the reverse diffusion process is run on all unobserved variables. Observed variables are kept constant at their initial values",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "f7905b54-4c68-46c1-a359-282166d871fd",
@@ -292,20 +329,24 @@
                                     "requirements": "Euler-Maruyama discretization has been implemented to run the diffusion process backward for Simformer",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "23d6d4c9-f750-4f5d-8965-b9c2277d5c6a",
                                     "requirements": "500 steps are used in the Euler-Maruyama discretization process for Simformer",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "225db93c-4bf3-4b1c-b1fa-13ea37cb7513",
@@ -322,44 +363,52 @@
                                     "requirements": "For conditioning on intervals, the self-recurrence is implemented such that a mutable hyperparameter $r$ specifies how many times future points undergo a forward diffusion step followed by a reverse step, incrementally refining each sample.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "39362fd2-1f41-4f81-97ec-ce3c1e893502",
                                     "requirements": "For conditioning on intervals, the constraint function is defined as $c(\\hat{x}) = \\hat{x} - u$, where $u$ is a mutable hyperparameter",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "091fd46a-e09e-4989-986b-2a14ba8b6e25",
                                     "requirements": "For conditioning on intervals, the scaling function $s(t)$ is defined as $s(t)=\\frac{1}{\\sigma(t)^2)|$, i.e., inversely proportional to the variance",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "58d5bd8c-e8c0-41d7-aa31-684e0e0ddc61",
                                     "requirements": "Algorithm 1 has been fully implemented to sample from conditions specified by the constraint function.",
                                     "weight": 3,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "f5b9aa3e-f51e-4071-ad3c-fa381e0c060b",
                             "requirements": "Conditioning on intervals can optionally be used when sampling",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "7a83a930-4571-4f37-a14f-ccd065832d07",
@@ -371,38 +420,44 @@
                     "requirements": "The sbi library (Tejero-Cantero et al., 2020) is used to implement NPE, NRE, and NLE. Default parameters from the library are used, aside from using a more expressive neural spine flow for NPE and NLE",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "ee41ea7c-8c0f-4f87-95cc-a1f2258596a6",
                     "requirements": "Each method NPE, NRE, and NLE is trained using the provided training loop (e.g. sbi.SNPE().train())",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "31ed240f-4e9c-489b-89ae-6ed46a85e8d8",
                     "requirements": "Each method NPE, NRE and NLE uses a batch size of 1000",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "6a1ddafa-29df-4e46-bc3e-71236a0b7d76",
                     "requirements": "Each method NPE, NRE and NLE uses the Adam optimizer",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "56dcd071-8f39-4131-97cd-f6d011e99cf5",
                     "requirements": "Early stopping is used to stop training early depending on validation loss",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "0ad49ef2-9746-4c76-b208-8c384f91b6fb",
@@ -424,7 +479,8 @@
                                     "requirements": "The tasks Gaussian Linear, Gaussian Mixture, Two Moons, and SLCP are available such that synthetic data can be sampled from each task",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "c4c06ba2-a749-432b-a92f-5770bd95e974",
@@ -436,31 +492,36 @@
                                             "requirements": "N Markov chains with samples are initialized from the joint distribuiton",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "ed3ab4fa-52b1-4328-8d90-988292d02e8f",
                                             "requirements": "1000 steps of a random direction slice sampling algorithm are run",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "e4d0c4d5-593a-432a-b5f7-6216655ab5f5",
                                             "requirements": "An additional 3000 steps of Metropolis-Hastings Markov Chain Monte Carlo (MHMCMC) are run with step size of 0.01",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "92486973-e7a9-4da9-8a38-556e3bae3dd9",
                                             "requirements": "Only the last samples of each chain are considered, yielding N reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "0cf2dd7e-ae82-4367-a4b5-319bf002944b",
@@ -472,41 +533,48 @@
                                             "requirements": "N Markov chains with samples are initialized from the joint distribuiton",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "028a6cbe-387e-456d-941c-0c4a4b970dd5",
                                             "requirements": "600 steps of a random direction slice sampling algorithm are run",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "1e941abb-e1d9-4f91-958c-db60dad4c82e",
                                             "requirements": "An additional 2000 steps of Metropolis-Hastings Markov Chain Monte Carlo (MHMCMC) are run with step size of 0.1",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "0051bf87-8706-4531-9b1d-00bbb499d8e4",
                                             "requirements": "Only the last samples of each chain are considered, yielding N reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "c09ac29b-6e1f-492a-bb28-0fd1e0921ee8",
                                     "requirements": "For each of the tasks Gaussian Linear, Gaussian Mixture, Two Moons, and SLCP, N >= 1000 reference samples are generated",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "7b6ba22b-2426-4c42-87f3-ca873ea83403",
@@ -518,7 +586,8 @@
                                     "requirements": "The Tree task is available such that synthetic data can be sampled",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "a336830e-9ea1-4c01-911b-5ef6ab18f5a3",
@@ -530,34 +599,40 @@
                                             "requirements": "N Markov chains with samples are initialized from the joint distribution",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "35e0a7bf-ddf7-429e-a1e3-a298bffcc301",
                                             "requirements": "5000 steps of a HMC sampler is run",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "462ad866-65cb-4e08-bbd4-83dd471d9358",
                                             "requirements": "Only the last samples of each chain are considered, yielding N reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "36605b43-ee09-4877-a74e-c5250de7a110",
                                     "requirements": "For the Tree task, N >= 1000 reference samples are generated",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "640b9d2b-b40f-4d22-b9ed-a383e0b995c3",
@@ -569,7 +644,8 @@
                                     "requirements": "The HMM task is available such that synthetic data can be sampled",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "8556e276-9c22-410f-a4b1-ab9789f87a9d",
@@ -581,34 +657,40 @@
                                             "requirements": "N Markov chains with samples are initialized from the joint distribution",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "293a5a7e-aa99-420c-9af6-9c47e07bedb3",
                                             "requirements": "5000 steps of a HMC sampler is run",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "bc5f359e-8302-4a9d-a617-6e3312aea9cc",
                                             "requirements": "Only the last samples of each chain are considered, yielding N reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "321d7fd3-71de-4092-907f-c6197f0a7f69",
                                     "requirements": "For the HMM task, N >= 1000 reference samples are generated",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "2eccea68-c454-44df-ad98-22640297231a",
@@ -620,24 +702,28 @@
                                     "requirements": "The Lotka Volterra task is available such that synthetic data can be sampled",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "bcf546a2-f0a7-42e5-9956-3bc18b67483a",
                                     "requirements": "For Lotka-Volterra, inference is performed for the full time-series and the implementation doesn't rely on summary statistics.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "efe8edda-ebfa-4363-b13a-28bcb3d95ae3",
                                     "requirements": "In the Lotka Volterra task, to each simulation, Gaussian observation noise is added with $\\sigma=0.1$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "460565d1-b20d-449e-abfe-cd786d94f21a",
@@ -649,38 +735,44 @@
                                     "requirements": "The SIRD task is available such that synthetic data can be sampled",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "6c80714a-4f4e-4cae-9792-9fff064e4e5f",
                                     "requirements": "In the SIRD task, a uniform prior is imposed on the global variables $\\gamma, \\delta$ denoted as $\\gamma, \\delta \\sim \\text{Unif}(0, 0.5)$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "22bc638a-ddbe-40f5-9de2-4436b28f62bf",
                                     "requirements": "In the SIRD task, for the time-dependent contact rate, $\\hat{\\beta} \\sim \\mathcal{G}(0, k)$ is first sampled from a gaussian prior with $k$ representing an RBF kernel defined as $k(t_1, t_2) = 2.5^2 \\exp\\left(-\\frac{1}{2} \\frac{\\|t_1 - t_2\\|^2}{7^2}\\right)$, then is transformed via a sigmoid function",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "4332dc3c-76d7-4b84-b317-35e82990b266",
                                     "requirements": "In the SIRD task, the contact rate is implemented to vary over time, whereas the recovery and death rate are constant in time.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "19f4319f-3056-4264-8fe4-3b4d13fe7a27",
                                     "requirements": "In the SIRD task, observational data is modeled with log-normal noise with a mean of $S(t)$ and a standard deviation of $\\sigma=0.05$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "a3cb2ba7-578e-4589-9a32-ddcd65b94f01",
@@ -692,69 +784,80 @@
                                     "requirements": "The Hodgkin-Huxley task is available such that synthetic data can be sampled",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "4884d911-0bd8-4a99-a4a5-2721b7185072",
                                     "requirements": "In the Hodgkin-Huxley task, the initial membrane voltage is established at $V_0=-65.0mV$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "548511a5-0bfe-451b-8c1d-3b2ecc5693bd",
                                     "requirements": "In the Hodgkin-Huxley task, simulations are conducted over a duration of 200ms",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "688df55a-5c45-4a79-8f1f-0aff770d4167",
                                     "requirements": "In the Hodgkin-Huxley task, an input current of 4mA is applied in the interval between 50ms and 150ms",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "57d03e3d-386c-4163-9945-428714362bfd",
                                     "requirements": "In the Hodgkin-Huxley task, the rate functions as defined following the equations in A2.2",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "5b2d5ce9-207a-47a0-8304-81c6bad86a69",
                                     "requirements": "In the Hodgkin-Huxley task, energy consumption is computed based on sodium charge, converted into $\\mu J/s$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "e2719676-7dc5-4fdd-a38a-eeadc6f81b27",
                                     "requirements": "In the Hodgkin-Huxley task, for observational data, the summary features are: spike count, resting potential mean, resting potential std, spiking window mean, and centered and standardizes moments up to 4th order",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "0b14bb53-e680-4ca6-a662-819ecd08cb16",
                                     "requirements": "In the Hodgkin-Huxley task, the simulator-generated noisy time series is reduced to the correct summary statistics",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "d342c64a-005d-44f8-88af-5d650c363011",
                                     "requirements": "In the Hodgkin-Huxley task, the metabolic cost consumed by the circuit is recorded and and added as an additional statistic",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "d0a2a0d9-e828-4a2a-bccc-377b8eff3fe1",
@@ -766,27 +869,32 @@
                             "requirements": "Given inputs X and Y, the classifier-based two-sample test accuracy between X and Y is measured as the 5-fold cross-validation score",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "982f7456-e34d-40be-a4a9-76c32826d301",
                             "requirements": "The classifier is a random forest classifier with 100 trees",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "973db5a3-21f4-48d0-8853-a5047626a637",
                             "requirements": "A score of 0.5 signifies perfect alignment with the ground truth posterior, and 1.0 indicates that a classifier can completely distinguish between the approximation and the ground truth",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "fe277dc1-7433-4bfe-bee3-9169ce93ad4c",
@@ -803,66 +911,76 @@
                             "requirements": "All Simformers have a token dimension of 50",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "e9edc2a0-3809-4e69-b9b6-1686b2955aa9",
                             "requirements": "All Simformers have 4 heads",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "32e4ef3f-9fdc-4845-a2ac-7c988141c039",
                             "requirements": "In all Simformers, the dimensionality of the key, query and value is 10",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "da87d682-3f30-443c-b318-8bb158048285",
                             "requirements": "In all Simformers, the random Gaussian Fourier embedding used in the tokenizer to embed metadata objects has 128 dimensions (if required)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "5963d717-2765-4535-80d8-8a92a9052a21",
                             "requirements": "In all Simformers, the random Gaussian Fourier embedding used for diffusion time has 256 dimensions",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "85db9bf8-1b9c-4d82-8b53-1813b1d31b3a",
                             "requirements": "In all Simformers, the feed-forward block expands to a hidden dimension of 150.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "b18e9e5a-0079-420f-9222-4380004418ef",
                             "requirements": "In all Simformers, a batch size of 1000 is used",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "831ca2ca-49a9-46c0-a63a-a39c877050a5",
                             "requirements": "The Adam optimizer is used to train all Simformers",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "7ec03b27-0737-4e4a-9581-bc4720744a1a",
                     "requirements": "Variance Exploding SDE (VESDE) is used to train the Simformer in all experiments",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "6dcabf24-d932-42d7-969e-027952e673e7",
@@ -874,7 +992,8 @@
                             "requirements": "Simformers used for all experiments in Section 4.1 have 6 layers",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "dbb88487-ba68-4776-8f94-127e2a0c0a2e",
@@ -896,31 +1015,36 @@
                                                     "requirements": "For the Linear Gaussian task, NPE has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "71d1e184-3e0e-46da-883c-c8a55244c3b5",
                                                     "requirements": "For the Linear Gaussian task, Simformer (with a dense attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "3628b28c-b00b-458e-8e1d-1ac6f5e47411",
                                                     "requirements": "For the Linear Gaussian task, Simformer (with an undirected graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "8f4524fc-48f5-4615-bd33-aedc2aa58d3a",
                                                     "requirements": "For the Linear Gaussian task, Simformer (with a directed graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "6aeb57d8-a135-4f03-ac45-a7927da55369",
@@ -932,31 +1056,36 @@
                                                     "requirements": "For the Mixture Gaussian task, NPE has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "20c740b8-19b8-416e-b35b-e4d98db613d1",
                                                     "requirements": "For the Mixture Gaussian task, Simformer (with a dense attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "152f3333-1368-4e19-a14f-f68c1cc26eb7",
                                                     "requirements": "For the Mixture Gaussian task, Simformer (with an undirected graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "fabc5fd9-a064-48d0-8da2-17bd643b8136",
                                                     "requirements": "For the Mixture Gaussian task, Simformer (with a directed graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "7365fc07-bb4c-4744-8770-9bf04bd03916",
@@ -968,31 +1097,36 @@
                                                     "requirements": "For the Two Moons task, NPE has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "d47f5e4e-23ec-41f9-96c5-18a471eba572",
                                                     "requirements": "For the Two Moons task, Simformer (with a dense attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "629c1323-a808-4f83-9cfd-cdbe4d93cf46",
                                                     "requirements": "For the Two Moons task, Simformer (with an undirected graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "ec9c4b69-613a-42c3-8224-cef629f103ce",
                                                     "requirements": "For the Two Moons task, Simformer (with a directed graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "ed25b914-62f6-4056-a678-f1ba819892f4",
@@ -1004,34 +1138,40 @@
                                                     "requirements": "For the SLCP task, NPE has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "3859bb58-dad4-4fe6-9c15-1b802e35ac9e",
                                                     "requirements": "For the SLCP task, Simformer (with a dense attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "fe86ca91-12bb-4ceb-bc1b-254a7aa9aa42",
                                                     "requirements": "For the SLCP task, Simformer (with an undirected graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "5bbb52eb-424e-4711-9fad-48011f6af612",
                                                     "requirements": "For the SLCP task, Simformer (with a directed graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "3fca5db9-2b7b-42dd-bbb8-709de985d349",
@@ -1043,31 +1183,36 @@
                                             "requirements": "For the Linear Gaussian task, samples for ten ground-truth posteriors are obtained",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "2ac19789-276a-4951-9d90-ba7a357511fb",
                                             "requirements": "For the Mixture Gaussian task, samples for ten ground-truth posteriors are obtained",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "fd64cfd0-746e-4441-bdc5-2b9bbef4e680",
                                             "requirements": "For the Two Moons task, samples for ten ground-truth posteriors are obtained",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "8f6a3486-8f4c-4c48-ab4f-9e0e8f16bf13",
                                             "requirements": "For the SLCP task, samples for ten ground-truth posteriors are obtained",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "86946725-2c72-4cbe-8829-f26723dedd03",
@@ -1079,31 +1224,36 @@
                                             "requirements": "For the Linear Gaussian task, for each model trained for 10^3, 10^4, and 10^5 simulations, N posterior samples are generated from the 10 different reference observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "157423ff-ee2b-437e-b2ca-bcec8d433b3b",
                                             "requirements": "For the Mixture Gaussian task, for each model trained for 10^3, 10^4, and 10^5 simulations, N posterior samples are generated from the 10 different reference observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "56cf845a-2871-4367-ab5f-de7eeca6ad8a",
                                             "requirements": "For the Two Moons task, for each model trained for 10^3, 10^4, and 10^5 simulations, N posterior samples are generated from the 10 different reference observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "2270f417-52ab-4467-89ab-abbd8f8bc4ea",
                                             "requirements": "For the SLCP task, for each model trained for 10^3, 10^4, and 10^5 simulations, N posterior samples are generated from the 10 different reference observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "8ef89a76-6998-4e08-8980-cfed46328456",
@@ -1115,31 +1265,36 @@
                                             "requirements": "For the Linear Gaussian task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "59965170-0553-49cb-9c56-10f156301c77",
                                             "requirements": "For the Mixture Gaussian task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "1149eae8-db2d-45ae-ac54-77551d12013d",
                                             "requirements": "For the Two Moons task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "6a97b353-6945-48ab-96cf-63640b596fbb",
                                             "requirements": "For the SLCP task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "7cb21bb8-ed7b-4509-87e2-235d613c4637",
@@ -1151,27 +1306,32 @@
                                             "requirements": "Across all four benchmark tasks (Linear Gaussian, Mixture Gaussian. Two Moons, SLCP) when approximating the posterior distribution, all Simformer variants almost always outperform neural posterior estimation (NPE) wrt. C2ST accuracy",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "1755440f-b437-4700-b2c0-5740d5188fa4",
                                             "requirements": "When approximating the posterior distribution, both the Simformer with undirected graph and Simformer with directed graph significantly outperform the regular Simformer on the Linear Gaussian and SLCP tasks wrt. C2ST accuracy",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "86499107-3abb-4381-9c83-359efa66286a",
                                             "requirements": "When approximating the posterior distribution, averaged across all benchmark tasks (Linear Gaussian, Mixture Gaussian. Two Moons, SLCP) and number of simulations used in training, the Simformer required about 10 times fewer simulations than NPE to achieve similar performance wrt. C2ST accuracy",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "4b06966e-21fb-4c41-ba8b-06a73d07c850",
@@ -1193,24 +1353,28 @@
                                                     "requirements": "For the Tree task, Simformer (with a dense attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "5fdb707e-4c2d-4a5d-96d6-d798c260dd79",
                                                     "requirements": "For the Tree task, Simformer (with an undirected graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "5730c287-4b2c-43de-8b46-c60219839c1d",
                                                     "requirements": "For the Tree task, Simformer (with a directed graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "36e9c98e-ff38-4cce-9570-3516722f74cc",
@@ -1222,27 +1386,32 @@
                                                     "requirements": "For the HMM task, Simformer (with a dense attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "dbb902c0-3beb-475e-b1e4-e93ba3d9a3d9",
                                                     "requirements": "For the HMM task, Simformer (with an undirected graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "0ec528ea-7dc7-4420-ae51-359d30bacd47",
                                                     "requirements": "For the HMM task, Simformer (with a directed graph for it's attention mask) has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Execution"
+                                                    "task_category": "Code Execution",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "ed3d37e3-fe23-4b1e-bade-445f4803604a",
@@ -1254,31 +1423,36 @@
                                             "requirements": "For the Tree task, ground truth posterior samples with Markov-Chain Monte-Carlo are generated on 100 randomly sampled selected conditional or full joint distributions",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "82cb5063-8d65-4270-bbf2-263bed38d932",
                                             "requirements": "For the HMM task, ground truth posterior samples with Markov-Chain Monte-Carlo are generated on 100 randomly sampled selected conditional or full joint distributions",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "409deb4c-dab8-4430-ac6d-9ca3026707e3",
                                             "requirements": "For the Two Moons task, ground truth posterior samples with Markov-Chain Monte-Carlo are generated on 100 randomly sampled selected conditional or full joint distributions",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "c2239ebc-0b8c-4651-9561-353cc0db8ce2",
                                             "requirements": "For the SLCP task, ground truth posterior samples with Markov-Chain Monte-Carlo are generated on 100 randomly sampled selected conditional or full joint distributions",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "f7583837-d547-432c-bc01-4fc1789c8ad3",
@@ -1290,31 +1464,36 @@
                                             "requirements": "For the Tree task, for each model trained for 10^3, 10^4, and 10^5 simulations, for each of the ground truth posterior samples, N model-generated posteriors are created by conditioning on the observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "913b099a-e731-4a8a-8a91-ccfb4ef5e650",
                                             "requirements": "For the HMM task, for each model trained for 10^3, 10^4, and 10^5 simulations, for each of the ground truth posterior samples, N model-generated posteriors are created by conditioning on the observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "7413d98d-aa4b-4dd4-90b7-acf047652b39",
                                             "requirements": "For the Two Moons task, for each model trained for 10^3, 10^4, and 10^5 simulations, for each of the ground truth posterior samples, N model-generated posteriors are created by conditioning on the observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "a2fe39cd-7147-490e-ad88-49b391d9b2a0",
                                             "requirements": "For the SLCP task, for each model trained for 10^3, 10^4, and 10^5 simulations, for each of the ground truth posterior samples, N model-generated posteriors are created by conditioning on the observations, where N is the number of reference samples",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "9bab456c-e8f2-48d6-9de1-50419853f1d3",
@@ -1326,44 +1505,52 @@
                                             "requirements": "For the Tree task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors (trained on 10^3, 10^4 and 10^5 simulations and conditioned on observations) and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "0ece9e6e-a75c-4aa1-aad8-bf5fead43be6",
                                             "requirements": "For the HMM task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors (trained on 10^3, 10^4 and 10^5 simulations and conditioned on observations) and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "2a4fd54c-7609-4bca-be6e-821a1b941bd9",
                                             "requirements": "For the Two Moons task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors (trained on 10^3, 10^4 and 10^5 simulations and conditioned on observations) and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "99bb3116-25c7-4b6f-9f09-e97f8b0339eb",
                                             "requirements": "For the SLCP task, for each model trained for 10^3, 10^4, and 10^5 simulations, Classifier Two-Sample Test accuracy between the model-generated posteriors (trained on 10^3, 10^4 and 10^5 simulations and conditioned on observations) and ground-truth posteriors have been calculated",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "b858fec6-3c95-4e5e-89e1-02d441f30cab",
                                     "requirements": "When evaluating arbitrary conditionals on tasks Tree, HMM, Two Moons, and SLCP, when trained with 10^5 simulations, all Simformer models on all tasks achieve low C2ST (below 0.7)",
                                     "weight": 3,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "5a4f4027-4a4a-4079-913d-2714b8fa054d",
@@ -1375,14 +1562,16 @@
                             "requirements": "The Simformer used for all experiments in Section 4.2 has 8 layers",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "7ec881a6-1960-450d-a466-12f0ba03d52d",
                             "requirements": "The Simformer in section 4.2 has been trained for 10^3, 10^4, and 10^5 simulations (in separate training runs)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "4a41cf69-dfce-4b8a-9992-882edc610757",
@@ -1394,24 +1583,28 @@
                                     "requirements": "Four synthetic prey observations are sampled at random times",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "1f9a15cb-263a-4fb9-957f-2eab2212ffb0",
                                     "requirements": "The Simformer trained on 10^5 simulations of Lotka-Volterra is used with a dense attention mask to infer the posterior distribution on a uniform grid between t=0 and t=15, given the four synthetic observations and posterior predictive samples for unobserved predator and prey variables.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "2da3fc50-59bb-466c-b167-7cf44c86e029",
                                     "requirements": "The ground truth parameter is usually within regions of high posterior probability, using the Simformer with a dense attention mask trained on 10^5 simulations of Lotka-Volterra",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "9701fea0-3f18-4789-9003-81f4e348fcc3",
@@ -1423,31 +1616,36 @@
                                     "requirements": "Nine additional synthetic observations of the predator population are sampled from Lotka-Volterra at random times",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "c31c4bfa-12c2-4326-adb4-7cf06384a800",
                                     "requirements": "The Simformer (trained on 10^5 simulations of Lotka-Volterra) with a dense attention mask is used to infer the posterior distribution given the four prey synthetic observations and nine predator synthetic observations",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "0f4a0b23-a0d9-4f11-bc99-9af8c899ad7b",
                                     "requirements": "Including the nine predator synthetic observations reduces the uncertainty in the posterior predictive of both prey and predator populations, when using the Simformer trained on 10^5 simulations of Lotka-Volterra",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "df75afbb-c140-4a59-acb6-df5986ef1780",
                                     "requirements": "Including the nine predator measurements reduces the uncertainty in both the posterior, when using the Simformer trained on 10^5 simulations of Lotka-Volterra",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "0e5d1602-6d99-4eb4-abe2-1e3924a98083",
@@ -1459,27 +1657,32 @@
                                     "requirements": "All Simformers trained on 10^3, 10^4, 10^5 simulations of Lotka-Volterra are separately used to sample from arbitrary conditional distributions to simultaneously generate posterior and posterior predictive samples",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "173a3eec-8d27-4b7f-8960-678a592e926d",
                                     "requirements": "Using the Simformer trained for 10^5 simulations of Lotka-Volterra, the C2ST performance (posterior distribution) is below 0.65",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "e87233c0-481d-4b86-bae8-bd37448a9231",
                                     "requirements": "Using the Simformer trained for 10^5 simulations of Lotka-Volterra, the C2ST performance (arbitrary conditionals) is below 0.75",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "9480ddc4-8a8c-4acc-a8e3-b398cb962672",
@@ -1491,14 +1694,16 @@
                             "requirements": "The Simformer used for all experiments in Section 4.3 has 8 layers",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "e0c85d33-977f-4839-b149-312cdfcd5b34",
                             "requirements": "The Simformer used in Section 4.3 uses the dense attention mask",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "62344010-ba29-4d85-a8ce-a92f90387cb9",
@@ -1510,31 +1715,36 @@
                                     "requirements": "Five synthetic observations are generated from infected, recovered, and deceased individuals at random times",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "78909e7b-adc2-430f-8d2c-698f870ae046",
                                     "requirements": "Given the five synthetic observations, the Simformer is applied to obtain samples from the posterior distribution of parameters as well as posterior predictive samples for unobserved  infected, recovered, and deceased values on a regular time grid from 0 to 40",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "81423255-fefa-410a-869f-5fba0a9ce93c",
                                     "requirements": "The mean of the death, recovery and contact rate parameters is somewhat close to the true parameter that generated the observations, using the Simformer given the five synthetic observations",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "eeb98ce1-14b2-47f2-af99-c0f06c1ee5f3",
                                     "requirements": "The mean of the infected, recovered and death population densities accurately model the sampled observations, using the Simformer given the five synthetic observations",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "231cf3a5-4f4a-4c23-8558-8c87fd31bd5d",
@@ -1546,34 +1756,40 @@
                                     "requirements": "Synthetic observations consisting of four measurements of the time-dependent contact rate parameter is generated and a single synthetic observation of death population is generated",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "aa314a14-d24f-4371-9738-ea3f62cb9a6c",
                                     "requirements": "The Simformer estimated realistic death and recovery rates, using the Simformer given the five synthetic observations",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "6e727597-f426-43da-9dd2-481dbc2c2b4b",
                                     "requirements": "The predicted mean intercepts all four measurements of the time-dependent contact rate parameter, using the Simformer given the five synthetic observations",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "296dadfa-105d-4e23-aedd-9ce6cde8836b",
                                     "requirements": "The predicted mean of the death population intercepts the synthetic observation, using the Simformer given the five synthetic observations",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "11977643-0daa-4866-b388-7c63253bb844",
@@ -1585,14 +1801,16 @@
                             "requirements": "The Simformer used for all experiments in Section 4.4 has 8 layers",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "c9544022-72fb-4e87-977f-84731c412783",
                             "requirements": "The Simformer used in Section 4.4 uses the dense attention mask",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "1f1f0d03-49b5-4ca9-89a3-85624c717226",
@@ -1604,38 +1822,44 @@
                                     "requirements": "The Simformer infers the posterior distribution given only the summary statistics of the voltage (not the energy)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "17113941-b42f-4662-9b19-d5676fa0e3f9",
                                     "requirements": "The posterior distribution has wide marginals for parameters $g_{Na}, g_K$ and narrow marginals for parameters $C_m, g_L$",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 },
                                 {
                                     "id": "31d0cc76-b73b-4fad-9656-2dda0419e095",
                                     "requirements": "Posterior predictive samples are generated from this new posterior (via Simformer and by running the simulation), where this \"new posterior\" is generated given voltage summary statistics",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "edae46eb-6449-451f-8f5d-4936be7bf7bb",
                                     "requirements": "The predicted posterior is almost equivalent to the simulated posterior",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "2c03b450-acbe-437f-a079-ee5560abf51d",
                                     "requirements": "The posterior predictive trace of Simformer closely matched the posterior predictive trace obtained by running the simulator",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d23997b6-49f6-48ff-b578-5e31505f065f",
@@ -1647,52 +1871,62 @@
                                     "requirements": "An observation interval is defined for the energy consumption within the lowsest 10% quantile of posterior predictives",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "0a2964da-9bad-44c6-8a6d-b107b6522463",
                                     "requirements": "Simformer with guided diffusion is used to infer the posterior given voltage summary statistics and the constraint on energy consumption",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "540ce42f-c72d-491a-87d6-7aa69373fbab",
                                     "requirements": "The additional constraint on energy consumption significantly constrained the parameters posterior, in particular the maximal sodium and potassium conductances",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 },
                                 {
                                     "id": "3c812e66-c1b1-4298-a078-797fd5516d68",
                                     "requirements": "Posterior predictive samples are generated from this new posterior (via Simformer and by running the simulation), where this \"new posterior\" is generated given voltage summary statistics and the constraint on energy consumption",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "d01c197f-aece-4023-af49-d1dfb8fc149b",
                                     "requirements": "The predicted energy consumption lies below the desired threshold",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "4444e56a-ac1a-43b5-8b53-005190291454",
                                     "requirements": "The posterior predictive trace of Simformer closely matched the posterior predictive trace obtained by running the simulator",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

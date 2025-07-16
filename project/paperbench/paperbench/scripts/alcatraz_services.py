@@ -57,7 +57,11 @@ async def download_submission_to_container(
 
 
 async def grade_on_cluster(
-    judge: Judge, computer: ComputerInterface, logger: BoundLogger, code_only: bool
+    judge: Judge,
+    computer: ComputerInterface,
+    logger: BoundLogger,
+    code_only: bool,
+    resources_provided: bool = False,
 ) -> JudgeOutput:
     # If the judge has a custom grade_on_cluster method, use it
     if hasattr(judge, "grade_on_cluster") and callable(getattr(judge, "grade_on_cluster", None)):
@@ -84,6 +88,7 @@ async def grade_on_cluster(
     logger.info(f"Grading paper {paper_id} on cluster")
     python_path = "/opt/conda/envs/grader/bin/python"  # use the conda env we installed in pb-grader
     code_only_string = " --code-only" if code_only else ""
+    resources_provided_string = " --resources-provided" if resources_provided else ""
     judge_completion_kwargs = getattr(judge, "completion_kwargs", None)
     reasoning_effort_str = (
         f" --reasoning-effort {judge_completion_kwargs['reasoning_effort']}"
@@ -95,6 +100,7 @@ async def grade_on_cluster(
         + f" --paper-id {paper_id} --judge {judge_type} --model {model_name} --out-dir /output"
         + reasoning_effort_str
         + code_only_string
+        + resources_provided_string
     )
 
     logger.info(f"Running judge with cmd: {cmd_str}")
@@ -119,6 +125,7 @@ async def grade_on_computer(
     logger: BoundLogger,
     run_dir: Path,
     code_only: bool = False,
+    resources_provided: bool = False,
     reasoning_effort: str | None = None,
 ) -> JudgeOutput | None:
     """
@@ -149,8 +156,11 @@ async def grade_on_computer(
             task_tree = task_tree.code_only() or task_tree.set_task_category(
                 "Code Development"
             ).set_sub_tasks([])
+        if resources_provided:
+            task_tree = task_tree.resources_provided()
+
         judge_kwargs = handle_judge_kwargs(
-            judge_type, code_only, paper, model_name, reasoning_effort
+            judge_type, code_only, resources_provided, paper, model_name, reasoning_effort
         )
         judge = create_judge(
             judge_type=judge_type,
@@ -165,7 +175,9 @@ async def grade_on_computer(
             paper_md=paper.paper_md,
         )
         logger.info(f"Judge created: {judge}")
-        grader_output = await grade_on_cluster(judge, computer, logger, code_only)
+        grader_output = await grade_on_cluster(
+            judge, computer, logger, code_only, resources_provided
+        )
 
         logger.info(f"Graded {paper_id} at {submission_path}")
 
@@ -196,6 +208,7 @@ async def grade_locally(
     model_name: str,
     logger: BoundLogger,
     code_only: bool = False,
+    resources_provided: bool = False,
     reasoning_effort: str | None = None,
 ) -> Optional[JudgeOutput]:
     """
@@ -229,8 +242,11 @@ async def grade_locally(
                 task_tree = task_tree.code_only() or task_tree.set_task_category(
                     "Code Development"
                 ).set_sub_tasks([])
+            if resources_provided:
+                task_tree = task_tree.resources_provided()
+
             judge_kwargs = handle_judge_kwargs(
-                judge_type, code_only, paper, model_name, reasoning_effort
+                judge_type, code_only, resources_provided, paper, model_name, reasoning_effort
             )
             judge = create_judge(
                 judge_type=judge_type,

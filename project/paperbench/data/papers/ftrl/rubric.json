@@ -18,7 +18,8 @@
                             "requirements": "The NetHack environment has been imported from https://github.com/heiner/nle",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Environment & Infrastructure Setup"
                         },
                         {
                             "id": "5649ccb5-b36d-41b9-aeaa-7abe206a6888",
@@ -35,27 +36,32 @@
                                             "requirements": "For NetHack, the 30M LSTM uses ReLU activation functions",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "3ec91367-616b-4c59-b25b-bcc451e79d81",
                                             "requirements": "For NetHack, the 30M LSTM uses a hidden dimensionality of 1738",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "acfc8769-18c6-4860-9807-1e2e3af5e0a2",
                                     "requirements": "The 30M pre-trained LSTM trained by \"Scaling Laws for Imitation Learning in Single-Agent Games\" (Tuyls et al. (2023)) is available. The weights are downloaded from https://drive.google.com/uc?id=1tWxA92qkat7Uee8SKMNsj-BV1K9ENExl",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "fec855c8-9fd8-4add-8faf-9a0d95c3d44a",
@@ -67,17 +73,20 @@
                                     "requirements": "The NLD-AA dataset is constructed by following the instructions from https://github.com/dungeonsdatasubmission/dungeonsdata-neurips2022",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "556adc51-d77a-415b-af74-d6ccff113bab",
                                     "requirements": "8000 games of Human Monk are randomly selected from the NLD-AA dataset, to make up the dataset used for training models on NetHack",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "60ae47f9-8131-4dc2-9974-a9af6d2da1da",
@@ -89,31 +98,36 @@
                                     "requirements": "The NetHack environment has been modified to support saving and loading the game",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "03f1e111-3743-444b-82d3-fe9e547ec0c5",
                                     "requirements": "AutoAscend has been implemented, using the implementation from https://github.com/cdmatters/autoascend/tree/jt-nld",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "832dc72d-1813-4ffc-9f5d-c977cacb42e6",
                                     "requirements": "The AutoAscend agent is executed to play the game and save the state when it reaches Level 4 of NetHack. 200 game saves satisfying such criteria are generated",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 },
                                 {
                                     "id": "c039593c-3c80-4de1-8600-83b19cc56246",
                                     "requirements": "The AutoAscend agent is executed to play NetHack and save the state when it reaches the first level of Sokoban. 200 game saves satisfying such criteria are generated",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "fb366e4c-946a-43d3-82ac-98f067e4ffba",
@@ -125,7 +139,8 @@
                                     "requirements": "APPO is used when training all models on the NetHack environment, using the implementation from https://github.com/alex-petrenko/sample-factory/",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "15d5dd79-1adf-4ad4-ad07-f8dfc06f85cb",
@@ -142,45 +157,52 @@
                                                     "requirements": "All models trained on NetHack use the ADAM optimizer",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "070f8846-402a-4074-88a1-22d84a7bbabc",
                                                     "requirements": "All models trained on NetHack use $\\beta_1=0.9, \\beta_2=0.999, \\epsilon=0.0000001$ as hyperparameters for the ADAM optimizer",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "d552126e-e9bd-4561-9a7e-a94e5f80cf30",
                                                     "requirements": "All models trained on NetHack use a learning rate of 0.0001",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "ce46a3bd-4824-423f-bb3f-af4d91250387",
                                                     "requirements": "All models trained on NetHack use a weight decay of 0.0001",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "9b430504-55c1-4c43-b066-143aecf6ec60",
                                             "requirements": "All models trained on NetHack use a batch size of 128",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "d982052f-e5cb-4660-94ee-81f3b2d99295",
                                             "requirements": "All models trained on NetHack use a value of 4 for the global norm for gradient clipping",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "8a3bec01-9ad5-4d55-a19c-c1782fa113d0",
@@ -192,83 +214,96 @@
                                                     "requirements": "All models trained on NetHack use a clip parameter for APPO of 0.1",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "36283b09-d40b-40fd-bfaf-e158910bfa92",
                                                     "requirements": "All models trained on NetHack use a clip baseline for APPO of 1.0",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "4f5a51bb-9520-4013-8345-6327f9ecd149",
                                                     "requirements": "All models trained on NetHack use a baseline cost (i.e. coefficient weighting the value function loss) of 1.0",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "6442c7f8-5e3f-4456-be7a-ae9ccd79beae",
                                                     "requirements": "All models trained on NetHack use a discounting factor of 0.999999",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "3a878514-0f60-413d-9f3c-37ace246c358",
                                                     "requirements": "All models trained on NetHack that don't use knowledge retention methods have an entropy cost of 0.001",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "b13f35ea-a588-48c2-a47c-34cea83d7d02",
                                                     "requirements": "All models trained on NetHack don't have any reward added (negative or positive) for each time step",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "1c251dfa-625d-4c37-8d3c-496b4af0c1de",
                                                     "requirements": "All models trained on NetHack have rewards clipped to +-10",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "cb0233d3-a8c5-472b-ab70-3bbf5a002dba",
                                                     "requirements": "All models trained on NetHack have a reward scale of 1.0, i.e., rewards are not scaled (beyond clipping)",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "491ae6e3-f83f-4cd9-97cd-cb5c6cb3e4c9",
                                                     "requirements": "All models trained on NetHack use rollout size of 32",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "aa4932c4-8089-4b83-9c3b-08371f4e5854",
                                     "requirements": "In NetHack, when fine-tuning any model (not when pre-training models from scratch), the model is first pre-trained for 500M environment steps where the entire model is frozen aside from the critic head",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "3ccae3d0-b213-4df7-8e4f-268d68833042",
                                     "requirements": "When fine-tuning models in the NetHack environment, all encoders are frozen during the course of the training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "2285a496-0f2a-45e7-93cb-8a02edf7ac56",
@@ -280,7 +315,8 @@
                                             "requirements": "When fine-tuning models in the NetHack environment using either elastic weight consolidation (EWC), behavioral cloning (BS), or kickstarting (KS), the entropy maximization loss is not used when computing the total loss",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "01cb2701-c047-4d3a-980c-0d8de0b2d136",
@@ -292,24 +328,28 @@
                                                     "requirements": "For NetHack the Kickstarting knowledge retention method is implemented; an auxiliary loss is implemented as $\\mathcal{L}_{KS}(\\theta) = \\mathbb{E}_{s \\sim \\pi_\\mathcal{B}_\\theta} \\left[ D_{KL} \\left( \\pi_{*}(s) \\parallel \\pi_{\\theta}(s) \\right) \\right]$, where $\\pi_\\star$ is the frozen pre-trained model for NetHack from (Tuyls et al., 2023), $\\pi_\\theta$ is the current model, and $\\mathcal{B}_\\theta$ is a buffer of states",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "bc514fb5-8efd-4998-be2d-aec7057164a1",
                                                     "requirements": "When fine-tuning models in the NetHack environment using kickstarting (KS), the auxiliary loss is computed on a buffer of data generated by the online policy",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "294d8931-c699-4722-8836-1979b4c6289c",
                                                     "requirements": "When fine-tuning models in the NetHack environment using kickstarting (KS), the auxiliary loss is scaled by a factor of 0.5 and an exponential decay  of 0.99998 is used, where the coefficient is decayed every training step",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "326d7aba-c5c7-436c-9412-f8b601cf48fa",
@@ -321,24 +361,28 @@
                                                     "requirements": "In the behavioural cloning (BC) implementation for NetHack, before training, a subset of states $\\mathcal{S}_{BC}$ is gathered on the 8000 trajectories generated by the AutoAscend algorithm, and a buffer is constructed as $\\mathcal{B}_{BC} := \\{(s,\\pi_\\star(s)) : s \\in \\mathcal{S}_{BC} \\}$, i.e., the action that the AutoAscend algorithm took on each of such states is recorded",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Data Processing & Preparation"
                                                 },
                                                 {
                                                     "id": "623ba7fa-b4a0-4a78-b384-131a85d8c018",
                                                     "requirements": "In the behavioural cloning (BC) implementation for NetHack, when fine-tuning, an auxiliary loss is implemented as $\\mathcal{L}_{BC}(\\theta) = \\mathbb{E}_{s \\sim \\mathcal{B}_{BC}} \\left[ D_{KL} \\left( \\pi_{*}(s) \\parallel \\pi_{\\theta}(s) \\right) \\right]$, where $\\pi_\\star$ is the frozen pre-trained model from (Tuyls et al., 2023), and $\\mathcal{B}_{BC}$ is a buffer of data containing states from the AutoAscend algorithm",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "eb4004f8-f230-4d97-b94a-7054f8e9e0d8",
                                                     "requirements": "When fine-tuning models in the NetHack environment using behavioral cloning (BC), the auxiliary loss is scaled by a factor of 2.0. No decay is used",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "61c916cd-a428-4166-a345-5e23bcf3abd2",
@@ -350,37 +394,44 @@
                                                     "requirements": "For NetHack, the diagonal Fisher matrix can be computed as $F_{ii} = \\mathbb{E} [\\Delta_\\thetal(\\theta)_i^2]$, where the expectation is computed using the squared gradients of the loss wrt. each parameter over 10000 batches sampled from the NLD-AA subset of 8000 monk trajectories",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "eb31b5b8-9523-47d3-96a2-90f818fa36d4",
                                                     "requirements": "For NetHack, the Elastic Weight Consolidation (EWC) knowledge retention method is implemented; the auxiliary loss is implemented as $\\mathcal{L}_{\\text{aux}} (\\theta) = \\sum_i F^i(\\theta_\\star^i-\\theta^i)^2$, where $\\theta$ is the weights of the current model, $\\theta_\\star$ is the weights of the pre-trained model from (Tuyls et al., 2023), and $F$ is the diagonal of the Fisher matrix",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "fb4230d6-f469-482c-88db-63590988a152",
                                                     "requirements": "When fine-tuning models in the NetHack environment using EWC, a regularization coefficient of $2 \\cdot 10^6$ is used",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "d0fc7e3c-6ee4-4e34-b46c-8eb28b783748",
                                             "requirements": "For the NetHack environment, the knowledge retention methods are not applied to the parameters of the critic",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "baecc3c2-5507-4efa-8fe3-98daeacbb19d",
@@ -392,21 +443,24 @@
                                     "requirements": "For the experiments in Section 4 related to NetHack, the average return for a method that has been trained for N steps is computed as the average return over all steps in the trajectory",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "d63bf606-7095-470e-bb04-cd401e82ca9e",
                                     "requirements": "When evaluating an agent on NetHack, the agent is rolled out until 1) it dies, 2) 150 steps are taken without progress being made, or 3) 100k steps are taken",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "506f55fb-2d28-437f-b8cd-0452b3494fb5",
                                     "requirements": "For the experiments in Section 4 related to NetHack, the maximum dungeon level achieved over the course of training is recorded",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "1a042a11-2efa-4959-a84e-04c75d2385f1",
@@ -418,17 +472,20 @@
                                             "requirements": "For the experiments in Section 5 related to NetHack, to compute the Level 4 evaluation, the model is evaluated on each of the 200 saves generated by AutoAscend by loading each game (running the agent where the AutoAscend agent finished) and computing the score the model achieved on top of the AutoAscend agent's score. The average score across the 200 game saves is computed as the average return",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "14de6420-98b4-44d7-b5cb-dce7cce2bda3",
                                             "requirements": "For the experiments in Section 5 related to NetHack, the average return from Level 4 is computed every 25 million training steps",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "8ce6899e-c902-463c-8e77-59339326e1f7",
@@ -440,23 +497,28 @@
                                             "requirements": "For the experiments in Section 5 related to NetHack, to compute the Sokoban score (number of filled pits), the model is evaluated on each of the 200 saves by loading each game (running the agent where the AutoAscend agent finished) and computing the score the model achieved on top of the AutoAscend agent's score (number of filled pits). The average score across the 200 game saves is computed as the Sokoban score",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "c1894983-c61c-49b3-8058-7b21e4a7cbfc",
                                             "requirements": "For the experiments in Section 5 related to NetHack, the average Sokoban score (number of filled pits) is computed every 25 million training steps",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "eec5335a-e1e6-4073-90a2-d2044c1c9b9a",
@@ -468,7 +530,8 @@
                             "requirements": "The Montezuma's Revenge environment has been imported from https://github.com/jcwleo/random-network-distillation-pytorch",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Environment & Infrastructure Setup"
                         },
                         {
                             "id": "bb8f2b81-bb76-44ff-80e3-6b7e2f828432",
@@ -480,24 +543,28 @@
                                     "requirements": "All models for the Montezuma's Revenge environment are based on the architecture from https://github.com/jcwleo/random-network-distillation-pytorch",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "5a67161e-54c8-47a9-90b6-97161b2f9e7e",
                                     "requirements": "The models trained on the Montezuma's Revenge environment use Random Network Distillation (RND) for training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "3ab393d2-ea35-4823-a8e3-cd9cbad6666b",
                                     "requirements": "The models trained on the Montezuma's Revenge environment receive and return vectors of size 512 for both the target network and prediction network",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "8a369c7a-1a75-4d42-8f4c-2d510eb6b6f3",
@@ -509,7 +576,8 @@
                                     "requirements": "The models trained on the Montezuma's Revenge environment use PPO for training, using the implementation from https://github.com/jcwleo/random-network-distillation-pytorch",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "c8a1ac33-c85d-47d6-8890-3fca8328de35",
@@ -521,192 +589,220 @@
                                             "requirements": "All models trained on Montezuma's Revenge have a maximum of 4500 steps per episode",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "27a87bc3-3016-4fe9-83a5-fe1bbeae2673",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"ExtCoef\" hyperparameter set to 2.0",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "4db385ef-36aa-4f00-8574-6bff77eb3f1e",
                                             "requirements": "All models trained on Montezuma's Revenge use a learning rate of 1e-4",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "47d6c57d-69b4-45c3-be5f-2a037190fe08",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"NumEnv\" hyperparameter set to 128",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "54d5e6d1-ad76-40a5-b820-da6090af0410",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"NumStep\" hyperparameter set to 128",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "09160858-4969-4b69-9d5d-eadb12ab9eac",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"Gamma\" hyperparameter set to 0.999",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "4b6ae9b0-43ff-4197-8726-0af7cd3c48a8",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"IntGamma\" hyperparameter set to 0.99",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "a644cd26-5450-4c36-85d0-18dac6ece999",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"Lambda\" hyperparameter set to 0.95",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "2d29420f-dbf2-4be3-8b02-fd0729cbd5bc",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"StableEps\" hyperparameter set to 1e-8",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "1cc11bdb-3f62-45bb-9017-c6e1154fe637",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"StateStackSize\" hyperparameter set to 4",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "23a7b10f-0515-4452-931f-6ab3d31329d9",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"PreProcHeight\" hyperparameter set to 84",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "45974989-8788-4468-a03c-757a73d63e4f",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"PreProcWidth\" hyperparameter set to 84",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "4f895e10-afc4-4b14-b7dc-a8fd5571a32a",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"UseGAE\" hyperparameter set to True",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "89f5dfe3-8387-418b-aeed-f789c95f9825",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"UseNorm\" hyperparameter set to False",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "9bfe3114-7f95-4b73-ab28-12df6f9676b6",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"UseNoisyNet\" hyperparameter set to False",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "71da356d-1436-45df-b3a1-2a482e0a73eb",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"ClipGradNorm\" hyperparameter set to 0.5",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "279302d4-54b1-424e-98ba-2f790bd0ab64",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"Entropy\" hyperparameter set to 0.001",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "4724cd08-fcc4-4bc1-8645-465a41e183d2",
                                             "requirements": "All models trained on Montezuma's Revenge are trained for 4 epochs",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "f9554ef5-802d-48c4-a161-2f6965e57983",
                                             "requirements": "All models trained on Montezuma's Revenge have a mini-batch size of 4",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "31b9787f-9fd4-4687-9309-9f06eb27bc01",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"PPOEps\" hyperparameter set to 0.1",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "7c799a96-3e8c-4df1-a7ad-35526aa1bc9c",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"IntCoef\" hyperparameter set to 1.0",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "74d5a083-6501-4642-98c2-c4568a8a3bba",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"StickyAction\" hyperparameter set to True",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "be7338b0-6e3d-45b5-be9c-62c0467b41c0",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"ActionProb\" hyperparameter set to 0.25",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "1c2646cd-c049-4b90-88ff-a30f2695f361",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"UpdateProportion\" hyperparameter set to 0.25",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "189af3f8-0c41-4606-9375-e452b01c3c75",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"LifeDone\" hyperparameter set to False",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "fbaf9172-6713-4024-9c12-50c3ade3689c",
                                             "requirements": "All models trained on Montezuma's Revenge have the \"ObsNormStep\" hyperparameter set to 50",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "ca6edffa-53a0-4ed1-bbb5-8d3c18ee135c",
                                     "requirements": "For constructing the dataset for training the \"pre-trained\" baseline for Montezuma's Revenge environment, 500 trajectories are sampled from a pre-trained PPO agent with RND that has achieved an episode cumulative reward of around 7000 and has been pre-trained from scratch (not using existing pre-trained weights)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "728b9b1a-2798-458b-a679-67b09c94a1a1",
@@ -718,7 +814,8 @@
                                             "requirements": "Fine-tuning models in the Montezuma's Revenge environment using behavioural cloning (BC) has been correctly implemented; an auxiliary loss is implemented as $\\mathcal{L}_{BC}(\\theta) = \\mathbb{E}_{s \\sim \\mathcal{B}_{BC}} \\left[ D_{KL} \\left( \\pi_{*}(s) \\parallel \\pi_{\\theta}(s) \\right) \\right]$, where $\\pi_{\\theta}$ is the current model, $\\pi_\\star$ is the pre-trained model, and $B_{BC}$ is a buffer of the 500 trajectories computed by the pre-trained PPO agent with RND that achieved an episode cumulative reward of around 7000",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "92c44d7d-4163-4951-8ca4-8d5fd4bf3de2",
@@ -730,30 +827,36 @@
                                                     "requirements": "For Montezuma's Revenge, the diagonal Fisher matrix can be computed as $F_{ii} = \\mathbb{E} [\\Delta_\\thetal(\\theta)_i^2]$, where the expectation is computed using the squared gradients of the loss wrt. each parameter using the 500 trajectories sampled from the pre-trained PPO agent that achieved an episode cumulative reward of around 7000",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "1c8fecd4-b73c-41f7-97b5-135d28466d22",
                                                     "requirements": "For Montezuma's Revenge, the Elastic Weight Consolidation (EWC) knowledge retention method is implemented; the auxiliary loss is implemented as $\\mathcal{L}_{\\text{aux}} (\\theta) = \\sum_i F^i(\\theta_\\star^i-\\theta^i)^2$, where $\\theta$ is the weights of the current model, $\\theta_\\star$ is the weights of the pre-trained model, and $F$ is the diagonal of the Fisher matrix",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "4bc41c97-3296-430c-aa1c-d69d52831c9d",
                                             "requirements": "For the Montezuma's Revenge environment, the knowledge retention methods are not applied to the parameters of the critic",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "21e9622d-3a74-4c45-97e0-8ba0522c0b8d",
@@ -765,27 +868,32 @@
                                     "requirements": "For the experiments in Section 4 related to Montezuma's Revenge, the average return for a method that has been trained for N steps is computed as the average return over all steps in the trajectory",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "dcff0bef-8fe9-4c37-a4de-3f5455faf10f",
                                     "requirements": "In the Montezuma's Revenge environment, when starting agents in Room 7, the success rate in Room 7 is computed at achieving at least one of the following: either earn a coin as a reward, acquire a new item, or exit the room through a different passage than the one the agent entered through",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "de1df70e-cc0e-464a-a55f-1cab6b269eda",
                                     "requirements": "In the Montezuma's Revenge environment, when training models, the success rate in Room 7 is computed every 5 million training steps",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "fb8ccbdb-4ade-4d2f-aa7c-0875da084142",
@@ -802,52 +910,60 @@
                                     "requirements": "RoboticSequence is defined as a Meta-World task which must complete the following sub-tasks sequentially in a single episode: use a hammer to hammer in a nail (hammer), push an object from one specific place to another (push), remove a bolt from a wall (peg-unplug-side), push an object around a wall (push-wall). If it performs these steps in the correct order, this is counted as a success, otherwise it's attempt it counted as a failure",
                                     "weight": 5,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "37617d8a-54c3-4b52-878a-7650cd59ace3",
                                     "requirements": "In the RoboticSequence environment, the starting positions and goal conditions are randomly sampled",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "2b588e8e-c095-4c32-baea-31e184887a08",
                                     "requirements": "In the RoboticSequence environment, the Stage ID is encoded as a one-hot vector and provided to the agent",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "1b2f259d-15d1-42a7-94a4-1d037978a849",
                                     "requirements": "In the RoboticSequence environment, the normalized timestep (i.e. the timestep divided by the maximal number of steps in the environment) is appended to the state vector",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "6c9f6163-b8c7-4a68-86d5-3afbd45982b2",
                                     "requirements": "In the RoboticSequence environment, the maximal number of steps is defined as 200",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "4d94457b-2701-4606-8d2c-3b4d1752f004",
                                     "requirements": "In the RoboticSequence environment, when the episode ends with success, the agent is provided with the \"remaining\" reward it would get until the end of the episode; if the last reward was originally $r_t$, the augmented reward is given by $r_t^\\prime = \\beta r_t (T - t)$, where $\\beta$ is defined as $1.5$, and $T$ is the maximal number of steps",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "1468553f-f209-4f42-977e-9f99c1c81d99",
                                     "requirements": "In the RoboticSequence environment, the success rate during training of each sub-task can be measured",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "e63ad108-9ffa-42f9-b949-975c381157ba",
@@ -864,76 +980,88 @@
                                             "requirements": "In the RoboticSequence environment, the policy and Q-value function are implemented as a 4-layer MLP with 256 neurons each",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "9e0dc336-a256-4b28-8b2b-19841db7adce",
                                             "requirements": "In the RoboticSequence environment, the policy and Q-value function use Leaky-ReLU activations",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "09f91c0f-88c1-42d3-b23e-35a6388a1eba",
                                             "requirements": "In the RoboticSequence environment, the policy and Q-value function have layer normalization only after the first layer",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "01a729bf-31bd-421b-8057-9567fffda4b9",
                                             "requirements": "In the RoboticSequence environment, the Soft Actor-Critic algorithm has been implemented",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "6cb1d923-bf35-4654-a24d-62f2fa3bb33d",
                                             "requirements": "In the RoboticSequence environment, for the first `start_steps` number of steps at the beginning of training the Soft Actor-Critic algorithm, the agent samples actions from a uniform random distribution over valid actions, where `start_steps` is some hyperparameter",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "819b5d8c-7bf1-4d16-bd29-3f34add3d27f",
                                             "requirements": "In the RoboticSequence environment, the Soft Actor-Critic replay buffer can contain 100,000 trajectories",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "2bae6d13-5ccd-490a-8bea-7094b190976a",
                                     "requirements": "In the RoboticSequence environment, when the agent suceeds or when the time limit is reached, SAC recieves a signal that the state was terminal, and bootstrapping in the target Q-value is not applied",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "8fb5f5d9-93bd-4d93-a008-040497cbf435",
                                     "requirements": "In the RoboticSequence environment, the entropy coefficient in SAC is tuned automatically",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "415909bb-96be-4051-9930-167a9443a924",
                                     "requirements": "In the RoboticSequence environment, a separate output head is created in the neural networks for each stage, and the stage ID information is used to choose the correct head",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "377dd263-55bd-4184-86ea-a3a9d4c98123",
                                     "requirements": "In the RoboticSequence environment, the SAC critic is not regularized",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d0a428b9-266d-47cc-b668-ca1b9186444e",
@@ -950,31 +1078,36 @@
                                             "requirements": "All models trained on the RoboticSequence environment use a learning rate of $10^{-3}$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "17095f62-efed-4741-b729-9285951aa76f",
                                             "requirements": "All models trained on the RoboticSequence environment use the Adam optimizer",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "8237af64-f979-4181-8958-3b68cd12390a",
                                             "requirements": "All models trained on the RoboticSequence environment use a batch size of 128",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "8a8f1d29-90ad-405d-a928-77d1b20fe9d7",
                                     "requirements": "In the RoboticSequence environment, during fine-tuning, the SAC replay buffer its initialized with 10,000 state-action-reward tuples from the pre-trained stages using the pre-trained policy (i.e. the policy trained to convergence on the last two stages)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "4a6121d6-16b0-4e09-8d26-f130a0cb5ae7",
@@ -996,48 +1129,56 @@
                                                             "requirements": "For the RoboticSequence environment, the diagonal of the Fisher information matrix $\\mathcal{I}$ can be computed as $\\mathcal{I}_{kk} = \\left( \\frac{\\delta\\mu}{\\delta\\theta_k} \\cdot \\frac{1}{\\sigma}\\right)^2 + 2 \\left( \\frac{\\delta\\sigma}{\\delta\\theta_k} \\cdot \\frac{1}{\\sigma}\\right)^2$, where $\\mu : \\mathbb{R} \\mapsto \\mathbb{R}$, and $\\sigma : \\mathbb{R} \\mapsto \\mathbb{R}$",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Method Implementation"
                                                         },
                                                         {
                                                             "id": "70f0fef8-1025-402c-8f67-f0aa7e44f4bf",
                                                             "requirements": "For the RoboticSequence environment, for the elastic weight consolidation (EWC) implementation, the diagonal of the Fisher matrix is correctly computed as $F_k = \\mathbb{E}_{x \\sim \\mathcal{D}} \\mathbb{E}_{y \\sim p_{\\theta}(\\cdot | x)} \\left( \\nabla_{\\theta_k} \\log p_{\\theta_k} (y | x) \\right)^2$, where the outer expectation is approximated with a sample of 2560 examples from the replay buffer $\\mathcal{D}$, and the inner expectation is computed following the previous equation",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Method Implementation"
                                                         },
                                                         {
                                                             "id": "bea5ee41-084b-43e3-bddd-bb8b76cd8709",
                                                             "requirements": "For the RoboticSequence environment, for the elastic weight consolidation (EWC) implementation, the diagonal of the Fisher matrix is clipped so the minimal value is $10^{-5}$",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Method Implementation"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 },
                                                 {
                                                     "id": "4d4773c7-db8c-48c2-8892-12c8bb57f7e2",
                                                     "requirements": "For the RoboticSequence environment the Elastic Weight Consolidation (EWC) knowledge retention method is implemented; the auxiliary loss is implemented as $\\mathcal{L}_{\\text{aux}} (\\theta) = \\sum_i F^i(\\theta_\\star^i-\\theta^i)^2$, where $\\theta$ is the weights of the current model, $\\theta_\\star$ is the weights of the pre-trained model, and $F$ is the diagonal of the Fisher matrix",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "6e7fab7d-1af9-455f-ad04-d151d0e0086f",
                                                     "requirements": "For the RoboticSequence environment, for the elastic weight consolidation (EWC) implementation, the actor regularization coefficient is set to 100",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "5d88c498-191d-479e-a5a3-75af55c47539",
                                                     "requirements": "For the RoboticSequence environment, for the elastic weight consolidation (EWC) implementation, the critic regularization coefficient is set to 0",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "7969b8c7-e879-4136-9de4-2d923e8a8e29",
@@ -1049,31 +1190,36 @@
                                                     "requirements": "For the RoboticSequence environment, for the behavioural cloning (BC) implementation, at the end of each task during training, a subset from the SAC buffer is randomly sampled, it is labeled using the outputs of the current (trained) networks and added to a separate buffer as \"expert\" data",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "1f96ce79-377c-435f-a1ad-c101a35971fa",
                                                     "requirements": "For the RoboticSequence environment, for the behavioural cloning (BC) implementation, in all tasks apart from the first and second, auxiliary loss is added to the SAC's objective to imitate the expert data; for the actor, KL divergence is used, and for the critics, the L2 loss is used (which can be derived as KL divergence between mean-parameterized Gaussian distributions).",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Method Implementation"
                                                 },
                                                 {
                                                     "id": "13ae6f4b-61c9-4ccd-b227-47378478f165",
                                                     "requirements": "For the RoboticSequence environment, for the behavioural cloning (BC) implementation, the actor regularization coefficient is set to 1",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "df3e311a-290d-4124-9bd1-be966f74d674",
                                                     "requirements": "For the RoboticSequence environment, for the behavioural cloning (BC) implementation, the critic regularization coefficient is set to 0",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "101f049f-1b6b-4751-b6fc-56a4e15f70f4",
@@ -1085,30 +1231,36 @@
                                                     "requirements": "For the RoboticSequence environment, for the episodic memory (EM) implementation, the size of the replay buffer is 100k",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 },
                                                 {
                                                     "id": "c9ac831b-ac39-4645-baa2-ef5e3c5a4ba4",
                                                     "requirements": "For the RoboticSequence environment, for the episodic memory (EM) implementation, when fine-tuning models transitions are sampled from both online trajectories and trajectories stored in the repay buffer",
                                                     "weight": 1,
                                                     "sub_tasks": [],
-                                                    "task_category": "Code Development"
+                                                    "task_category": "Code Development",
+                                                    "finegrained_task_category": "Experimental Setup"
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "395a870b-8258-4e98-96a8-893c7bcc8321",
                                             "requirements": "For the RoboticSequence environment, the knowledge retention methods are not applied to the parameters of the critic",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "f281bf42-3bad-4653-86bc-4afdf2dacea7",
@@ -1120,30 +1272,36 @@
                                     "requirements": "When a model has been trained for N steps on RoboticSequence, the success rate is computed as the average success rate over all steps in the trajectory",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "4778e195-5563-45b3-b8c3-9326cae8ec3f",
                                     "requirements": "When training models on RoboticSequence, the log-likelihoods under the fine-tuned policy of trajectories collected using $\\pi_\\star$ on \"push-wall\" are computed every 50 thousand training steps, where $\\pi_\\star$ is the pre-trained policy (trained to convergence on the final two tasks)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "c455e8ed-8c85-45d5-99de-bf45f6a5f461",
                                     "requirements": "When training models on RoboticSequence, the 2D PCA projections of the log-likelihoods under the fine-tuned policy of trajectories are collected using $\\pi_\\star$ on \"push-wall\" are computed, where $\\pi_\\star$ is the pre-trained policy (trained to convergence on the final two tasks)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "4a7478db-3563-438c-a631-e3d7b1cec3df",
@@ -1165,45 +1323,52 @@
                                     "requirements": "The pre-trained 30M LSTM model (Tuyls et al., 2023) is evaluated on the NetHack environment",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b51f7910-31ac-4aa3-a099-a198e7738432",
                                     "requirements": "The 30M LSTM model (Tuyls et al., 2023) is initialized with random weights and pre-trained from scratch on the NetHack environment using APPO and behavioral cloning (BC) using the original pre-trained 30M LSTM model (Tuyls et al., 2023). The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "f34e4f40-2d0b-4298-a316-743b9b5844d0",
                                     "requirements": "The pre-trained 30M LSTM model (Tuyls et al., 2023) is fine-tuned on the NetHack environment using APPO. The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "636f6d6a-b310-4597-b1fe-7fc57a6564ed",
                                     "requirements": "The pre-trained 30M LSTM model (Tuyls et al., 2023) is fine-tuned with behavioral cloning (BC) on the NetHack environment using APPO. The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "64b22962-21b0-41b7-b5b8-119a025d16be",
                                     "requirements": "The pre-trained 30M LSTM model (Tuyls et al., 2023) is fine-tuned with elastic weight consolidation (EWC) on the NetHack environment using APPO. The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "64b28c7a-e2ba-49a6-addb-c5502ff616dd",
                                     "requirements": "The pre-trained 30M LSTM model (Tuyls et al., 2023) is fine-tuned with kickstarting (KS) on the NetHack environment using APPO. The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "19552c32-0a92-468b-b4f0-2bc54c512f08",
@@ -1215,45 +1380,52 @@
                                     "requirements": "The pre-trained model is initialized with random weights and pre-trained from scratch on the Montezuma's Revenge environment using PPO with RND until it achieves an episode reward around 7000",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "74684ac6-0b8b-451f-9375-5c0bcdc09571",
                                     "requirements": "For the \"from scratch\" baseline, the pre-trained model is initialized with random weights and pre-trained from scratch on the Montezuma's Revenge environment using PPO with RND. The \"from scratch\" model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "402dc442-cd70-4a56-b95f-6beafa4f0da3",
                                     "requirements": "For the \"pre-trained\" baseline, the pre-trained model is initialized with random weights and pre-trained from scratch on the Montezuma's Revenge environment, using using PPO with RND and behavioral cloning with 500 trajectories from the \"from scratch\" model. The\"pre-trained\" model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "832e0bdc-ffc2-413a-9f44-8db993d87b51",
                                     "requirements": "The \"pre-trained\" baseline is fine-tuned on the Montezuma's Revenge environment using PPO with RND. The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "9e59fb14-df00-4eba-898b-dd5723cba91e",
                                     "requirements": "The \"pre-trained\" baseline is fine-tuned with behavioral cloning (BC) on the Montezuma's Revenge environment using PPO with RND. The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "a7204cbc-a0d9-413f-8964-f551b8b339f2",
                                     "requirements": "The \"pre-trained\" baseline is fine-tuned with elastic weight consolidation (EWC) on the Montezuma's Revenge environment using PPO with RND. The model is trained 5 separate times with 5 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "a65f9d0c-246e-4db6-bfa7-5bf72714be40",
@@ -1265,48 +1437,56 @@
                                     "requirements": "For the RobiticSequence environment, the \"pre-trained\" SAC model is obtained by initializing with random weights and pre-training from scratch on the last two stages in multi-task setting (peg-unplug-side and push-wall) until convergence (i.e. 100% success rate)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "68b4ae69-d78f-48b4-aa06-fae54e63d5de",
                                     "requirements": "For the RobiticSequence environment, the \"from scratch\" SAC model is obtained by initializing with random weights and pre-training from scratch on the RoboticSequence environment. The model is trained 20 separate times with 20 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "077c51ef-1a36-4e1f-b4fb-a8e689adafb6",
                                     "requirements": "The pre-trained (from scratch) model is fine-tuned on the RoboticSequence environment. The model is trained 20 separate times with 20 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "9037e949-9828-4594-b5bf-32bb82df021d",
                                     "requirements": "The pre-trained (from scratch) model is fine-tuned with behavioral cloning (BC) on the RoboticSequence environment. The model is trained 20 separate times with 20 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "a77dae72-76db-4f2e-8b12-e9bf65845d0c",
                                     "requirements": "The pre-trained (from scratch) model is fine-tuned with elastic weight consolidation (EWC) on the RoboticSequence environment. The model is trained 20 separate times with 20 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "6dd3c5b1-a5a6-4ca9-b131-57d2e4e1a236",
                                     "requirements": "The pre-trained (from scratch) model is fine-tuned with episodic memory (EM) on the RoboticSequence environment. The model is trained 20 separate times with 20 unique seeds",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "9e453a32-d69d-4c6e-9a39-35437aae1a42",
@@ -1323,45 +1503,52 @@
                                     "requirements": "The recorded metrics for the NetHack experiments in Section 4 show that the pre-trained baseline (Tuyls et al., 2023) achieves an average return around (+-1k) 4.5k",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "c6231bba-d504-491d-974d-1af400aea535",
                                     "requirements": "The recorded metrics for the NetHack experiments in Section 4 show that fine-tuning coupled with kickstarting (KS) surpasses the frozen pre-trained baseline (Tuyls et al., 2023) by the end of training, achieving an average return roughly equivalent to (+-1k) 11k",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "9c5f4433-bdae-49d6-98a2-818a0ce7d96c",
                                     "requirements": "The recorded metrics for the NetHack experiments in Section 4 show that fine-tuning coupled with kickstarting (KS) achieves the highest average return at the end of training compared to all other methods",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "1aeb1f08-19c1-42a2-b919-dfe45fdc2276",
                                     "requirements": "The recorded metrics for the NetHack experiments in Section 4 show that fine-tuning the pre-trained baseline (Tuyls et al., 2023) results in an average return of 1k by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "7516943c-f5e0-45fd-ae07-6fd5415cf9ad",
                                     "requirements": "The recorded metrics for the NetHack experiments in Section 4 show that fine-tuning coupled with behavioral cloning (BC) achieves the second highest average return at the end of training compared to all other methods",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b9a9dcfc-69cd-4bca-93f3-41e53fee223e",
                                     "requirements": "The recorded metrics for the NetHack experiments in Section 4 show that fine-tuning coupled with elastic weight consolidation (EWC) achieves an average return similar to the frozen  pre-trained baseline by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "45c909a4-75fc-4c43-94a6-9cfd055979e5",
@@ -1373,24 +1560,28 @@
                                     "requirements": "The recorded metrics for the Montezuma's Revenge experiments in Section 4 show that fine-tuning coupled with behavioural cloning (BC) achieves an average return around 6000 by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "ca63a2e9-64de-4cc1-b6b3-dbce2f6e9c95",
                                     "requirements": "The recorded metrics for the Montezuma's Revenge experiments in Section 4 show that all methods fine-tuning coupled with behavioural cloning (BC), vanilla fine-tuning, and fine-tuning coupled with elastic weight consolidation (EWC) achieve an average return higher than the pre-training from scratch baseline by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "637c9dff-84db-425f-b2c8-d039e9bfc072",
                                     "requirements": "The recorded metrics for the Montezuma's Revenge experiments in Section 4 show that the average return converges around 5e7 steps for fine-tuning coupled with elastic weight consolidation (EWC)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "9defdebd-f79f-4dc1-b5e7-335241c8d911",
@@ -1402,41 +1593,48 @@
                                     "requirements": "The recorded metrics for the RoboticSequence experiments in Section 4 show that fine-tuning coupled with behavioural cloning (BC) achieves a success rate similar to fine-tuning coupled with episodic memory (EM) by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "3413b8ea-1a06-4512-a074-d22f567b6d84",
                                     "requirements": "The recorded metrics for the RoboticSequence experiments in Section 4 show that both fine-tuning coupled with behavioural cloning (BC) and fine-tuning coupled with episodic memory (EM) achieve a success rate higher than all other methods by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b483620e-492e-4646-a088-66f65afec59e",
                                     "requirements": "The recorded metrics for the RoboticSequence experiments in Section 4 show that fine-tuning coupled with elastic weight consolidation (EWC) achieves a success rate higher than vanilla fine-tuning by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "e28e4430-9d22-4539-ab35-2a8fa9c95240",
                                     "requirements": "The recorded metrics for the RoboticSequence experiments in Section 4 show that vanilla fine-tuning achieves a success rate similar to pre-training from scratch by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 },
                                 {
                                     "id": "2bcf4f7f-f91f-404e-b558-7c63c6b6ae2b",
                                     "requirements": "The recorded metrics for the RoboticSequence experiments in Section 4 show that fine-tuning coupled with behavioural cloning (BC) achieves a success rate of around 0.8 at 1e6 steps, then plateaus at 0.8 success rate until the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "80a06d8c-2407-49b2-bdb9-c2f67b61a5d6",
@@ -1458,17 +1656,20 @@
                                             "requirements": "The recorded metrics show that fine-tuning with kickstarting (KS) is significantly more likely to visit later dungeon levels than the pre-trained policy",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "f552f42a-8ccc-42c6-9946-995584a9aee9",
                                             "requirements": "The recorded metrics show that AutoAscend is significantly more likely to visit later dungeon levels than fine-tuning with kickstarting (KS)",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "6745a623-ede4-4e25-b7c5-eb40c5e39a83",
@@ -1480,24 +1681,28 @@
                                             "requirements": "The recorded metrics for the NetHack experiments in Section 5 show that both fine-tuning coupled with kickstarting (KS) and fine-tuning coupled with behavioral cloning (BC) achieve a higher performance from Level 4 (average return from level 4) than the frozen pre-trained baseline (Tuyls et al., 2023) by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "3391c6e9-9821-4c25-98a8-c44dafe8b926",
                                             "requirements": "The recorded metrics for the NetHack experiments in Section 5 show that fine-tuning coupled with elastic weight consolidation (EWC) achieves a higher performance from Level 4 (average return from level 4) roughly equivalent to the frozen pre-trained baseline (Tuyls et al., 2023) by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "60d7694f-b063-4fee-8a87-7bba5db7db94",
                                             "requirements": "The recorded metrics for the NetHack experiments in Section 5 show that both vanilla fine-tuning and pre-training from scratch achieve a lower performance on Level 4 (average return from level 4) than the frozen pre-trained baseline (Tuyls et al., 2023) by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "cb4c8e7f-e089-4271-8b3b-a1b7f7b952e1",
@@ -1509,27 +1714,32 @@
                                             "requirements": "The recorded metrics for the NetHack experiments in Section 5 show that fine-tuning coupled with behavioral cloning (BC) achieves an average Sokoban score roughly equivalent to frozen pre-trained baseline (Tuyls et al., 2023) by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "7921c7e8-9ef7-43ec-b716-b448998cda52",
                                             "requirements": "The recorded metrics for the NetHack experiments in Section 5 show that both fine-tuning coupled with kickstarting (KS) and fine-tuning coupled with elastic weight consolidation (EWC) achieve an average Sokoban score lower than the frozen pre-trained baseline (Tuyls et al., 2023) by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "6b8bbb64-94b1-421b-87a8-a925f2727177",
                                             "requirements": "The recorded metrics for the NetHack experiments in Section 5 show that both vanilla fine-tuning and pre-training from scratch achieve an average Sokoban score roughly equivalent to 0.1 (+-0.1) by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "60b05283-f67c-43d9-961b-be268f4810df",
@@ -1541,31 +1751,36 @@
                                     "requirements": "The recorded metrics for the Montezuma's Revenge experiments in Section 4 show that vanilla fine-tuning achieves the lowest success rate in Room 7 compared to all other methods by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "c075713f-b928-4810-99c3-1e37b282c61f",
                                     "requirements": "The recorded metrics for the Montezuma's Revenge experiments in Section 4 show that the methods fine-tuning coupled with behavioural cloning (BC) and fine-tuning coupled with elastic weight consolidation (EWC) achieve a success rate in Room 7 lower or roughly equivalent to the pre-trained baseline by the end of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "91e46a34-9df9-4f0f-a355-464086e8d264",
                                     "requirements": "The recorded metrics for the Montezuma's Revenge experiments in Section 4 show that the methods fine-tuning coupled with behavioural cloning (BC) and fine-tuning coupled with elastic weight consolidation (EWC) have a fairly constant success rate in Room 7 throughout training, rarely fluctuating more than 0.75+-0.10",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b69054fc-82e8-408b-aff8-29a11c161bc3",
                                     "requirements": "The recorded metrics for the Montezuma's Revenge experiments in Section 4 show that the success rate in Room 7 of vanilla fine-tuning falls to roughly 0.55 after 2e7 steps of training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "b40dd37e-d239-4f9e-a9f7-a8ece3fdc7ef",
@@ -1582,66 +1797,76 @@
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that all training methods (apart from the pre-trained frozen baseline) achieve a success rate around or above 90% for the hammer sub-task within 1e6 steps, and maintain a success rate around or above 90% for the hammer sub-task for the remaining course of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "4870459d-7c84-4688-9167-e80f10ade926",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that all training methods (apart from the pre-trained frozen baseline) achieve a success rate around or above 80% for the push sub-task by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "9586bf60-aa4e-43f0-81da-d26753840164",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that all training methods (apart from the pre-trained frozen baseline and pre-training from scratch) learn faster than the pre-training from scratch method for the push sub-task",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "463556ff-577e-4cce-997e-040c38895134",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that the fine-tuning coupled with behavioural cloning (BC) doesn't have a success rate under 90% for the peg-unplug-side sub-task over the course of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "063cde22-1f33-4917-8a50-1efc29f9b2dd",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that the fine-tuning coupled with episodic memory (EM) achieves a success rate <20% within 1e6 steps of training for the peg-unplug-side sub-task, then the success rate increases to around or above 90% by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Logging, Analysis & Presentation"
                                         },
                                         {
                                             "id": "5f3570bd-9a40-4bd8-b5cb-ad43be18482c",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that the fine-tuning coupled with elastic weight consolidation (EWC) achieves a success rate <65% within 1e6 steps of training for the peg-unplug-side sub-task, then the success rate increases to around or above 90% by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "98f86761-deff-4bcd-bd44-09e4981986cc",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that the fine-tuning coupled with behavioural cloning (BC) doesn't have a success rate under 90% for the push-wall sub-task over the course of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "c2d77e0d-1af8-41da-8512-79fbd2386228",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that the fine-tuning coupled with episodic memory (EM) achieves a success rate <10% within 1e6 steps of training for the push-wall sub-task, then the success rate increases to around or above 85% by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "720064ae-29b7-4f28-bd99-5496e7579358",
                                             "requirements": "The recorded metrics for the RoboticSequence experiments in Section 5 show that the fine-tuning coupled with elastic weight consolidation (EWC) achieves a success rate <50% within 1e6 steps of training for the push-wall sub-task, then the success rate increases to around or above 60% by the end of training",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "ccb2f396-1ee4-4afe-8add-a108b6f4c47b",
@@ -1653,34 +1878,42 @@
                                             "requirements": "The recorded metrics show that the success rate on the \"push-wall\" task of the fine-tuned policy on RoboticSequence rapidly drops at the start of training, going to a success rate of almost 0 after 100k steps",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "cfafddf9-f5a1-4bec-bab3-c131ee9b3cf6",
                                             "requirements": "The recorded metrics show that the success rate on the \"push-wall\" task of the fine-tuned policy on RoboticSequence recovers after around 4M steps; by 4M steps the success rate is above >0.8",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "f7eb45e0-800c-4acc-92f5-7b95d6806545",
                                             "requirements": "The computed PCA projections of the fine-tuned policy on RoboticSequence demonstrates that the model forgets the initial solution and is unable to recover it",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Logging, Analysis & Presentation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

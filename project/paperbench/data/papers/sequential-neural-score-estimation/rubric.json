@@ -13,66 +13,76 @@
                     "requirements": "The Gaussian Linear task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "3a845c86-5343-4145-b38a-4f54fa8f065d",
                     "requirements": "The Gaussian Mixture task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "b0e7463b-dc2d-4a42-84c6-b59c34a0f5ac",
                     "requirements": "The Two Moons task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "636b493d-6459-4c02-9d26-e11ab99a0e43",
                     "requirements": "The Gaussian Linear Uniform task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "8ffe1960-87c2-48fb-9c6a-0e17cfe064bd",
                     "requirements": "The Bernoulli GLM task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "f6f6e39c-0759-4cd7-8efc-5d20db3b67c7",
                     "requirements": "The SLCP task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "584fceff-d6b8-406b-a605-4b1671e74659",
                     "requirements": "The SIR task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "b84bf196-46d7-4a15-b8a4-ff6a6a1e6177",
                     "requirements": "The Lotka Volterra task is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "33a68532-f8bc-45bf-9794-fc4d54a7562a",
                     "requirements": "The Neuroscience problem is available such that synthetic data can be sampled from the task",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "1dc9d70a-d0ea-47fe-acf3-a00bf9ef262b",
@@ -84,7 +94,8 @@
                     "requirements": "The forward noising process has been implemented following Section 2.2",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "acadbf21-a526-4346-a6d4-5c711da7be15",
@@ -96,45 +107,52 @@
                             "requirements": "The drift term for VESDE is defined as $f(x, t)=0$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "d6a4a408-756f-4efb-9de0-a2b39c92cb46",
                             "requirements": "The diffusion term for VESDE is defined as $g(t)=\\sigma_{min} \\cdot (\\frac{\\sigma_{min}}{\\sigma_{max}})^t \\cdot \\sqrt{2 \\log \\frac{\\sigma_{max}}{\\sigma_{min}}}$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "0d28b6c7-3fa1-47c7-8bbf-7eaafb6e9077",
                             "requirements": "The constant $\\sigma_{\\text{min}}$ for VESDE is set to 0.01 for the tasks SIR and Two Moons",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "394139bd-20d1-4bf3-b43e-b7af3507435d",
                             "requirements": "The constant $\\sigma_{\\text{min}}$ for VESDE is set to 0.05 for the tasks Gaussian Linear, Gaussian Mixture, Gaussian Linear Uniform, Bernoulli GLM, SLCP, and Lotka Volterra",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "47bbd386-53c3-41ee-8068-172ff6496c6e",
                             "requirements": "The constant $\\sigma_{\\text{max}}$ for VESDE is chosen to be as large as the maximum Euclidean distance between all pairs of training data points for the current task. For sequential methods, the training data points that are used are the training data points available in the first round",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "ee6fc1b6-ab2d-4773-ae59-fe29c9f8c39a",
                             "requirements": "The time interval used in VESDE is (0, 1]",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "b6083aac-0e45-4063-8882-75c47982bc09",
@@ -146,38 +164,44 @@
                             "requirements": "The drift term for VPSDE is defined as $f(x, t)=-\\frac{1}{2}\\beta_t\\theta_t$, where $\\beta_t = \\beta_{\\text{min}} + t(\\beta_{\\text{max}} - \\beta_{\\text{min}})$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "da121c46-2949-4214-9050-56a3d0817994",
                             "requirements": "The diffusion term for VPSDE is defined as $\\sqrt{\\beta_t}$, where $\\beta_t = \\beta_{\\text{min}} + t(\\beta_{\\text{max}} - \\beta_{\\text{min}})$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "c4621fe1-4c93-48a9-a8bb-4830b351ddd6",
                             "requirements": "The constant $\\beta_\\text{min}$ for VPSDE is set to 0.1",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "17102a8e-565c-46c6-908e-708d2ab7efc0",
                             "requirements": "The constant $\\beta_\\text{max}$ for VPSDE is set to 11.0",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "6a5e82b9-6d49-435d-9a63-c6f210154c1e",
                             "requirements": "The time interval used in VPSDE is (0, 1]",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "087ac366-8fbe-408b-b753-a1312e03f72e",
@@ -189,20 +213,24 @@
                             "requirements": "Code has been implemented for VESDE to compute the (gradients of the) transition log density",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "648352ef-2fbe-480a-bf77-acd8f89bef81",
                             "requirements": "Code has been implemented for VPSDE to compute the (gradients of the) transition log density",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "2ec0a969-5021-4bac-8fa4-60e142f8f913",
@@ -219,17 +247,20 @@
                             "requirements": "The sbibm library is used to implement Neural Posterior Estimation (NPE)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "4c097da3-7391-40b2-adee-c08ec59b0539",
                             "requirements": "Code is implemented to train Neural Posterior Estimation (NPE) using the sbibm library",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "7bea00e4-1186-4f20-8538-61d5edfd0205",
@@ -241,34 +272,40 @@
                             "requirements": "The sbibm library is used to implement Sequential Neural Posterior Estimation (SNPE)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "e73d1064-f820-4d47-ba52-e06d79b39711",
                             "requirements": "Code is implemented to train Sequential Neural Posterior Estimation (SNPE) using the sbibm library",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "02b42ffb-c304-49d2-b6f5-3cd61cd3e131",
                     "requirements": "Truncated Sequential Neural Posterior Estimation (TSNPE) is implemented using the GitHub repo https://github.com/mackelab/tsnpe_neurips",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "e7b8bc58-f9f5-45dd-b701-16bdd85c0975",
             "requirements": "C2ST has been implemented using the default implementation from `sbibm`, using default hyperparameters",
             "weight": 1,
             "sub_tasks": [],
-            "task_category": "Code Development"
+            "task_category": "Code Development",
+            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
         },
         {
             "id": "a89b7e7f-01ba-4af3-b8a8-957ed5c04a0c",
@@ -285,24 +322,28 @@
                             "requirements": "When training NPSE, for each sampled parameter from the prior $\\theta_0$, code is implemented to use the simulator to generate a corresponding observation $x$; $x \\sim p(x|theta_0)$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Data Processing & Preparation"
                         },
                         {
                             "id": "2dc54398-e427-4caf-8ae2-88f5914b59c9",
                             "requirements": "When training NPSE, for each $\\theta_0$ and corresponding observation $x$, code is implemented to simulate the forward diffusion process using an SDE to obtain $\\theta_t$ at time $t$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "da18282b-be9d-4e41-ae08-aca90181a908",
                             "requirements": "When training NPSE, code is implemented to compute the loss as a Monte Carlo estimate of $\\left\\| s_\\psi(\\theta_t, x, t) - \\nabla_{\\theta_t} \\log p_t(\\theta_t | \\theta) \\right\\|^2$, where $s_\\psi(\\theta_t, x, t)$ is the result of the score network, and $\\nabla_{\\theta_t} \\log p_{t \\mid 0}(\\theta_t \\mid \\theta_0)$ is the forward diffusion transition log density",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "dff3296e-ce27-45f0-9520-d6f2dce1796e",
@@ -314,20 +355,24 @@
                             "requirements": "When sampling using NPSE, samples are drawn from the stationary distribution $\\pi$ (unit gaussian distribution); $\\overline{\\theta}_0 \\sim \\pi(\\cdot)$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "eb61bf5c-7f24-4bb0-92eb-853205a8784c",
                             "requirements": "When sampling using NPSE, the approximation of the time-reversal of the probability flow ODE is implemented given some observation $x = x_{\\text{obs}}$, and replacing the score of the (perturbed) posterior(s) with the neural network; $\\nabla_\\theta \\log p_t(\\theta \\vert x_{\\text{obs}}) \\approx s_\\psi(\\theta_t, x_{\\text{obs}}, t)$. RK45 is used to solve the ODE",
                             "weight": 3,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "93b74a1f-992c-432e-ae4e-e8aa1703f58e",
@@ -339,7 +384,8 @@
                     "requirements": "In TSNPSE, given a total budget of $N$ simulations and $R$ rounds, the simulations are evenly distributed across rounds; the number of simulations per round $M$ is computed as $M=N/R$",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "76a5da91-52ea-4de8-a168-2510ceeb1c2d",
@@ -351,7 +397,8 @@
                             "requirements": "In TSNPSE, the initial proposal prior is equivalent to the known prior of the current task; $p(\\theta) =: p^{-0}(\\theta)$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "9565b199-225c-4141-b2be-ddc95b21366e",
@@ -363,21 +410,24 @@
                                     "requirements": "In TSNPSE, in the $r$-th round, after applying the NPSE algorithm to learn a score network, 20000 samples are simulated from the approximate posterior via (the time-reversal of) the probability flow ODE using the neural network approximation of $\\nabla_\\theta \\log p_t(\\theta \\vert x_{\\text{obs}})$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "34fde1e1-8684-48e4-8fa0-4858fa6ef3c4",
                                     "requirements": "In TSNPSE, in the $r$-th round, the (approximate) likelihood $p(\\theta \\mid x_{\\text{obs}})$ of the samples under the model is computed using the instantaneous-change-of-variables formula",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "5a98077f-3db6-462c-85de-da243375ccc9",
                                     "requirements": "In TSNPSE, in the $r$-th round, the truncation boundary is computed as the $\\epsilon = 5 \\times 10^{-4}$-th percentile of the samples from the approximate posterior. This defines the log-probability rejection threshold for rejection sampling.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "be74e9cb-0bcf-49b4-93ef-7131f7660a47",
@@ -389,68 +439,80 @@
                                             "requirements": "In TSNPSE, in the $r$-th round, when sampling from the truncated proposal prior, samples are first drawn from the prior as $\\theta \\sim p(\\theta)$.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "c70a513b-018e-4566-b5af-ab611effe4ce",
                                             "requirements": "In TSNPSE, in the $r$-th round, when sampling from the truncated proposal prior, an initial rejection step is applied to samples drawn from the prior; the samples are rejected if they do not belong to the empirical hyperrectangle defined by the approximate posterior samples. That is, the hyperrectangle defined as the Cartesian product of the one-dimensional intervals with endpoints given by the minimum and maximum of the approximate posterior samples in each dimension.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "c2e78e8a-de60-4cde-8fcc-2616f94ac186",
                                             "requirements": "In TSNPSE, in the $r$-th round, when sampling from the truncated proposal prior, following the initial rejection step, the likelihood of the samples from the prior under the approximate posterior is computed using the instantaneous change-of-variables formula.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "e17ca159-67a6-4117-8a6a-227c77ebc489",
                                             "requirements": "In TSNPSE, in the $r$-th round, when sampling from the truncated proposal prior, samples are accepted if the likelihood under the approximation posterior is greater than the truncation boundary that has been computed on the $r$-th round. Otherwise they are rejected.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "eb56d7bc-ce49-4033-94fe-a284b151e2b9",
                                             "requirements": "In TSNPSE, in the $r$-th round, when sampling from the truncated proposal prior, the previous steps are repeated until the required number of samples from the proposal prior have been obtained.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "6cf7e83a-748e-42f0-b7d7-55cb4e955f07",
                     "requirements": "In TSNPSE, in the $r$-th round, a dataset $\\mathcal{D}$ of $|M|$ samples is constructed by drawing $\\theta_i \\sim {p}^{-r-1}(\\theta)$, $x_i \\sim p(x \\mid \\theta_i)$, and adding $(\\theta_i, x_i)$ to $\\mathcal{D}$, where ${p}^{-r-1}(\\theta)$ denotes the proposal prior and $p(x|\\theta)$ denotes the simulator.",
                     "weight": 3,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "d2f135a0-7aec-4df3-93db-3be72b20057b",
                     "requirements": "In TSNPSE, in each of the rounds, given a dataset $\\mathcal{D}$ of $|M|$ samples, the NPSE algorithm is followed to learn a neural network which approximates the score(s) of the perturbed posterior(s) $\\nabla_{\\theta_t} \\log p_t(\\theta_t | x)$",
                     "weight": 3,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "2d2d46c3-6627-47eb-b42d-ef5abaefefce",
                     "requirements": "In TSNPSE, the score network computed in the final round is used as the final approximation of the scores $\\nabla_{\\theta_t} \\log p_t(\\theta_t | x)$, and can be used to generate approximate samples from the posterior, as per the standard NPSE algorithm",
                     "weight": 3,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "228f048e-45ea-41b2-9738-2c8edbab270c",
@@ -477,17 +539,20 @@
                                             "requirements": "The parameter embedding network $\\theta_t$ is a 3-layer fully-connected MLP with 256 hidden units in each layer.",
                                             "weight": 2,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "3dcddd21-9771-40b6-8fdf-0a1a23f3f945",
                                             "requirements": "The output dimension from the final layer of the parameter embedding network is determined by $\\max (30, 4 \\cdot d)$, where $d$ is the input dimension to the parameter embedding network",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "e780b355-775d-4d6d-9f4f-1e60b17614f4",
@@ -499,17 +564,20 @@
                                             "requirements": "The observation embedding network $\\x$ is a 3-layer fully-connected MLP with 256 hidden units in each layer",
                                             "weight": 2,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "a3351355-61be-411c-961d-6d7db8b397b1",
                                             "requirements": "The output dimension from the final layer of the observation embedding network is determined by $\\max (30, 4 \\cdot p)$, where $p$ is the input dimension to the observation embedding network",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "5ff0fd6e-e670-403a-bc45-9430335ec5cd",
@@ -521,17 +589,20 @@
                                             "requirements": "The sinusoidal embedding $t$ is embedded into 64 dimensions",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "f7eafffb-aea8-460c-8f4c-6fb4be964de5",
                                             "requirements": "The sinusoidal embedding $t$ is computed as follows: the $i$-th value is computed as $\\sin \\left( \\frac{t}{10000^{(i-1)/31}} \\right)$ if $i \\leq 32$, otherwise it is computed as $\\cos \\left( \\frac{t}{10000^{((i-32)-1)/31}} \\right)$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "d2a3d831-228e-40dc-9323-6c5a6633e9a1",
@@ -543,107 +614,124 @@
                                             "requirements": "The score network is a 3-layer fully-connected MLP with 256 hidden units in each layer",
                                             "weight": 2,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "cd67e43e-f1fd-4aad-9e4d-e909e2b55ec3",
                                             "requirements": "Both the output of the parameter embedding network $\\theta_t$ and output of the observation embedding network $x$ are standardized before being inputted to the score network, by subtracting an estimate of the mean and dividing by the standard deviation in each dimension. The empirical mean and empirical standard deviation of the training data is used",
                                             "weight": 2,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         },
                                         {
                                             "id": "0203c1b6-f3c2-45f9-892b-e141f1e6e5c6",
                                             "requirements": "The score network takes the concatenated input $[\\theta_{\\text{emb}}, x_{\\text{emb}}, t_{\\text{emb}}] $, i.e. the outputs of the parameter embedding network, the output of the observation embedding network, and the output of the sinusoidal embedding network concatenated together",
                                             "weight": 2,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "20d5ed76-f928-40a2-8248-3f1dbaf2102e",
                                             "requirements": "The output dimension of the score network is equal to the dimension of the parameter embedding network",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "50b24eb8-9494-4f6a-83a0-ee0b9b9f1321",
                                     "requirements": "All MLP networks use SiLU activation functions between layers",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "c1c7b1ce-bfc5-46bf-a701-78c98139bc74",
                             "requirements": "Adam is used as the optimizer to train all networks",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "e32788d4-0ee0-4542-864e-eec5a6e5b779",
                             "requirements": "A learning rate of 10^-4 is used when training all networks",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "6113057c-227b-45a4-820f-942878d80a33",
                             "requirements": "15% of each dataset is held out as a validation split. In sequential experiments, the validation split is re-computed on every round as 15% of the available simulations sampled uniformly at random",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Data Processing & Preparation"
                         },
                         {
                             "id": "3a7eaa80-8b59-4ca1-b87f-4d71d979fdce",
                             "requirements": "After each training step the loss on the validation split is computed. If this validation loss doesn't decrease for 1000 steps, then training is stopped and the network that gave the lowest validation loss is returned",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "46eb9ccc-c7eb-40c3-a34d-cc91e9e4db87",
                             "requirements": "The maximum number of training iterations is 3000",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "b69e449f-2d50-4a36-be43-b0ee00a2c1e3",
                             "requirements": "For experiments with a simulation budget of either 1000 or 10000, the batch size is 50 for non-sequential experiments (NPSE-VE, NPSE-VP, NPE)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "dc9bd609-b5f3-428d-bff9-4d56843bbe06",
                             "requirements": "For experiments with a simulation budget of either 1000 or 10000, the batch size is 200 for sequential experiments (TSNPSE-VE, TSNPSE-VP, SNPE, TSNPE)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "7f97ba49-e042-4a5b-af23-48e1df11ae8a",
                             "requirements": "For simulation budgets of 100000 the batch size is 500 for all tasks",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "ac2ef197-1e19-4e8b-9f2e-7a218dc7484e",
                             "requirements": "When computing the C2ST score, 10000 samples from both the true posterior and the approximate posterior are used",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "3da1c67c-162a-4594-8361-bcd56fa18909",
@@ -660,17 +748,20 @@
                                     "requirements": "For each simulation budget 10^3, 10^4, 10^5, all non-sequential methods (NPSE-VE, NPSE-VP, NPE) have been trained on all tasks and evaluated using C2ST",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "3edc4750-98e6-4214-836c-8bba322e3000",
                                     "requirements": "For each simulation budget 10^3, 10^4, 10^5, all sequential methods (TSNPSE-VE, TSNPSE-VP, SNPE, TSNPE) have been trained for 10 rounds on all tasks and evaluated using C2ST",
                                     "weight": 3,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "ce7c8199-419c-4664-8a49-b5921be163e0",
@@ -687,80 +778,92 @@
                                             "requirements": "The recorded metrics show that, for the Lotka Volterra task, all methods NPSE-VE, NPSE-VP, and NPE achieve similar results to one-another (within +- 0.15 C2ST)",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "e5ea6fe2-b69c-410c-a0ba-09df2dad95f9",
                                             "requirements": "The recorded metrics show that, for the SLCP task, the methods NPSE-VE and NPSE-VP achieve roughly equivalent C2ST scores",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "089460fd-533f-46c4-a148-1f9084898704",
                                             "requirements": "The recorded metrics show that, for the SLCP task, the methods NPSE-VE and NPSE-VP both achieve lower C2ST scores than NPE",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "26b43594-7ddb-41d4-8846-a2908f9a0ab8",
                                             "requirements": "The recorded metrics show that, for the Gaussian Linear Uniform task, NPE achieves a lower C2ST score than both methods NPSE-VE and NPSE-VP",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "54cccd02-52ae-44d0-9ad7-a2a7c12ae49c",
                                             "requirements": "The recorded metrics show that, for the Gaussian Linear Uniform task, the methods NPSE-VE and NPSE-VP achieve roughly equivalent C2ST scores",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "f4adb128-d3ee-47e9-bae3-c609ae8fc041",
                                             "requirements": "The recorded metrics show that, for the Bernoulli GLM task, all methods NPSE-VE, NPSE-VP, and NPE achieve roughly equivalent C2ST scores",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "9a4dbff1-55f9-4498-8e83-c84e3f831d6f",
                                             "requirements": "The recorded metrics show that, for the SIR task, NPE achieves a lower C2ST score than NPSE-VP",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "b40d156e-54a4-4102-855a-e797b9fad75b",
                                             "requirements": "The recorded metrics show that, for the Two Moons task, NPE achieves a lower C2ST score than NPSE-VP",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "0e6a12ee-fae2-48b6-8c57-05e7fef83a44",
                                             "requirements": "The recorded metrics show that, for the Gaussian Mixture task, NPE and NPSE-VE achieve roughly equivalent C2ST scores",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "54e2553a-4f34-4c43-ab47-d83cb1d00e94",
                                             "requirements": "The recorded metrics show that, for the Gaussian Mixture task, both NPE and NPSE-VE achieve lower C2ST scores than NPSE-VP",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "d560a5b0-9324-4b25-bb31-d9dcf2fd90d6",
                                             "requirements": "The recorded metrics show that, for the Gaussian Linear task, all methods NPSE-VE, NPSE-VP, and NPE achieve roughly equivalent C2ST scores",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "f5edd76d-d09d-4693-b8ca-db45bfc31213",
@@ -772,51 +875,60 @@
                                             "requirements": "The recorded metrics show that, for the tasks SLCP, Lotka Volterra, and Bernoulli GLM, TSNPSE-VE and TSNPSE-VP achieves a lower or roughly equivalent C2ST score than both SNPE and TSNPE",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "9176d64d-5d35-444c-be41-99cb2d4ccb74",
                                             "requirements": "The recorded metrics show that, for the Gaussian Linear task, TSNPSE-VE and TSNPSE-VP achieve a lower or roughly equivalent C2ST score compared to TSNPE",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "5cb794a0-9d35-4010-8f73-5c06f7d6d836",
                                             "requirements": "The recorded metrics show that, for the tasks Gaussian Linear Uniform, Bernoulli GLM, SIR, Two Moons, Gaussian Mixture, and Gaussian Linear, TSNPSE-VE achieves an equivalent or higher C2ST score compared to SNPE",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "e4090d0e-af0b-42e0-87e3-e02c002e3697",
                                             "requirements": "The recorded metrics show that, for the tasks Gaussian Linear Uniform, Bernoulli GLM, SIR, Two Moons, Gaussian Mixture, and Gaussian Linear, TSNPSE-VP achieves an equivalent or higher C2ST score compared to SNPE",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "4da588d3-ed23-4938-ae45-6f3330b145b9",
                                             "requirements": "The recorded metrics show that, for the tasks Gaussian Linear Uniform, SIR, Two Moons, and Gaussian Mixture, TSNPSE-VE achieves an equivalent or higher C2ST score compared to TSNPE",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "1e34fed1-7c74-4eb5-a590-759ab003563c",
                                             "requirements": "The recorded metrics show that, for the tasks Gaussian Linear Uniform, Bernoulli GLM, SIR, Two Moons, Gaussian Mixture, and Gaussian Linear, TSNPSE-VP achieves an equivalent or higher C2ST score compared to TSNPE",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "8831cd0d-fa1f-44e4-995c-d459e6649d61",
@@ -833,24 +945,28 @@
                                     "requirements": "SNPSE-VP is trained with inference over 9 rounds, with 30000 initial simulations and 20000 added simulations in each round",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "db05a3d3-1026-4576-b4de-3a188c567ec8",
                                     "requirements": "The percentage of valid summary statistics from each method is computed after each round, where an invalid summary statistic is when the Pyloric simulator returns a `NaN` (in one or more of the output dimensions)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "13c6dc3c-1578-48a4-9cc9-399a61cd22f2",
                                     "requirements": "A posterior mean-predictive sample is computed at the end of the final round, by first computing the mean of the approximate posterior samples, then acquiring a simulation",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "e9e9b23c-238f-417c-a022-ef1ae5b7c2ed",
@@ -862,31 +978,38 @@
                                     "requirements": "The recorded metrics show that, in the final round, SNPSE-VP achieves about 80% valid summary statistics",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "3fb824b3-9455-4ad1-a8ec-31af2dffad76",
                                     "requirements": "The recorded metrics show that SNPSE-VP has a higher percentage of valid summary statistics for all simulation budgets less than 200*10^3 compared to TSNPE and SNVI",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "445ce9cf-4bb6-40fc-b6d4-c96e32698ddc",
                                     "requirements": "The recorded metrics for the results in Section 5.3 show that, the obtained posterior produces samples which closely match the observed data",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

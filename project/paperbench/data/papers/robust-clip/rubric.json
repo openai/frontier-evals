@@ -18,55 +18,64 @@
                             "requirements": "Code has been implemented such that LLaVA-1.5 7B can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "00dc942f-0d35-4fe2-8ff7-7bf11c391f3a",
                             "requirements": "LLaVA-1.5 7B is set up to use the OpenAI CLIP ViT-L/14@224 vision encoder (rather than the default ViT-L/14@336).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "fb356827-4d60-4dfb-b881-5616c17c2368",
                             "requirements": "Code has been implemented such that OpenFlamingo 9B can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "9b0dfbb6-18c7-4e80-98b2-0516dbc75f45",
                             "requirements": "The code has been modified as needed to allow LLaVA to work with OpenCLIP CLIP implementation instead of the Huggingface implementation.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "fbc512b3-ce82-4701-8577-6f9fb109772c",
                     "requirements": "Code has been implemented such that OpenAI's ViT-L/14 visual encoder can be loaded into memory",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "fbc512b3-ce82-4701-8577-6f9fb109772d",
                     "requirements": "Code has been implemented such that OpenAI's ViT-L/14 text encoder can be loaded into memory",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "53ac73ee-e2ed-4f74-93d2-efde644d2f2a",
                     "requirements": "The visual encoder is properly isolated from the text encoder, ensuring that only the visual encoder weights are updated during fine-tuning while the text encoder weights remain frozen.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "a424f5e8-fb8b-4fab-b9a5-49bcca768591",
@@ -83,31 +92,36 @@
                             "requirements": "There is gradient normalization with elementwise sign for l_infinity.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "6f59a8d7-1429-41de-97c7-314f35331a1f",
                             "requirements": "There is a momentum factor of 0.9.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "625d35e7-1b52-4309-a7c8-d08e966fc43c",
                             "requirements": "There is an initialization with uniform random perturbation.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "ea973e69-e246-4abe-a554-f144c7e530ea",
                             "requirements": "An l_{infinity} ball is computed around non-normalized inputs.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "097dbd33-7148-420d-aa8c-c966ed143a10",
@@ -119,14 +133,16 @@
                             "requirements": "Given an input x and text prompts t_1, ..., t_k, the ith logit of the classifieris computed as the cosine similarity of output of the image encoder on x and the output of the text encoder on t_i.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "2339b2a9-cf8b-462d-ba57-65b7a1ae2098",
                             "requirements": "Given a label y, the loss is correctly computed as the cross-entropy loss as in equation 1 of section 3.2.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "3dbf8f03-1352-4112-8f53-327cdeee77e9",
@@ -138,34 +154,40 @@
                                     "requirements": "For each training sample x_i, the worst-case perturbed sample z_i is found using PGD by maximizing the cross-entropy loss against label y_i within an l_{infinity} ball of radius epsilon around x_i, where x_i is the non-normalized input.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "04a3d883-480f-4d1b-88c0-67c117a6277b",
                                     "requirements": "The cross-entropy loss is computed for each z_i against its corresponding label y_i.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "f8574d37-0507-44e3-b59e-0a794c6e7601",
                                     "requirements": "For each batch, the loss is computed by summing these individual losses over all samples in a batch from the training set and taking their mean.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "7b03775b-fb66-4ffe-a09b-e3ea320e4363",
                                     "requirements": "The model parameters are updated using gradient descent on this loss.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "f812cf2f-9570-47f5-a93d-82f223119afc",
@@ -177,17 +199,20 @@
                             "requirements": "Given an image encoder phi, image x and constant epsilon, the loss is the max of ||phi(z) - phi_{Org}(x)||_2^2 over perturbations z of image x satisfying ||z - x||_{\\infty} \\leq epsilon, where phi(z) and phi_{Org}(x) are the (non-normalized) feature embeddings produced by the fine-tuned and original CLIP vision encoders respectively, as in equation 3. Here, phi_{Org}(x) is frozen.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "044b6a7f-aac8-4a69-a9e6-ddd41193df85",
                             "requirements": "The loss is summed over the samples in a batch, and their mean is taken.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "b4e2271d-0cca-479b-8d30-cea8be44b0bf",
@@ -199,35 +224,40 @@
                             "requirements": "The ImageNet dataset is imported.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "2ae96f37-e6b0-4162-9e16-a61d193bc8b5",
                             "requirements": "ImageNet images are used at resolution 224x224.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Data Processing & Preparation"
                         },
                         {
                             "id": "c20fed83-21ae-45a5-ab9d-22f5f808cab6",
                             "requirements": "For each model, training is done for two epochs on the ImageNet dataset.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "39905299-5a1d-4ef5-9ce7-83b08fff294c",
                             "requirements": "All robust models use 10 steps of PGD.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "db6842ed-8431-4afa-8f0a-ca6f23c87481",
                             "requirements": "All robust models are trained with l_{infinity} radius of either 4/255 or 2/255 with step size set to 1/255.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "24ad9995-f2a1-4a77-b71b-2fa913048e1e",
@@ -239,37 +269,44 @@
                                     "requirements": "AdamW optimizer is used with momentum coefficients beta_1 = 0.9 and beta_2 = 0.95.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "61f6d477-295f-449c-a683-fbd792cba564",
                                     "requirements": "The learning rate is implemented with cosine decay schedule and linear warmup to a peak learning rate of 1e-5 at 7% of total training steps.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "6a930f99-32a5-4784-8c27-cd41843121c9",
                                     "requirements": "The weight decay coefficient is set to 1e-4.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "0e405780-5eaf-4f6d-9c83-aea7c42e93f8",
                                     "requirements": "An effective batch size of 128 is used.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "381e5a29-1ea3-40f5-a4ab-21cc98958284",
@@ -286,17 +323,20 @@
                             "requirements": "The image captioning datasets COCO 2014 and Flickr30K have been imported.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "852ce44e-697d-4379-b732-0be1bfa8a457",
                             "requirements": "The visual question answering datasets VQAv2 and TextVQA have been imported.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "e20c9d60-8a2b-447d-9d6c-176cab3a5f67",
@@ -308,31 +348,36 @@
                             "requirements": "For each dataset, 500 samples are used for adversarial evaluations.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "53203b37-8b33-4ca1-b16c-f7da228fca34",
                             "requirements": "All the samples are used for clean evaluations.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "7cfd21a3-4227-40e4-862e-ae34fca73ff0",
                             "requirements": "The CIDEr score is used for image captioning, and is correctly implemented.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "3629342c-a8ca-447d-8950-ea5ddf16521d",
                             "requirements": "VQA accuracy is used for visual question answering, and is correctly implemented.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "3426ac50-7e18-4cd9-a667-f7c10b8477d0",
@@ -344,7 +389,8 @@
                             "requirements": "The APGD algorithm from Croce & Hein 2020 has been correctly implemented / imported at single precision and half precision, with an initial step-size of epsilon.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "26eaf2df-5cc9-4fd5-8ef0-0917725fb9c8",
@@ -356,7 +402,8 @@
                                     "requirements": "APGD at half precision was run for 100 iterations for each of the five ground-truth labels for each image, maximizing the autoregressive cross-entropy loss with respect to the ground-truth captions.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "e48a8794-d28c-49ca-a324-ea0a8afaf17b",
@@ -368,41 +415,48 @@
                                             "requirements": "CIDEr scores are calculated after each attack on every sample.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "14d3767b-326c-4617-a9a5-3760c2317cc2",
                                             "requirements": "For each sample, the lowest CIDEr score across all ground-truth captions is identified and stored.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "daefe337-8286-4a54-8b93-ef52fd7a79dc",
                                             "requirements": "The ground-truth caption and corresponding adversarial perturbation that produced the lowest score are saved for use in subsequent single-precision attacks",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Logging, Analysis & Presentation"
                                         },
                                         {
                                             "id": "b8a21c35-d5e2-4647-a4ca-2f2acb9b80a7",
                                             "requirements": "Scores are computed using the standard CIDEr metric implementation following Vedantam et al. 2015",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "ed00f7ca-e5ef-426b-92ec-44865dd26c40",
                                     "requirements": "For the COCO samples with score at least 10, and for the Flickr30k samples with score at least 2, an additional single precision attack is made (with the perturbation initialized with the best perturbation for each sample from the previous attacks), using the ground-truth that led to the lowest score for each sample.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "c43e1d66-4e91-450e-8ecb-bfcd09a43d31",
@@ -414,7 +468,8 @@
                                     "requirements": "APGD at half precision was run for 100 iterations for each of the five most frequent ground-truth labels (among the 10 available ground-truths), maximizing the autoregressive cross-entropy loss with respect to the ground-truth answers.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "a85d9d0b-b3fd-4f74-8e81-6aaa7b052e06",
@@ -426,58 +481,68 @@
                                             "requirements": "VQA accuracy scores are calculated after each attack on every sample.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "d799c493-f264-4ab2-ab4f-ca5999b418cf",
                                             "requirements": "For each sample, the lowest VQA accuracy score across all ground-truth answers is identified and stored.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "b406d554-56fd-4444-be4d-c0e6581d490f",
                                             "requirements": "The ground-truth answer and corresponding adversarial perturbation that produced the lowest score are saved for use in subsequent single-precision attacks",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Logging, Analysis & Presentation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "782f24ee-c3fc-41ca-b156-9538af47b8d4",
                                     "requirements": "The VQA accuracy scores have been computed for all the samples.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "869f880d-fcb4-466e-8178-1b3e2c3b8377",
                                     "requirements": "For all samples, an additional single precision attack is made, using the ground-truth that led to the lowest score for each sample. The single precision attack also initializes perturbations with the perturbation of the previous attacks that led to the lowest score for each sample",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "74b14f74-2275-4476-8078-ddbabfb94301",
                                     "requirements": "A targeted attack with \"maybe\" and a targeted attack with \"Word\" are run on the most frequent ground truth sample, by minimizing the loss with respect to the target string.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "2bbf067d-71b0-42f7-a239-6c902509fbb7",
                                     "requirements": "The targeted attack with \"Word\" is not run on TextVQA.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "1644cf71-b7a1-47df-8f1a-4f6a760fc25e",
@@ -494,24 +559,28 @@
                                     "requirements": "The CIDEr score has been computed and displayed for all five encoders for OF and LLaVA on image captioning, for all the image captioning datasets (COCO and Flickr3k) on clean images, adversarial images with epsilon = 2 / 225, and adversarial images with epsilon = 4 / 255.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "d75c44fa-05a8-42cc-8365-cd2e408c790c",
                                     "requirements": "The VQA accuracy score has been computed and displayed for all five encoders for OF and LLaVA on image captioning, for all the VQA datasets (TextVQA and VQAv2) on clean images, adversarial images with epsilon = 2 / 225, and adversarial images with epsilon = 4 / 255.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "a4627f29-a2bd-4308-a579-2c98434f23a5",
                                     "requirements": "For each (vision encoder, VLM) pair, for each type of attack (clean, epsilon = 2/255, epsilon = 4/255), the average over the metrics has been computed and reported.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d97cbf7e-ef61-41f0-883e-a15c4c315cfb",
@@ -523,55 +592,64 @@
                                     "requirements": "The original CLIP encoder attains the best performance on clean data.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "9c9ab5f4-6b97-4d46-bf1f-39e10443a7cc",
                                     "requirements": "The original CLIP encoder has very low scores on perturbed data.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "c5d0da9e-8be9-4182-a719-0b5160dbde51",
                             "requirements": "Compared to TeCoA, FARE overall has better clean performance and better robust performance.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "e9452862-044f-4cda-8232-725b4b972d24",
                             "requirements": "For LLaVA, FARE^4 outperforms TeCoA^2 and TeCoA^4 in all datasets in clean examples and in most datasets on perturbed examples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "8d0f5f86-b66b-4f1e-98cc-657ed45362cd",
                             "requirements": "In LLaVA, FARE^2 has a higher clean performance on average than FARE^4, but a lower performance on average on datasets with pertubed examples at both epsilon = 2 / 255 and epsilon = 4 / 255.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "068a0e17-5b57-4ab6-9eca-9d0a09bb2fc3",
                             "requirements": "In OF, FARE4 is rivalled in clean performance by TeCoA^2 only on VQAv2, with a negligible performance gap.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "29a35cf2-5e44-40c3-8c6d-6be949e0a7f1",
                             "requirements": "FARE^2 demonstrates higher clean performance and the best overall robustness at epsilon = 2/255.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "ad14fccb-7270-44bb-9355-d9757f95be51",
@@ -583,34 +661,40 @@
                             "requirements": "The adversarial COCO images previously generated at epsilon = 4/255 against OF-CLIP and LLaVA-CLIP in Section 4.1 are prepared for transfer attack evaluation.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Data Processing & Preparation"
                         },
                         {
                             "id": "29b2389a-1f5e-4121-a8a4-a7444154c41a",
                             "requirements": "OF and LLaVA with the five image encoders are evaluated on the above adversarial examples, and a table of the CIDEr scores is plotted, as in Table 2.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "de583bc3-1579-49bd-be27-f1458b1bc08e",
                             "requirements": "As in section 4.1, the attacks transfer well between OF and LLaVA for standard CLIP.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "1aa7adf7-a05b-4262-8a7c-bbae900b2cdf",
                             "requirements": "As in section 4.1, the attacks do not transfer well between OF and LLaVA for robust versions of CLIP.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "573bef89-f353-43d6-b965-2b744114df97",
@@ -627,17 +711,20 @@
                             "requirements": "APGD has been implemented to run for 10000 iterations for epsilon = 2/255 and 4/255, minimizing the autoregressive cross-entropy loss with respect to the target string.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "a83bea8b-7ef5-4fd6-922c-9895aeb17f89",
                             "requirements": "An attack is defined to be successful if the target string is contained exactly in the output of the model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "0d7ed7b6-f05d-45ed-b6c5-ddadd3857980",
@@ -649,7 +736,8 @@
                             "requirements": "Images are gathered for all the six target captions from Appendix B.8.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "680294a2-7736-4827-9f98-84e1ef1fe6e8",
@@ -661,24 +749,28 @@
                                     "requirements": "For captions 1 - 5, 25 images are randomly sampled from COCO.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "15a1c1e5-75c1-4f7b-8e18-44a83ae597c6",
                                     "requirements": "For caption 6, some certain 25 handpicked images from a stock website are used.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "a9e3bff9-b22f-420c-a9aa-3c42fba552c3",
                             "requirements": "The total number of successful attacks (out of 25) is reported, for each (target, epsilon, encoder) tuple.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "eaf6dadd-fe9d-434f-8b31-feb89d00c1e6",
@@ -690,41 +782,48 @@
                                     "requirements": "The original CLIP is vulnerable to all the attacks, and the robust CLIP never breaks for epsilon = 2/255.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b9ac88d4-ba17-4aaa-b42b-160048f187f4",
                                     "requirements": "When using TeCOA, the attack is not successful in generating the target string, but does produce captions of lower quality.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "04b35fad-ee3d-4703-93ae-726e882dbbd8",
                                     "requirements": "FARE is robust to attacks, and also produces good captions.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "06886772-d5a3-4488-bc67-ebe3fef3cfac",
                                     "requirements": "In the epsilon = 4 / 255 threat model, FARE^2 and TeCoA^2 only break in a few cases.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "dfe2f5b3-7f50-4d9a-8d2c-95b1fde9a688",
                                     "requirements": "FARE^4 and TeCoA^4 are completely robust against all the attacks.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "57cc9806-065f-41d0-9669-e2023aa0cd9f",
@@ -736,20 +835,24 @@
                             "requirements": "The adversarial image has been perturbed by epsilon = 4 / 255.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "3df2d801-4f72-4057-95d4-c0baac452445",
                             "requirements": "The quality and accuracy of text increase in order of CLIP, TeCoA, and FARE, as in Figures 1 and 3.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "f851f514-d4e0-4889-a562-90f0cc1da649",
@@ -761,14 +864,16 @@
                     "requirements": "Imagenet, as well as the 13 zero-shot datasets listed in Appendix B.10, have been successfully imported.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Dataset and Model Acquisition"
                 },
                 {
                     "id": "5b330a3b-ab8e-4e7d-b3ff-e6447ec69e5f",
                     "requirements": "In each dataset, for each class, the text embedding is created by averaging the output of the text encoder on all the prompt templates for the class.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "df5f9183-4f15-4d5c-ab5a-be925f7dc60c",
@@ -780,17 +885,20 @@
                             "requirements": "The first two attacks of AutoAttack are implemented, with the correct types, as explained in the attack setup from section 4.3.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "5a705380-610d-4cad-8471-0fcfc1cc711b",
                             "requirements": "The adversarial attacks are performed on all versions of CLIP using the corresponding loss types from AutoAttack. The logits are taken from the cosine similarities described in Section 3.1.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "b8e9d20a-1c5e-40e7-9f58-f481059edab7",
@@ -802,14 +910,16 @@
                             "requirements": "The zero-shot accuracy is computed for clean data, and perturbed data (for epsilon = 2/255 and 4/255 separately) for CLIP with all five image encoders.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "d66c762d-da5e-4332-967d-58676f70fab8",
                             "requirements": "The above zero-shot accuracies are reported.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "7faf873c-35e1-40dc-af42-461d7a448647",
@@ -826,17 +936,20 @@
                                             "requirements": "TeCoA is more accurate than the others on clean images.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "6b94a3c5-8134-4fed-98c3-346fd9b5d646",
                                             "requirements": "TeCoA is more accurate than the others on perturbed images.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "268bd8d8-b8e5-42f8-9331-031919976b66",
@@ -848,47 +961,56 @@
                                             "requirements": "The original CLIP model has the best performance on clean data.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "cadff81a-3a9b-4898-a286-006e745f6ff6",
                                             "requirements": "The TeCoA models perform significantly worse than the original CLIP model on clean data.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "d3c609f1-b6d8-4696-a720-4091ed60702d",
                                             "requirements": "FARE has much better clean accuracy than TeCoA.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "dc3ed8eb-3b4e-4b04-a6a8-6fd2a5f0e416",
                                             "requirements": "The original CLIP has accuracy close to zero on perturbed data.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "cea15ca3-43dd-4c30-b6df-bee5cef1abfe",
                                             "requirements": "FARE^4 outperforms TeCoA^2 and TeCoA^4 on perturbed data.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "40d07526-8c86-4f51-a49e-20ea2a237b45",
@@ -905,31 +1027,36 @@
                             "requirements": "The POPE benchmark has been implemented correctly.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "46a0e1f5-60c5-4fe7-b648-3e10df19bbb3",
                             "requirements": "The POPE scores (Adversarial, Popular, and Random) have been calculated for the five visual encoders with LLaVA.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "58c0a841-bb93-4d48-8e35-3add13851733",
                             "requirements": "The above POPE scores have been reported along with their mean, in a format comparable to Table 5.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "a264d096-4531-4f98-8c47-c65fb56c34db",
                             "requirements": "The trends in section 4.4, including the good performance of CLIP (with FARE not too much worse), and the poor performance of TeCoA, hold.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "f1b26f09-28e4-41f1-80e6-6f838d0d8c63",
@@ -941,14 +1068,16 @@
                             "requirements": "The SQA-I benchmark has been correctly implemented.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "903b64f8-4006-483f-9022-380aee0a7a39",
                             "requirements": "The SQA-I scores are reported for LLaVA with the five visual encoders.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "8cd52eca-c364-4a67-a3ac-8209566abe50",
@@ -960,20 +1089,24 @@
                                     "requirements": "FARE and CLIP have comparable scores in the SQA-I benchmark.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "292f770f-491f-44ef-8c1e-2aa4f865d7e8",
                                     "requirements": "There is a drop in the score for TeCOA of SQA-I, when compared with FARE and CLIP.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "8223df60-b383-4a9d-937a-a38c15d2f00c",
@@ -985,42 +1118,48 @@
                             "requirements": "A single image is prepared for the jailbreaking attacks to be run on.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Data Processing & Preparation"
                         },
                         {
                             "id": "451efc49-3524-4ee5-9780-ee6d1025fddb",
                             "requirements": "The jailbreaking attacks and prompts are implemented correctly.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "e5ee8d92-8996-4ec9-979b-d04aae3abe10",
                             "requirements": "The jailbreaking attacks are set to have the following parameters: 5000 iterations and alpha = 1/255.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "ffc8deff-04b6-4d37-a576-cf904d87b7e5",
                             "requirements": "Jailbreaking attacks are run on LLaVA with CLIP, FARE^4, and TeCoA^4 with epsilon = 0, 16/255, and 32/255, and 64/255 on harmful target strings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "12e6fef6-e3d4-48a7-9696-9baf21bc5d03",
                             "requirements": "The attacked models are all evaluated on the suite of prompts.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "e6459598-9f4e-40ac-a8cc-65fc0026488a",
                             "requirements": "The number of passed prompts is reported for categories any, identity, disinfo, crime, x-risk, in a format comparable to Table 7.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "2b2ed403-e025-4b0f-b9ad-b45278f6540e",
@@ -1032,31 +1171,38 @@
                                     "requirements": "FARE and TECOA are effective even at higher radii than what they were trained at.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b22a53f6-c8b0-4751-897e-0d351b4eecf1",
                                     "requirements": "FARE and TeCoA defend against significantly more attacks than CLIP.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "991b408d-491d-486d-8f31-f086da23d2a1",
                                     "requirements": "FARE and TeCoA are roughly equally effective for all the values of epsilon in Table 7.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

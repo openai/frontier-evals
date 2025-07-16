@@ -13,80 +13,92 @@
                     "requirements": "Code has been written to train a binary classifier to predict whether an input $x_t$ originates from the source domain or target domain.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "5d7eb9db-5d5a-47d0-a5ee-991ab9327103894398",
                     "requirements": "A binary classifier has been trained to predict whether an input $x_t$ originates from the source domain or target domain.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "44e8d794-412f-4b59-931d-c4076a73231a",
                     "requirements": "The adaptor module from Noguchi & Harada, 2019 has been implemented.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "5acc0f6c-9b8a-496d-beb1-5ca89a44f5a353533",
                     "requirements": "Code has been written to select training samples from the target dataset, a time-step selected randomly, and standard Gaussian noise for each sample.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 },
                 {
                     "id": "5acc0f6c-9b8a-496d-beb1-5ca89a44f5a3",
                     "requirements": "Training samples are drawn from the target dataset, each paired with a randomly selected timestep and standard Gaussian noise.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "1209cc8c-40e9-46c9-9b00-ae2a0c133f34343ffb",
                     "requirements": "Code has been written to compute the adaptive inner maximum as defined in Equation 7.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "1209cc8c-40e9-46c9-9b00-ae2a0c133ffb",
                     "requirements": "The adaptive inner maximum has been computed as defined in Equation 7.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "492163d6-6e41-46e9-a9b6-1ef49061d81d",
                     "requirements": "Code has been written to compute the similarity guided loss as defined in Equation 5.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "492163d6-6e41-46e9-a9b6-1ef49061d84234f1d",
                     "requirements": "The similarity guided loss has been computed as defined in Equation 5.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "34cb106d-4b83-4bbd-a1fd-29cba4c26f3gw3rw3d94",
                     "requirements": "Code has been written to update the adaptor module parameters via gradient descent with similarity-guided loss and adversarial noise as the objective. The objective function is defined in Equation 8.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "34cb106d-4b83-4bbd-a1fd-29cba4c26d94",
                     "requirements": "The adaptor module parameters are updated via gradient descent with similarity-guided loss and adversarial noise as the objective. The objective function is defined in Equation 8.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Method Implementation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "fba2b11d-cf4f-47a0-bcd8-456d9f571a00",
@@ -103,87 +115,100 @@
                             "requirements": "Code has been written to fine-tune a pre-trained LDM in the shift module of the U-net. The pre-trained DPM and autoencoders in LDM are kept fixed.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "3b484d81-4352-4eea-a568-da927824c9e9",
                             "requirements": "A pre-trained LDM has been fine-tuned in the shift module of the U-net. The pre-trained DPM and autoencoders in LDM are kept fixed.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "3282140d-e00b-45a1-9e14-cb2638632423494fa8",
                             "requirements": "Code has been written to initialize the parameters of the adapter layer to zero.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "3282140d-e00b-45a1-9e14-cb2638694fa8",
                             "requirements": "The parameters of the adapter layer are initialized to zero.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "b41c12f5-f27e-433a-bbd3-66b1c343fwf3eedc097",
                             "requirements": "Code has been written to set the hyper-parameter gamma for similarity-guided training to 5.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "b41c12f5-f27e-433a-bbd3-66b1ceedc097",
                             "requirements": "The hyper-parameter gamma for similarity-guided training is set to 5.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "44de168e-4f56-4c7d-800f-16dda3432r3c66a289",
                             "requirements": "Code has been written to fine-tune a pre-trained model on ImageNet with a binary classifier head on 10 target domain images.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "44de168e-4f56-4c7d-800f-16ddac66a289",
                             "requirements": "A pre-trained model on ImageNet is fine-tuned with a binary classifier head on 10 target domain images.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "00c640f9-2865-4d4d-ab62-d381e5763423415b3",
                             "requirements": "Code has been written to set the hyperparameters $J$ and $\\omega$ to 10 and 0.02, respectively, for adversarial noise selection.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "00c640f9-2865-4d4d-ab62-d381e57615b3",
                             "requirements": "The hyperparameters $J$ and $\\omega$ are set to 10 and 0.02, respectively, for adversarial noise selection.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
-                        },
-                        {
-                            "id": "d96e73af-6bc0-405d-bebf-0730dca61911",
-                            "requirements": "Code has been written to set the learning rate to 0.00005 for DDPM and 0.00001 for LDM. Both models are trained for 300 iterations and a batch size of 40.",
-                            "weight": 1,
-                            "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "d96e73af-6bc0-405d-bebf-0730dca61911",
                             "requirements": "The learning rate is set to 0.00005 for DDPM and 0.00001 for LDM. Both models are trained for 300 iterations and a batch size of 40.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
+                        },
+                        {
+                            "id": "d96e73af-6bc0-405d-bebf-0730dca61911",
+                            "requirements": "The learning rate is set to 0.00005 for DDPM and 0.00001 for LDM. Both models are trained for 300 iterations and a batch size of 40.",
+                            "weight": 1,
+                            "sub_tasks": [],
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "ee09fd31-4bd7-4c61-b9d4-4a459fe88dba",
@@ -200,55 +225,64 @@
                                     "requirements": "Code has been written to generate 1,000 images from the models.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "bb0a98fa-568e-452e-a51f-9a027214251a",
                                     "requirements": "1,000 images have been generated from the models.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 },
                                 {
                                     "id": "57dc269b-20f0-445f-831f-8463079f3423r23be26",
                                     "requirements": "Code has been written to assign each image to the training sample with the smallest LPIPS distance.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "57dc269b-20f0-445f-831f-8463079fbe26",
                                     "requirements": "Each image has been assigned to the training sample with the smallest LPIPS distance.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
-                                },
-                                {
-                                    "id": "2a3fc09c-ad26-4374-8892-28173fc8d669",
-                                    "requirements": "Code has been written to compute the average pair-wise distance within each cluster, as well as the average score from each cluster.",
-                                    "weight": 1,
-                                    "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "2a3fc09c-ad26-4374-8892-28173fc8d669",
                                     "requirements": "The average pair-wise distance within each cluster has computed. The average score from each cluster has been calculated as Intra-LPIPS metric.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
+                                },
+                                {
+                                    "id": "2a3fc09c-ad26-4374-8892-28173fc8d669",
+                                    "requirements": "The average pair-wise distance within each cluster has computed. The average score from each cluster has been calculated as Intra-LPIPS metric.",
+                                    "weight": 1,
+                                    "sub_tasks": [],
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "9dc4e2e6-838a-4348-892a-a9592ceb55a1",
                             "requirements": "The FID metric has been implemented.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "3391773b-c60b-4ee0-a727-c7761a68f1e8",
@@ -260,31 +294,36 @@
                             "requirements": "Code has been written to load Babies, Sunglasses, Raphael Peale, Sketches, and face paintings from the dataset FFHQ.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "cfa8eaba-9c8d-4cc4-8797-ea27404328c3",
                             "requirements": "Babies, Sunglasses, Raphael Peale, Sketches, and face paintings have been loaded from the dataset FFHQ.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
-                        },
-                        {
-                            "id": "a40709b6-f522-45cb-b9c4-f05ef341b7f4",
-                            "requirements": "Code has been written to load the Haunted Houses and Landscape drawings from the LSUN dataset.",
-                            "weight": 1,
-                            "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "a40709b6-f522-45cb-b9c4-f05ef341b7f4",
                             "requirements": "Haunted Houses and Landscape drawings have been loaded from the LSUN dataset.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
+                        },
+                        {
+                            "id": "a40709b6-f522-45cb-b9c4-f05ef341b7f4",
+                            "requirements": "Haunted Houses and Landscape drawings have been loaded from the LSUN dataset.",
+                            "weight": 1,
+                            "sub_tasks": [],
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "c350894a-3d86-411d-b3d2-0bba4c5036b4",
@@ -296,48 +335,56 @@
                             "requirements": "TGAN has been implemented by adapting the StyleGAN2 codebase.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "1a32ffae-af23-465e-bc16-c0f0cd828ffd",
                             "requirements": "TGAN+ADA has been implemented by adapting the StyleGAN2 codebase.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "afc80729-a8ca-4cce-aa43-2c1779cdabc8",
                             "requirements": "EWC has been implemented by adapting the StyleGAN2 codebase.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "d13c3a0b-1304-4e28-b3c4-ba9fb6eaf30a",
                             "requirements": "CDC has been implemented by adapting the StyleGAN2 codebase.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "1eb7c592-f303-4de0-ac80-73d11b55f6b3",
                             "requirements": "DCL has been implemented by adapting the StyleGAN2 codebase.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "ca04bf90-d5cb-4703-86fa-c01372398751",
                             "requirements": "DDPM-PA has been implemented by adapting the StyleGAN2 codebase.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "2611ab60-d9d9-4f22-8cd3-ecb8af89c47f",
@@ -349,28 +396,32 @@
                     "requirements": "Code has been written to train a diffusion model to generate data from a 2-dimensional Gaussian distribution with mean [1, 1] and unit variance.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "1d502a68-3fb3-4bce-953a-764cd09d2443r7ea6",
                     "requirements": "A diffusion model has been trained to generate data from a 2-dimensional Gaussian distribution with mean [1, 1] and unit variance.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "f3935ee2-c8e0-401e-9b75-dc7260e5fc8d",
                     "requirements": "Code has been written to transfer the trained model to generate samples from a 2-dimensional Gaussian distribution with a mean of [-1, -1] and unit variance using three methods: DDPM, DDPM-ANT w/o AN, and DDPM-ANT.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "f3935ee2-c8e0-401e-9b75-dc7260e53f3afw3fc8d",
                     "requirements": "The trained model has been transferred to generate samples from a 2-dimensional Gaussian distribution with a mean of [-1, -1] and unit variance using three methods: DDPM, DDPM-ANT w/o AN, and DDPM-ANT.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "f614fbdc-1d89-4e3e-8edd-f1e18a8ce7fd",
@@ -382,66 +433,76 @@
                             "requirements": "Code has been written to calculate the gradient direction used as reference using 10,000 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "7820ea5b-97be-4f81-ac79-3c971134423c",
                             "requirements": "The gradient direction used as reference has been calculated using 10,000 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "cdfa5f7a-6d39-4228-959b-aecfe10243r31a0af",
                             "requirements": "Code has been written to calculate the gradient of the output layer during the first iteration with 10-shot samples for DDPM.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "cdfa5f7a-6d39-4228-959b-aecfe101a0af",
                             "requirements": "The gradient of the output layer during the first iteration has been calculated with 10-shot samples for DDPM.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "bd36332e-aed0-4d65-bf04-9d1432g3rw313ba4fee",
                             "requirements": "Code has been written to calculate the gradient of the output layer during the first iteration with 10-shot samples for DDPM fine-tuned using similarity-guided training only (DDPM-ANT w/o AN).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "bd36332e-aed0-4d65-bf04-9d1413ba4fee",
                             "requirements": "The gradient of the output layer during the first iteration has been calculated with 10-shot samples for DDPM fine-tuned using similarity-guided training only (DDPM-ANT w/o AN).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "eed7cd00-1ddd-4986-b5e6-76daff843423e2f3we848",
                             "requirements": "Code has been written to calculate the gradient of the output layer during the first iteration with 10-shot samples for DDPM fine-tuned using similarity-guided training and adversarial noise selection (DDPM-ANT as defined by Equation 8).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "eed7cd00-1ddd-4986-b5e6-76daff84e848",
                             "requirements": "The gradient of the output layer during the first iteration has been calculated with 10-shot samples for DDPM fine-tuned using similarity-guided training and adversarial noise selection (DDPM-ANT as defined by Equation 8).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "f43671c8-7696-4cc2-97ff-85029f88aaa1",
                             "requirements": "The gradients computed for DDPM show the largest angular deviation from the reference gradient. Using DDPM without AN shows a decrease in the angular difference, and the closest angular difference between the direction of the gradient and the reference was achieved by the proposed method DDPM-ANT.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "f6c411d4-3929-479d-bc56-028b22ebfbb9",
@@ -453,41 +514,48 @@
                             "requirements": "Code has been written to generate 20,000 samples using the DDPM model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "20389b30-6a9c-4c52-bbe4-595e1fd47548",
                             "requirements": "The DDPM model has been used to generate 20,000 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "733d5b92-0acb-418b-bf4a-9c5793d3423rf3b3c17",
                             "requirements": "Code has been written to generate 20,000 samples using the DDPM-ANT model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "733d5b92-0acb-418b-bf4a-9c5793db3c17",
                             "requirements": "The DDPM-ANT model has been used to generate 20,000 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "5c62087a-20c0-469c-8cdf-6ec267a7b4c8",
                             "requirements": "The samples generated by DDPM-ANT has a larger concentration of samples around -1,  which is the mean of the target distribution, than DDPM.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "f9386f7f-3e73-4b2f-bb21-4493444129fe",
@@ -504,94 +572,108 @@
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings using the CDC model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "acf3e6db-2136-4b89-953a-e813fdb25b63",
                             "requirements": "The CDC model has been used to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "91e045b5-a545-4a1c-92cb-8f0da2363f33frb5ea",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings using the DCL model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "91e045b5-a545-4a1c-92cb-8f0da236b5ea",
                             "requirements": "The DCL model has been used to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "b0e511b4-a831-4c28-99ba-cffdd3f3fd1a454c",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings using the DDPM-PA model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "b0e511b4-a831-4c28-99ba-cffddd1a454c",
                             "requirements": "The DDPM-PA model has been used to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "0b788d47-6e35-4a79-8ff6-8b01932e23f377548a6",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings using the DDPM-ANT model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "0b788d47-6e35-4a79-8ff6-8b01977548a6",
                             "requirements": "The DDPM-ANT model has been used to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "6cbd6a02-363b-46d2-b179-c7667f23f365546d3",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings using the LDM-ANT model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "6cbd6a02-363b-46d2-b179-c766765546d3",
                             "requirements": "The LDM-ANT model has been used to perform 10-shot image generation, adapting the LSUN Church dataset to Landscape drawings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "063c7847-11ea-4fb7-88f2-1c233d2016dd",
                             "requirements": "The images generated by DDPM-ANT and LDM-ANT show better results at capturing the style of landscapes and representing buildings from the source domain.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "3395e370-2eb0-4b73-bf02-2ad5774db404",
                             "requirements": "The images generated by CDC and DCL capture the color scheme of the target domain, but fail to capture the structure of the source domain.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "45cabdee-165f-4305-8d56-6be77eb58633",
                             "requirements": "The images generated by DDPM-PA capture the structure of the source domain, but fail to capture the color scheme of the target domain.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "aaa9a965-d745-4414-b333-5bfa16742eac",
@@ -603,97 +685,112 @@
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings using the CDC model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "74baef43-248d-4b62-a5c6-c272551eb607",
                             "requirements": "The CDC model has been used to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "d2b6ae69-fd8b-4e58-9e98-c95feb72324234322838",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings using the DCL model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "d2b6ae69-fd8b-4e58-9e98-c95feb722838",
                             "requirements": "The DCL model has been used to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "58a28f17-9837-4c7f-9bc5-eeec22342342b4376c",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings using the DDPM-PA model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "58a28f17-9837-4c7f-9bc5-eeec22b4376c",
                             "requirements": "The DDPM-PA model has been used to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "37ed1897-f4c6-4da9-9828-e0bb69324234f32d2c",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings using the DDPM-ANT model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "37ed1897-f4c6-4da9-9828-e0bb69f32d2c",
                             "requirements": "The DDPM-ANT model has been used to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "b6c81e95-82ca-4c9b-83fd-9a7223423490f5548",
                             "requirements": "Code has been written to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings using the LDM-ANT model.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "b6c81e95-82ca-4c9b-83fd-9a72890f5548",
                             "requirements": "The LDM-ANT model has been used to perform 10-shot image generation, adapting the FFHQ dataset to Raphael's paintings.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "9cc039c6-a2ff-440c-bcaf-714436639a52",
                             "requirements": "The images generated by CDC and DCL capture the style of the target domain, but the generated images are blurry or distorted.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "a10da90c-5368-4b3a-bbbc-b18a642d5d33",
                             "requirements": "The images generated by DDPM-PA are clear, but fail to capture the style of the target domain.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "1681b1fb-ef15-4ca4-bd40-5e8170526456",
                             "requirements": "The images generated by DDPM-ANT and LDM-ANT results at better capture the style of the target domain, while being less blurry or distorted than those generated by CDC and DCL.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "86a12a48-96af-4538-9ec8-cecb379563e7",
@@ -710,52 +807,60 @@
                             "requirements": "Code has been written to update all parameters of TGAN during fine-tuning.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "44633b1b-0847-41c7-95a1-0ba8910b9028",
                             "requirements": "All parameters of TGAN were updated during fine-tuning.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "7c37b754-9301-4e6e-be00-dfdc9d89a0cb",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using TGAN was approximately 0.510.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "974200ad-33dd-42e1-ab26-569de0a40c54",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using TGAN was approximately 0.550.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "95959820-8424-4b4a-85b2-ee257922bdc7",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using TGAN was approximately 0.533.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "0dc44954-bc82-4c95-83c8-56a1b7b43598",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using TGAN was approximately 0.585.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "1c6e4adc-f61f-49c5-a4d9-c53ca75583b4",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using TGAN was approximately 0.601.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "bdc117df-2bce-4357-b457-63e4503d6f7b",
@@ -767,52 +872,60 @@
                             "requirements": "Code has been written to update all parameters of TGAN+ADA during fine-tuning.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "501bca60-25bc-4526-9fb2-78ba689cc30b",
                             "requirements": "All parameters of the model were updated during fine-tuning of TGAN+ADA.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "113d31aa-fbfc-4174-8439-9d85b1fa90e9",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using TGAN+ADA was approximately 0.546. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "1e57b62f-bc4d-456d-b491-a94f9ebcc73e",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using TGAN+ADA was approximately 0.571.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "ef4d66f8-9fa2-46d1-b71e-075eb285d065",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using TGAN+ADA was approximately 0.546. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "37027468-1b5e-4455-9dc5-70cd2a1c8c84",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using TGAN+ADA was approximately 0.615.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "fc9676f4-d2b4-407c-bdef-1348b109f314",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using TGAN+ADA was approximately 0.643.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "e296ece5-7825-4e40-ad9e-6d427caa54d4",
@@ -824,52 +937,60 @@
                             "requirements": "Code has been written to update all parameters of EWC during fine-tuning.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "1c449e47-a797-4e95-a4df-62aae370f15e",
                             "requirements": "All parameters of the model were updated during fine-tuning of EWC.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "74d173bc-f118-4c57-be85-701a9c4e05eb",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using EWC was approximately 0.560. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "5e3bd49e-eb36-4eea-bc6e-068c6e24e1d5",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using EWC was approximately 0.550. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "7c911ac9-dc1e-4211-91f3-020564e07e7d",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using EWC was approximately 0.541. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "4816272b-2f0a-4374-8df1-293449e181b1",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using EWC was approximately 0.579.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "7cbca5c0-df59-4820-823f-cbbe48014be3",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using EWC was approximately 0.596.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "dbad73c8-9113-4064-b09d-81c098b6edfa",
@@ -881,52 +1002,60 @@
                             "requirements": "Code has been written to update all parameters of CDC during fine-tuning.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "16f0e37d-e2a2-4ec3-a1f6-612fd4ea3f79",
                             "requirements": "All parameters of the model were updated during fine-tuning of CDC.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "13db3b4c-ed4c-4aff-9743-67eee97e775e",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using CDC was approximately 0.583. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "e03e5934-cb83-472a-b646-6ec4feb6f1db",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using CDC was approximately 0.581. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "43da110f-9808-4444-b81a-f7fdd4a711c5",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using CDC was approximately 0.564. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "4740fcf9-1223-4e23-9b8e-9ca1661829fb",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using CDC was approximately 0.620.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "8ea8dd6d-d405-476d-9ff2-d335a989683c",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using CDC was approximately 0.674.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "97663c20-b7b8-45e3-af35-8b7a39c4655a",
@@ -938,52 +1067,60 @@
                             "requirements": "Code has been written to update all parameters of DCL during fine-tuning.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "35d26ce2-eacb-4394-8c7a-717535e2a81a",
                             "requirements": "All parameters of the model were updated during fine-tuning of DCL.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "21f6d97f-c7d9-4d5b-be65-e5e581b5b6d0",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using DCL was approximately 0.579. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "a233e3c1-23c8-4d95-8a0a-03902681749e",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using DCL was approximately 0.574. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "5a9f9eef-cf7b-41e2-8d01-5bd6256591e2",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using DCL was approximately 0.558. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "38f5ef2e-5e05-4724-b269-25cb338d1ee2",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using DCL was approximately 0.616.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "35aa5b56-360a-4271-89ab-40633432b755",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using DCL was approximately 0.626.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "a39ffdca-97f7-4f61-83b2-5880e35f9035",
@@ -995,52 +1132,60 @@
                             "requirements": "Code has been written to update all parameters of DDPM-PA during fine-tuning.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "3a1f7621-ed55-4604-95a0-29628bc90b5d",
                             "requirements": "All parameters of the models were updated during fine-tuning of DDPM-PA.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "8c79c1fc-c87a-41c5-8c76-285004ed0a6c",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using DDPM-PA was approximately 0.599. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "cc587c72-982b-40a4-82d9-2a299fd9066b",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using DDPM-PA was approximately 0.604. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "f59ada11-1f81-4826-9a88-f20938af4a40",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using DDPM-PA was approximately 0.581. ",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "048c8922-ce0e-4fe5-8189-dc607b6e2451",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using DDPM-PA was approximately 0.628.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "9e0be390-39ac-4e80-b293-90b429826e6a",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using DDPM-PA was approximately 0.706.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "e896daa1-fcac-40a5-a891-25ded5a3b181",
@@ -1052,45 +1197,52 @@
                             "requirements": "Only 1.3% of the total number of parameters of the model were updated during fine-tuning of DDPM-ANT.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "f9b1e756-e242-424e-b38e-c52bd3cd7b5f",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using DDPM-ANT was approximately 0.592. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "5470d90d-21fc-409e-a43a-702545cedad0",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using DDPM-ANT was approximately 0.613. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "bbe9da95-6d05-4ddf-ade6-3f7f5d5c6e14",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using DDPM-ANT was approximately 0.621. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "853e5c69-6216-4ae0-b637-1e6f1e73e6ea",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using DDPM-ANT was approximately 0.648.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "f7e247be-433e-481f-bb45-b22069ec9c0b",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using DDPM-ANT was approximately 0.723.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "1191aad4-d944-42db-85e3-742e3e2bae46",
@@ -1102,48 +1254,56 @@
                             "requirements": "Only 1.6% of the total number of parameters of the model were updated during fine-tuning of LDM-ANT. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "73d5e78f-0e8b-4431-934e-7f7865b35e82",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Babies using LDM-ANT was approximately 0.601. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "b12177bc-5005-4eb1-8792-143c69268552",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Sunglasses using LDM-ANT was approximately 0.613. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "ca670619-1466-4420-a8e4-15e84374635d",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting FFHQ to Raphael's painting using LDM-ANT was approximately 0.592. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "5d2ee275-4a50-4ce1-a73a-aa0f5974ac5c",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Haunted houses using LDM-ANT was approximately 0.653.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "ff1c3ebc-0421-442a-9614-db0b26ddd321",
                             "requirements": "The Intra-LPIPS score for the 10-shot image generation adapting LSUN Church to Landscape drawings using LDM-ANT was approximately 0.738.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "d3e99eb3-74e7-4a6b-b1f1-c2518d9e4350",
@@ -1160,17 +1320,20 @@
                             "requirements": "The FID score using TGAN for 10-shot transfer from FFHQ to Babies is approximately 104.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "fca53380-dbf2-48a1-b5ef-9bf57f57d2d0",
                             "requirements": "The FID score using TGAN for 10-shot transfer from FFHQ to Sunglasses is approximately 55.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "5c283f6d-665d-4306-b79a-208805857315",
@@ -1182,17 +1345,20 @@
                             "requirements": "The FID score using ADA for 10-shot transfer from FFHQ to Babies is approximately 102.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "9eafca2f-1ce5-4fec-b4b2-8f6eaea87ca9",
                             "requirements": "The FID score using ADA for 10-shot transfer from FFHQ to Sunglasses is approximately 53.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "fe75fe4a-1e75-47f7-9e89-d21def58259d",
@@ -1204,17 +1370,20 @@
                             "requirements": "The FID score using EWC for 10-shot transfer from FFHQ to Babies is approximately 87.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "14bbc0cc-4d2e-4e04-a94b-655d70850df1",
                             "requirements": "The FID score using EWC for 10-shot transfer from FFHQ to Sunglasses is approximately 59.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "2ad54574-09c1-4378-955f-ab05470a12d3",
@@ -1226,17 +1395,20 @@
                             "requirements": "The FID score using CDC for 10-shot transfer from FFHQ to Babies is approximately 74.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "603c094c-d569-49fb-88e4-7c7cf13503da",
                             "requirements": "The FID score using CDC for 10-shot transfer from FFHQ to Sunglasses is approximately 42.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "f2690b96-a564-4518-95b4-426c1845991a",
@@ -1248,17 +1420,20 @@
                             "requirements": "The FID score using DCL for 10-shot transfer from FFHQ to Babies is approximately 52.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "36e4df66-c40b-4a01-aeb6-44b1f24fcd65",
                             "requirements": "The FID score using DCL for 10-shot transfer from FFHQ to Sunglasses is approximately 38.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "e52dc9bc-019d-4108-b65d-a70a30ec12c2",
@@ -1270,17 +1445,20 @@
                             "requirements": "The FID score using DDPM-PA for 10-shot transfer from FFHQ to Babies is approximately 48.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "2edc3515-975b-4c4e-ab06-e0681dcd20d0",
                             "requirements": "The FID score using DDPM-PA for 10-shot transfer from FFHQ to Sunglasses is approximately 34.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "af955177-de84-4f84-8a59-2a720009a8ac",
@@ -1292,20 +1470,24 @@
                             "requirements": "The FID score using ANT for 10-shot transfer from FFHQ to Babies is approximately 46.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "c1d68df9-77e2-499b-85ef-e450d524be38",
                             "requirements": "The FID score using ANT for 10-shot transfer from FFHQ to Sunglasses is approximately 20.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "6f29040f-e853-4b30-9c26-8e83b0f2615d",
@@ -1317,87 +1499,100 @@
                     "requirements": "Code has been written to fine-tune the DPM model on a 10-shot sunglasses dataset for 300 iterations.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "5c926d2d-c604-4d54-b620-f11cd5e7f2c9",
                     "requirements": "The DPM model was fine-tuned on a 10-shot sunglasses dataset for 300 iterations.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "66c2a90b-8f8a-483b-bd37-906bb3c34234239c2",
                     "requirements": "Code has been written to fine-tune the DPM model using an adaptor layer on a 10-shot sunglasses dataset for 300 iterations, updating only the adaptor layer.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "66c2a90b-8f8a-483b-bd37-906bb3c239c2",
                     "requirements": "The DPM model was fine-tuned using an adaptor layer on a 10-shot sunglasses dataset for 300 iterations, updating only the adaptor layer.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "5ae20584-256c-4b30-9a02-0b2342ae3242344187",
                     "requirements": "Code has been written to fine-tune the DPM model using only similarity guided training on a 10-shot sunglasses dataset for 300 iterations.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "5ae20584-256c-4b30-9a02-0b2342ae4187",
                     "requirements": "The DPM model was fine-tuned using only similarity guided training on a 10-shot sunglasses dataset for 300 iterations.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "bcccd310-9ffd-4ad2-9ba8-0433e1ff32422342343455cf",
                     "requirements": "Code has been written to fine-tune the DPM model using the proposed DPM-ANT strategy on a 10-shot sunglasses dataset for 300 iterations.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "bcccd310-9ffd-4ad2-9ba8-0433e1ff32423455cf",
                     "requirements": "The DPM model was fine-tuned using the proposed DPM-ANT strategy on a 10-shot sunglasses dataset for 300 iterations.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Execution"
+                    "task_category": "Code Execution",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "bcccd310-9ffd-4ad2-9ba8-0433e1ff55cf",
                     "requirements": "Code has been written to fine-tune the DPM model using the proposed DPM-ANT strategy on a 10-shot sunglasses dataset for 300 iterations.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "3f10eb63-5b7f-4e4f-899c-b2292224130a",
                     "requirements": "DPM-ANT generated images show better quality and detail than the other ones.",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Result Analysis"
+                    "task_category": "Result Analysis",
+                    "finegrained_task_category": "Logging, Analysis & Presentation"
                 },
                 {
                     "id": "02e8e688-3b00-4b17-b837-7bc28f693988",
                     "requirements": "The adaptor results have the highest FID score, followed by the baseline results. DPM-ANT w/o AN achieve a lower FID score while the proposed DPM-ANT has the smallest FID score.",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Result Analysis"
+                    "task_category": "Result Analysis",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 },
                 {
                     "id": "dd4fd0a1-cc9e-43c1-9ed1-c7661ba76d51",
                     "requirements": "Both DPM-ANT w/o AN and the proposed DPM ANT successfully transfer sunglasses to all images. The baseline and adaptor methods both fail to transfer sunglasses to some of the images generated.",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Result Analysis"
+                    "task_category": "Result Analysis",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "b3f0b97c-f328-4604-b74d-fc12b9251ee4",
@@ -1414,31 +1609,36 @@
                             "requirements": "Code has been written to use the DPM-ANT model to transfer FFHQ to Sunglasses, and train a classifier on 10 adapted images.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "97c453a4-1925-40fe-aec7-c94c010ae8d5",
                             "requirements": "The DPM-ANT model was used to transfer FFHQ to Sunglasses, and a classifier was trained on 10 adapted images.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "862eb8c7-c2b2-45cc-8d33-bba33edd9f04",
                             "requirements": "The intra-LPIPS score of the 10-shot classifier is approximately 0.613.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "4a5afb97-a578-4fde-87a9-114a0c20bdaf",
                             "requirements": "The FID score of the 10-shot classifier is approximately 20.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "c1699dfe-778a-45b4-b847-e31cedf48982",
@@ -1450,35 +1650,42 @@
                             "requirements": "Code has been written to use the DPM-ANT model to transfer FFHQ to Sunglasses, and train a classifier on 100 adapted images.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "84319b5f-e28f-4d85-a5c0-b8fe834dfcf4",
                             "requirements": "The DPM-ANT model was used to transfer FFHQ to Sunglasses, and a classifier was trained on 100 adapted images.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "b0ac5f91-386e-4c6d-8340-e4f052c98221",
                             "requirements": "The intra-LPIPS score of the 100-shot classifier is approximately 0.637.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "c9f1f68f-3cfa-4090-a51b-3d0a4f998481",
                             "requirements": "The FID score of the 100-shot classifier is approximately 22.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

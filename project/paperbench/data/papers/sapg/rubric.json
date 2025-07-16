@@ -23,17 +23,20 @@
                                     "requirements": "The on-policy actor loss has been implemented as described in Equation 2.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "71e63922-52ae-417a-834e-8ed01b0dfefc",
                                     "requirements": "The off-policy actor loss has been implemented as described in Equation 3.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "351366b5-147f-4214-b0c7-8b508de033e6",
@@ -45,34 +48,40 @@
                                     "requirements": "The n-step return for on-policy data has been implemented as described in Equation 5.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "893fdad6-f965-4ea4-ade3-c4ff6208ad00",
                                     "requirements": "The one-step return for off-policy data has been implemented as described in Equation 6.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "9cec8d88-5eaa-4fbe-ab24-3db082104ec4",
                                     "requirements": "The on-policy critic loss has been implemented as described in Equation 7. ",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "4c79136d-c44e-49cd-8d94-0164ae87bdab",
                                     "requirements": "The off-policy critic loss has been implemented as described in Equation 8.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "0f9641cc-8fd4-4164-b2cf-1b2b7d87cf37",
@@ -84,7 +93,8 @@
                             "requirements": "Code has been written to set the parameter lambda for off-policy updates to 1.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "e605a74c-dd43-4834-a58c-d2bf7114fa6e",
@@ -96,27 +106,32 @@
                                     "requirements": "Code has been written to collect samples from a number of different policies (denoted as $M$ in Section 4.2).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "4cbd9e69-4605-4390-b4ff-6ca21c1040b9",
                                     "requirements": "Code has been written to collect $\\frac{N}{2}$ samples from policy $i$ for a batch size of $N$ samples used to update policy $i$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "010f50bd-7813-4da8-bd99-41c3cc6ef89c",
                                     "requirements": "Code has been written to collect $\\frac{N}{2}$ samples from any policy except policy $i$ for a batch size of $N$ samples used to update policy $i$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "8b06805d-99c6-44a9-bf9d-42cbba726dfe",
@@ -133,14 +148,16 @@
                                     "requirements": "$M$ different policies are used to collect samples.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "98b54a01-428b-470a-aae9-ff5851176bfd",
                                     "requirements": "One policy is selected to be the leader policy and the remaining $M-1$ policies are selected to be the follower policies.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "edb9b108-4a97-47c5-a373-77e65f2e4b1e",
@@ -152,41 +169,48 @@
                                             "requirements": "Code has been written to collect $\\frac{N}{2}$ samples from the leader policy from a batch size of $N$ samples, to be used to update the leader.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "c6fdbab5-5537-4b74-9147-d3495c393f9b",
                                             "requirements": "Code has been written to collect $\\frac{N}{2}$ samples from the follower policies from a batch size of $N$ samples, to be used to update the leader.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "56005d05-b995-4d2f-93a7-14f287efd4c2",
                                     "requirements": "Code has been written to collect on-policy samples from each follower policy, to be used to update each follower policy.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "cfbaa359-30ff-4059-8399-0d8942a6eb25",
                                     "requirements": "Code has been written to set the parameter lambda for off-policy updates to 1.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "fefabdd4-f727-47e8-9a2c-941a5231757f",
                                     "requirements": "Code has been written to update the leader with PPO using on-policy and off-policy data. The off-policy data is weighted by importance sampling.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "56f38bff-c6e8-4db6-9d89-9f742ef65383",
@@ -198,20 +222,24 @@
                                     "requirements": "Code has been written to share the backbone $B_theta$ between the actor policies, conditioned on each policy's hanging parameters $phi_j$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "dd211514-5e19-4f44-b10a-fd1e4d3688b8",
                                     "requirements": "Code has been written to share the backbone $C_psi$ between the actor and critic, conditioned on each policy's hanging parameters $phi_j$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "fca2c094-92fe-4de2-b0d2-17a93cda9389",
@@ -228,14 +256,16 @@
                                     "requirements": "Code has been written to collect samples using $M$ different policies.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "98b54a01-428b-470a-aae9-ff5851176bcd",
                                     "requirements": "Code has been written to select one policy to be the leader policy and the remaining $M-1$ policies to be the follower policies.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "edb9b108-4a97-47c5-a373-77e65f2e4b9e",
@@ -247,48 +277,56 @@
                                             "requirements": "Code has been written to collect samples using the leader and follower policies. ",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "d4e81d58-cf8b-4c6d-afa4-64f6385d7b19",
                                             "requirements": "Code has been written to collect $\\frac{N}{2}$ samples from the leader policy from a batch size of $N$ samples, to be used to update the leader.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "c6fdbab5-5537-4b74-9147-d3495c393f8b",
                                             "requirements": "Code has been written to collect $\\frac{N}{2}$ samples from the follower policies from a batch size of $N$ samples, to be used to update the leader.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "56005d05-b995-4d2f-93a7-14f287efd4d2",
                                     "requirements": "Code has been written to update each follower policy using PPO with on-policy samples.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "cfbaa359-30ff-4059-8399-0d8942a6eb15",
                                     "requirements": "Code has been written to set the parameter lambda for off-policy updates to 1.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "534229ab-463a-49c3-a715-03bd07c86af6",
                                     "requirements": "Code has been written to update the leader with PPO using on-policy and off-policy data. The off-policy data is weighted by importance sampling.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d4b1a8d9-0557-4d8a-a216-7e7b2795bc55",
@@ -300,23 +338,28 @@
                                     "requirements": "Code has been written to add an entropy term to the loss of each follower with hyper-parameter $\\sigma$ as a coefficient.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "34bb0d42-a4bc-4068-9029-84ebf09cbf07",
                                     "requirements": "Code has been written for the leader's loss, which, unlike the followers, does not have an entropy term.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "c426f93e-2a1f-4b57-bb29-c669d4a44d9a",
@@ -328,7 +371,8 @@
                     "requirements": "Code has been written to define the observation space, which consists of joint angles, joint velocities, object pose, object linear velocity, and object angular velocity.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "06a83598-066e-4cf6-a6e9-ad15dc96710b",
@@ -345,45 +389,52 @@
                                     "requirements": "Code has been written to import the Allegro Kuka Regrasping environment from IsaacGymEnvs.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "56a0ccfe-9d55-4d48-9ff1-5af0a7639e1c",
                                     "requirements": "Code has been written to mount an Allegro Hand of 16 degrees of freedom on a Kuka arm of 7 degrees of freedom.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "94e1952d-cb93-4781-8cee-68782aea8b27",
                                     "requirements": "Code has been written to place an object in a random position on a table at initialization of a task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "88db1925-492d-4e7c-89ed-adcfe588b676",
                                     "requirements": "Code has been written to select a three dimensional position at random as the goal at initialization of a task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "185eb404-5449-4ccc-b4aa-0e9ce4c6a9fc",
                                     "requirements": "Code has been written to mark a task as success if the arm lifts the object and holds it at the goal position for 30 time-steps.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "4ddc20c9-92e9-4215-9ad6-27d0e6b66a59",
                                     "requirements": "Code has been written to re-initialize a task if marked as success.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "cb7fd3cd-5beb-44f1-a45b-9a9da478b98c",
@@ -395,45 +446,52 @@
                                     "requirements": "Code has been written to import the Allegro Kuka Throw environment from IsaacGymEnvs.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "a7bdf75d-ab03-4e73-9a7a-59615e6764af",
                                     "requirements": "Code has been written to mount an Allegro Hand of 16 degrees of freedom on a Kuka arm of 7 degrees of freedom.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "0c4e69ea-cbf4-49d9-ad39-62500fc4bf26",
                                     "requirements": "Code has been written to place an object in a random position on a table at initialization of a task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "bf6d3e03-06ff-4e45-956b-f7b51e6faafa",
                                     "requirements": "Code has been written to place a bucket at a three dimensional position that is out of reach of the arm at initialization of a task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "2fa8ea31-caca-414b-b778-50fea9ae2283",
                                     "requirements": "Code has been written to mark a task as success if the arm lifts the object and throws it into the bucket.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "82a09e6b-28f7-4eb2-8dac-301a1b8d31c2",
                                     "requirements": "Code has been written to re-initialize a task if marked as success.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "46d28204-6c39-4c80-81ab-ba4e86f8f95a",
@@ -445,48 +503,56 @@
                                     "requirements": "Code has been written to import the Allegro Kuka Reorientation environment from IsaacGymEnvs.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "0b281ca2-a6d3-4f2c-81e2-6c549010af8b",
                                     "requirements": "Code has been written to mount an Allegro Hand of 16 degrees of freedom on a Kuka arm of 7 degrees of freedom. ",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "c2ff9000-b2c1-420b-9644-7ec14f5e5a0b",
                                     "requirements": "Code has been written to place an object in a random position on a table at initialization of a task. ",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "84a8972c-4571-4c4a-9154-52b920cb9246",
                                     "requirements": "Code has been written to select a pose in 7 dimensions at random as the goal at initialization of a task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "6adb40f3-9ff7-454c-96e0-ad17354fb498",
                                     "requirements": "Code has been written to mark a task as success if the arm is able to orient the object in the goal pose.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "dbea6a1f-ff1b-43b3-af09-daa5e91b1b05",
                                     "requirements": "Code has been written to select a new pose as the goal if the task is marked as success.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "0e1aecd9-a7f9-4f22-94ad-e6444c3174d1",
@@ -503,38 +569,44 @@
                                     "requirements": "Code has been written to import the Shadow hand environment from IsaacGymEnvs.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "5cb6fc5a-c1ee-4e27-a272-606f26591056",
                                     "requirements": "Code has been written to use a shadow hand of 24 degrees of freedom for manipulation.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "7ca105e5-4ba2-42e7-9af3-34d270cad350",
                                     "requirements": "Code has been written to place a cube on the hand and pick an orientation as random as the goal at initialization of a task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "4aa6c053-2695-4499-8f90-5cb2416f71ce",
                                     "requirements": "Code has been written to mark a task as success when the cube reaches the goal orientation.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "a7c600b0-d7ab-4635-bde8-8328a193e20d",
                                     "requirements": "Code has been written to re-initialize a task if marked as success.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "a905781b-db91-4b0e-9a84-1f514f58e720",
@@ -546,41 +618,48 @@
                                     "requirements": "Code has been written to import the Allegro hand environment from IsaacGymEnvs.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Environment & Infrastructure Setup"
                                 },
                                 {
                                     "id": "5607d2ef-d61e-4d1e-a1cc-18bd0d2e9832",
                                     "requirements": "Code has been written to use an Allegro hand of 16 degrees of freedom for manipulation.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "1beb950d-2248-4bed-9e14-f14a69eceba1",
                                     "requirements": "Code has been written to place a cube on the hand and pick an orientation as random as the goal at initialization of a task. ",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "34a9649f-f372-4489-a4d6-0b2c79b84faa",
                                     "requirements": "Code has been written to mark a task as success when the cube reaches the goal orientation. ",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "58b76d68-8183-4821-a35e-09fd168fc655",
                                     "requirements": "Code has been written to re-initialize a task if marked as success. ",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "fb932764-57f1-4d0f-8c5f-a08aaa5941bf",
@@ -592,83 +671,96 @@
                             "requirements": "Code has been written to import the PPO algorithm introduced by Schulman et al., 2017, as a baseline.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "cbee4c00-a3b0-42b3-b8e6-ac2091059933",
                             "requirements": "Code has been written to import the Parallel Q-learning algorithm introduced by Li et al., 2023, as a baseline.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "760ed7c6-9a0d-48ac-b162-bae4611a1add",
                             "requirements": "Code has been written to import the DexPBT algorithm introduced by Petrenko et al., 2023, as a baseline.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "e72b38d4-74ae-46b4-b458-2edad4774d27",
                     "requirements": "Code has been written to run five different seeds for each experiment.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "79a1c008-6b96-4d5f-945b-9baa0e423325",
                     "requirements": "Code has been written to use six different policies for SAPG and DexPBT.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "5bf9383b-4137-4d28-a4fa-c4ecf78fe993",
                     "requirements": "Code has been written to use a recurrent policy for AllegroKuka tasks.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "61c3894d-d8a6-4b6e-88b6-9990d7ec6bc9",
                     "requirements": "Code has been written to use an MLP policy for Shadow Hand and Allegro Hand tasks.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "5aed04e1-078b-4325-a6ac-88959f972298",
                     "requirements": "Code has been written to collect 16 steps of experience per instance of the environment before every PPO update.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "846e182a-bcbb-4340-a10f-37300c06ae21",
                     "requirements": "Code has been written to set the entropy coefficient to either 0.0, 0.003, or 0.005 for SAPG.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "dfe1b771-6aee-4cdb-9b9a-0e4d6429ac9c",
                     "requirements": "Code has been written to set the entropy coefficient to 0 for SAPG in the tasks ShadowHand, AllegroHand, Regreasping, and Throw.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "2a843a97-d82b-470f-91b1-a9d39257ac8e",
                     "requirements": "Code has been written to set the entropy coefficient to 0.005 for SAPG in the task Reorientation. ",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "d728b196-773e-47f6-8fce-622ab84370a4",
@@ -685,24 +777,28 @@
                             "requirements": "Code has been written to train PPO for 7 different batch sizes ranking in the approximate values of $\\{1500, 3125, 6250, 12500, 25000, 50000, 100000\\}$.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "9ada4389-8b53-4d71-ad56-91399b0f3e02",
                             "requirements": "The performance of PPO for all batch sizes was below 12,000.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "28229478-e3d1-4bb3-9d6d-481f685316e4",
                             "requirements": "SAPG performance reaches above 12,000; significantly higher than that of PPO.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "c3d40629-128e-446d-8d9b-f862f8d8ab62",
@@ -714,27 +810,32 @@
                             "requirements": "Code has been written to train PPO for 7 different batch sizes ranking in the approximate values of $\\{1500, 3125, 6250, 12500, 25000, 50000, 100000\\}$.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "7dcfd407-ed9a-41e6-bdec-5d5f44e79a03",
                             "requirements": "The performance of PPO for all batch sizes was no greater than 20.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "d76f0652-8315-4be3-9a22-79c94245b25e",
                             "requirements": "SAPG performance reaches approximately 30. Its performance is significantly higher than that of PPO.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "72398b0a-36d9-4582-957f-c7c94c855fe3",
@@ -756,17 +857,20 @@
                                     "requirements": "Code has been written to train and evaluate PPO in the Allegro Kuka Regrasping task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "711e25af-b2eb-46b7-b6a0-8cc60c606c48",
                                     "requirements": "PPO in Allegro Kuka Regrasping task reaches about 10 successes at the beginning of training, and quickly drops to about 0. It is the worst performing method in the test.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "eef9b4e8-f690-4ea4-88ea-3daab1038a97",
@@ -778,17 +882,20 @@
                                     "requirements": "Code has been written to train and evaluate PQL in the Allegro Kuka Regrasping task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "a77aadc7-8925-4217-a7ea-140e852c7ed6",
                                     "requirements": "PQL in Allegro Kuka Regrasping task reaches a few number of successes at the beginning of training. Except for the beginning of training, it consistently performs better than PPO.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d33e963e-3098-4b58-b00f-eb865b735a04",
@@ -800,17 +907,20 @@
                                     "requirements": "Code has been written to train and evaluate PBT in the Allegro Kuka Regrasping task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "bb6ca8ea-4738-4368-9161-768294785488",
                                     "requirements": "PBT in Allegro Kuka Regrasping task rapidly increases the number of successes during training. It significantly outperforms both PPO and PQL.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "0fe6b74e-3c2c-413c-8a01-35d82f97630d",
@@ -822,20 +932,24 @@
                                     "requirements": "Code has been written to train and evaluate SAPG in the Allegro Kuka Regrasping task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "d05489a2-c250-4b36-a6d2-fd96681470f9",
                                     "requirements": "SAPG in Allegro Kuka Regrasping task rapidly increases the number of successes during training. It outperforms PBT, and it is the best performing method.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "08ed355d-220f-4da6-923a-c627e0f5fbb3",
@@ -852,17 +966,20 @@
                                     "requirements": "PPO has been trained and evaluated in Allegro Kuka Throw task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "674b8bd7-3c08-4526-b277-b491d419f240",
                                     "requirements": "The number of success in PPO in Allegro Kuka Throw task show a rapid increase during training, but drops towards the end of training; it significantly outperforms PQL.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "17a81819-8c78-4632-8bf8-e3232acf88aa",
@@ -874,17 +991,20 @@
                                     "requirements": "PQL has been trained and evaluated in Allegro Kuka Throw task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "933b0de9-a09c-4bb7-8e3f-500b38706541",
                                     "requirements": "The number of success in PQL in Allegro Kuka Throw task is slightly above 0 during training; it is the worst performing method.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "887c4e25-1302-45ee-b344-49b2c4aeaeaf",
@@ -896,17 +1016,20 @@
                                     "requirements": "PBT has been trained and evaluated in Allegro Kuka Throw task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "833e2a43-ff46-4b25-a28a-4cf895de5ef9",
                                     "requirements": "The number of success in PBT in Allegro Kuka Throw task increase rapidly during training; it outperforms PPO.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d4957fc6-09e5-41b9-843c-306878f06a76",
@@ -918,20 +1041,24 @@
                                     "requirements": "SAPG has been trained and evaluated in Allegro Kuka Throw task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "a5aa1216-118b-4cda-a0ef-b1e7667e87de",
                                     "requirements": "The number of successes in SAPG in Allegro Kuka Throw task increase rapidly during training; it's the best performing method.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "ad681e1a-1f5f-4cde-822a-2ed1af2911bf",
@@ -948,17 +1075,20 @@
                                     "requirements": "PPO has been trained and evaluated in Allegro Kuka Reorientation task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "83634e09-f1d3-4945-9f54-b32bcfab1933",
                                     "requirements": "The number of success in PPO in Allegro Kuka Reorientation task is consistently approximately 0.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "c560bc31-ca78-4274-b025-55dd1ac8e492",
@@ -970,17 +1100,20 @@
                                     "requirements": "PQL has been trained and evaluated in Allegro Kuka Reorientation task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "8bfc8f8e-977e-4183-a077-4232f8966649",
                                     "requirements": "The number of success in PQL in Allegro Kuka Reorientation task is consistently approximately 0.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "4630f175-b2c7-442c-978b-56c8d8d43c69",
@@ -992,17 +1125,20 @@
                                     "requirements": "PBT has been trained and evaluated in Allegro Kuka Reorientation task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "a304b983-430f-4c04-8db2-ee9e982e79d9",
                                     "requirements": "The number of success in PBT in Allegro Kuka Reorientation increases steadily. It performs better than both PPO and PQL.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "eb8a59a4-b808-45ec-89a8-bd36d040e4b9",
@@ -1014,20 +1150,24 @@
                                     "requirements": "SAPG has been trained and evaluated in Allegro Kuka Reorientation task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "8ce095a8-2423-4041-944c-c70dd3e80195",
                                     "requirements": "The number of successes of SAPG in Allegro Kuka Reorientation increases steadily. It is the best performing method.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "134b6e06-92d8-489c-8b96-498fae8bb7b8",
@@ -1044,17 +1184,20 @@
                                     "requirements": "PPO has been trained and evaluated in Allegro Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "03fbc6dd-9df3-4c43-86ba-72bad1af6bf3",
                                     "requirements": "The reward of PPO in Allegro Hand task increases steadily. It is only outperformed by PBT.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "c8a8b235-6c4d-47a8-93db-53a267132ef3",
@@ -1066,17 +1209,20 @@
                                     "requirements": "PBT has been trained and evaluated in Allegro Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "d04b34bf-2027-492c-91e7-c2e0e515c275",
                                     "requirements": "The reward of PBT in Allegro Hand task increases steadily, but it is the worst performing method.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "20c45fb0-551f-4ca1-85ca-d225abe5db29",
@@ -1088,17 +1234,20 @@
                                     "requirements": "PQL has been trained and evaluated in Allegro Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "1535c72d-9e09-46bd-871f-3557ba63bff0",
                                     "requirements": "The reward of PQL in Allegro Hand task increases quickly and then plateaus. The performance is similar to that of PPO.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "afdc9f93-ebd8-4b33-a25f-a688999317ea",
@@ -1110,20 +1259,24 @@
                                     "requirements": "SAPG has been trained and evaluated in Allegro Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "f3d5704c-b9da-40be-95cf-9f87ab295527",
                                     "requirements": "The reward of PQL in Allegro Hand task increases steadily throughout training. It is the best performing method.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "f1f9d439-bf66-4441-8b2e-4dfdc3ed3dcb",
@@ -1140,17 +1293,20 @@
                                     "requirements": "PPO has been trained and evaluated in Shadow Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "d6c1f104-0072-4443-a1f8-ef1147b8daed",
                                     "requirements": "The reward of PPO in Shadow Hand task increases steadily. It performs similarly to PBT.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "4b530289-ff82-40fe-ba57-5c9b720d8bf7",
@@ -1162,17 +1318,20 @@
                                     "requirements": "PBT has been trained and evaluated in Shadow Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "5ec68d84-872f-4e66-b9f1-f9532101b72f",
                                     "requirements": "The reward of PBT in Shadow Hand task increases steadily. It performs similarly to PPO.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "36ec0a15-9be4-49d5-8787-ebdba34f949b",
@@ -1184,17 +1343,20 @@
                                     "requirements": "PQL has been trained and evaluated in Shadow Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "8c1acd48-8b0e-4b5d-8073-de3db0c72873",
                                     "requirements": "The reward of PQL in Shadow Hand task increases sharply at first and then plateaus. It outperforms both PPO. and PBT, and achieves similar performance as SAPG.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "12e36a12-8dc1-4473-ad7a-86c8fac1ce1e",
@@ -1206,23 +1368,28 @@
                                     "requirements": "SAPG has been trained and evaluated in Shadow Hand task.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "9b79ceec-714e-4002-8377-11a833db4689",
                                     "requirements": "The reward of SAPG in Shadow Hand task increases steadily. It outperforms both PPO. and PBT, and achieves similar performance as PQL.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "050960b0-f4fd-4b2d-ad5f-6e9382f39a01",
@@ -1239,45 +1406,52 @@
                             "requirements": "The average reward for PPO was 1.01e4 with a standard error of 6.31e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "33580075-0b95-45bb-9251-52da4510ee7b",
                             "requirements": "The average reward for PBT was 7.28e3 with a standard error of 1.24e3 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "0c8b9796-2fd8-499c-a49d-a388fcf48400",
                             "requirements": "The average reward for PQL was 1.01e4 with a standard error of 5.28e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "9a1f61db-e368-4228-9aae-3f39970e4de2",
                             "requirements": "The average reward for SAPG with entropy coefficient of 0 was 1.23e4 with a standard error of 3.29e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "8a568508-ec25-46a5-9b24-ab13f2820d91",
                             "requirements": "The average reward for SAPG with entropy coefficient of 0.005 was 9.14e3 with a standard error of 8.38e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "bb6200f6-75c5-4f32-bcfb-3b931e6d0117",
                             "requirements": "SAPG with entropy coefficient of 0 is the best performing method.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "7293058f-2781-4dc4-a2f6-1f706ae7e49d",
@@ -1289,45 +1463,52 @@
                             "requirements": "The average reward for PPO was 1.07e4 with a standard error of 4.90e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "cdca77ff-3541-4044-926c-8100d9272b51",
                             "requirements": "The average reward for PBT was 1.01e4 with a standard error of 1.80e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "e919fe9f-7cd1-4b81-b8c0-7a7d4df7d6f0",
                             "requirements": "The average reward for PQL was 1.28e4 with a standard error of 1.25e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "86a7d4cc-ee31-41c7-9b88-ba978e6b86b4",
                             "requirements": "The average reward for SAPG with entropy coefficient of 0 was 1.17e4 with a standard error of 2.64e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "8e8575f2-d93e-4447-a7f0-8e40441f0ef4",
                             "requirements": "The average reward for SAPG with entropy coefficient of 0.005 was 1.28e4 with a standard error of 2.80e2 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "1eb951c5-8a59-492f-a849-47dc910857e8",
                             "requirements": "SAPG with entropy coefficient of 0.005 is the best performing method.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "ad9c33c8-4604-42ee-8bd1-9b4874ba8026",
@@ -1339,45 +1520,52 @@
                             "requirements": "The average number of successes for PPO was 1.25 with a standard error of 1.15 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "8f9f267a-3787-46af-b5b0-0d8361dcdc9e",
                             "requirements": "The average number of successes for PBT was 31.9 with a standard error of 2.26 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "c7fe1dbb-6064-45b6-826d-0461ce49fa78",
                             "requirements": "The average number of successes for PQL was 2.73 with a standard error of 0.02 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "6e3a8ad2-1210-47e2-a4e0-0839ae6c4415",
                             "requirements": "The average number of successes for SAPG with entropy coefficient of 0 was 35.7 with a standard error of 1.46 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "23cc6a37-8f86-429d-a66b-cf9401bf65fb",
                             "requirements": "The average number of successes for SAPG with entropy coefficient of 0.005 was 33.4 with a standard error of 2.25 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "2fa1bea1-4e1b-4eeb-9f12-4f3645f0a2ba",
                             "requirements": "SAPG with entropy coefficient of 0 is the best performing method.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "0d2f16dd-70e6-417a-9024-73c3b46fa87b",
@@ -1389,45 +1577,52 @@
                             "requirements": "The average number of successes for PPO was 16.8 with a standard error of 0.48 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "a891f6c5-1567-4a4b-b8e6-10f7b9b288d5",
                             "requirements": "The average number of successes for PBT was 19.2 with a standard error of 1.07 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "757a9a3f-aec6-465b-be05-6d5b5b66e624",
                             "requirements": "The average number of successes for PQL was 2.62 with a standard error of 0.08 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "8dd86030-c998-47db-a776-55b02bc2ec6e",
                             "requirements": "The average number of successes for SAPG with entropy coefficient of 0 was 23.7 with a standard error of 0.74 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "8d3d1a09-93e5-4faf-b7a8-a0085ed609b2",
                             "requirements": "The average number of successes for SAPG with entropy coefficient of 0.005 was 18.7 with a standard error of 0.43 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "0d2b3237-5f84-4ab9-bc77-c38f31c4d55a",
                             "requirements": "SAPG with entropy coefficient of 0 is the best performing method.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "2c61a0a6-6b64-4a7a-8e47-167abe8ed15a",
@@ -1439,48 +1634,56 @@
                             "requirements": "The average number of successes for PPO was 2.85 with a standard error of 0.05 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "ca949fe5-d656-4294-8a34-ba6231f2cbed",
                             "requirements": "The average number of successes for PBT was 23.2 with a standard error of 4.86 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "01475549-724a-4565-91cf-7dadde0b7473",
                             "requirements": "The average number of successes for PQL was 1.66 with a standard error of 0.11 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "f7c78019-2fc6-4e79-865a-061beae18526",
                             "requirements": "The average number of successes for SAPG with entropy coefficient of 0 was 33.2 with a standard error of 4.20 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "cae067cb-95bc-4206-83a9-69b6fdfd5266",
                             "requirements": "The average number of successes for SAPG with entropy coefficient of 0.005 was 38.6 with a standard error of 0.63 after 2e10 samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "7ec5e1ed-21da-4769-b8eb-77ad0488dcc8",
                             "requirements": "SAPG with entropy coefficient of 0.005 is the best performing method.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "94a9c1ec-6512-4f75-8017-2c09654927f0",
@@ -1497,52 +1700,60 @@
                             "requirements": "SAPG has been trained and evaluated without off-policy data in Allegro Kuka Regrasping",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "8c58346a-161b-418d-86e0-30db27cf5a15",
                             "requirements": "SAPG has been trained and evaluated using symmetric off-policy data in Allegro Kuka Regrasping",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "1dcfdd84-93b6-482c-83b9-8faddb7c55f4",
                             "requirements": "SAPG has been trained and evaluated using high off-policy data ratio in Allegro Kuka Regrasping",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "12910787-89ca-4548-a6c3-357bd40c296d",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.003 in Allegro Kuka Regrasping",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "84211932-bb8a-4ca3-a9c0-7fd864da78da",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.005 in Allegro Kuka Regrasping",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "07a91966-1c5d-48c0-bb66-79ec371a1879",
                             "requirements": "Standard SAPG has been trained and evaluated in Allegro Kuka Regrasping",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "193b0859-6f88-4ce1-b596-12fff30772ff",
                             "requirements": "Training without off-policy data is the worst performing method. Using symmetric off-policy improves things a bit. The other methods all perform significantly better.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "c5e45e8d-3700-4003-93f0-79187066f8bb",
@@ -1554,52 +1765,60 @@
                             "requirements": "SAPG has been trained and evaluated without off-policy data in Allegro Kuka Throw",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "0edf5ba9-c61d-4074-9ec8-7c78c6c9fbdd",
                             "requirements": "SAPG has been trained and evaluated using symmetric off-policy data in Allegro Kuka Throw",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "3ab7a450-8aef-4ad9-ab8b-25ff06f84858",
                             "requirements": "SAPG has been trained and evaluated using high off-policy data ratio in Allegro Kuka Throw",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "75d8b372-80d8-4e34-b75c-606bc06b917e",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.003 in Allegro Kuka Throw",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "1358faca-0b44-49aa-894f-6c57b199d672",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.005 in Allegro Kuka Throw",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "e87ccb36-20f8-4bbe-bd3f-86a9b8517b40",
                             "requirements": "Standard SAPG has been trained and evaluated in Allegro Kuka Throw",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "74d49bbb-fc77-4f43-890a-eda9c810b440",
                             "requirements": "Training without off-policy data is the worst performing method. All other methods perform a bit better, and standard SAPG is the best performing method.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "210bddcf-0517-4383-94eb-224088b19da7",
@@ -1611,52 +1830,60 @@
                             "requirements": "SAPG has been trained and evaluated without off-policy data in Allegro Kuka Reorientation task",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "cfb5b8b1-bb67-4098-83d2-e7c001741e07",
                             "requirements": "SAPG has been trained and evaluated using symmetric off-policy data in Allegro Kuka Reorientation task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "7420e98b-5d3b-482b-aac5-55d5d8df956c",
                             "requirements": "SAPG has been trained and evaluated using high off-policy in Allegro Kuka Reorientation task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "40352f5e-b9fa-41b1-b386-bfd6717b8b0f",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.003 in Allegro Kuka Reorientation task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "623dfcd6-ae62-4ce6-89b3-4b0051506fda",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.005 in Allegro Kuka Reorientation task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "856460c8-b9b1-484e-aded-ae66e8feed06",
                             "requirements": "Standard SAPG has been trained and evaluated in Allegro Kuka Reorientation task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "bd416f08-3b17-415b-a140-dbc7ccbde93f",
                             "requirements": "Training without off-policy data is the worst performing method. All other methods perform better, and SAPG using entropy coefficient of 0.005 is the best performing method.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "928f5433-f1f3-4b7e-bc3d-39b9ea1b5f68",
@@ -1668,52 +1895,60 @@
                             "requirements": "SAPG has been trained and evaluated without off-policy data in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "d9092acc-258f-48ef-a0ee-f7fc1806a11a",
                             "requirements": "SAPG has been trained and evaluated using symmetric off-policy data in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "5c21bf63-50ad-4638-a3ef-6af9a675f4c0",
                             "requirements": "SAPG has been trained and evaluated using high off-policy in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "6d1e068e-afe6-4abc-8373-4d9654a4a4a8",
                             "requirements": "Standard SAPG has been trained and evaluated in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "00b99a98-0c98-4b8f-ab39-c30a3c4a5fdb",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.003 in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "e14a9452-e4a1-4b27-8701-4937cbaa18eb",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.005 in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "253cc3b2-d656-432b-bf8b-6ad4c4a6a66c",
                             "requirements": "Training without off-policy data is the worst performing method. Using symmetric off-policy and high off-policy data improves results and perform similarly to each other. The best methods are standard SAPG and using entropy coefficient of 0.003.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "9f016b75-506f-4903-b0fb-94ed18e0d819",
@@ -1725,55 +1960,64 @@
                             "requirements": "SAPG has been trained and evaluated without off-policy data in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "41f1a669-38a4-4e2d-8ea6-f3c0d8aaa6a7",
                             "requirements": "SAPG has been trained and evaluated using symmetric off-policy data in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "ada9a9c5-002d-4ead-9290-81551f332ec4",
                             "requirements": "SAPG has been trained and evaluated using high off-policy in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "9c9b9344-a9fa-4bfb-9cf7-4c60fca6632b",
                             "requirements": "Standard SAPG has been trained and evaluated in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "f2fe516f-6c8c-4147-9265-9988be784a6e",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.005 in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "4584f422-849c-4348-be43-7c923362554d",
                             "requirements": "SAPG has been trained and evaluated using entropy coefficient of 0.003 in Shadow Hand task.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "89ea072a-8a15-4529-b58c-8e0600bd9e88",
                             "requirements": "Training using symmetric off-policy data is the worst performing method. All other methods improves the performance, and the best methods are standard SAPG and using entropy coefficient of 0.003 and 0.005.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "5c9e43a3-90fc-4493-842a-8651e34b494b",
@@ -1785,7 +2029,8 @@
                     "requirements": "Code has been written to either implement or import a pre-existing implementation of PCA.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "42104128-ba3e-4387-b32c-a2b266286c7b",
@@ -1797,31 +2042,36 @@
                             "requirements": "PCA has been computed for the visited states for PPO and the reconstruction errors calculated for components 1 to 66.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "1b5177e8-c14b-4d59-a6cc-4113d610c999",
                             "requirements": "PCA has been computed for the visited states for a random policy and the reconstruction errors calculated for components 1 to 66.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "02bf6a17-192e-4bfc-b061-0abd6a68c992",
                             "requirements": "PCA has been computed for the visited states for SAPG and the reconstruction errors calculated for components 1 to 66.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "d33b2f75-eb26-42ff-94a0-ff205dc5a38a",
                             "requirements": "The random policy has the smallest reconstruction error for most number of components, and SAPG has the highest reconstruction error for most number of components. All methods have similar reconstruction errors when using more than 25 components.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "3a3e86b3-bd81-4a97-9fa2-b3c6d3e008e6",
@@ -1833,31 +2083,36 @@
                             "requirements": "PCA has been computed for the visited states for PPO and the reconstruction errors calculated for components 1 to 56.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "e388762a-858d-42a7-b944-3101fefab2da",
                             "requirements": "PCA has been computed for the visited states for a random policy and the reconstruction errors calculated for components 1 to 56.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "7651abd5-f7f2-45da-90a5-85ec88292ffb",
                             "requirements": "PCA has been computed for the visited states for SAPG and the reconstruction errors calculated for components 1 to 56.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "21885969-e53c-4f34-b9e6-7d1b8961d12f",
                             "requirements": "PPO has the smallest reconstruction error for the first number of components, and the random policy has the highest reconstruction error for the first number of components. SAPG has the highest reconstruction errors  when using more than 6 components. All methods have similar reconstruction errors when using more than 25 components.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "c8e6423c-3005-4ed2-9d76-675c122c7318",
@@ -1869,34 +2124,40 @@
                             "requirements": "PCA has been computed for the visited states for PPO and the reconstruction errors calculated for components 1 to 56. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "ec5c9d5e-7db3-40d0-acf1-e69e6f5dad53",
                             "requirements": "PCA has been computed for the visited states for a random policy and the reconstruction errors calculated for components 1 to 56. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "aba141f8-03f6-4c04-b308-342b75516f7d",
                             "requirements": "PCA has been computed for the visited states for SAPG and the reconstruction errors calculated for components 1 to 56. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "8550d48c-e5e1-45ae-ae46-ea9ddcc5f838",
                             "requirements": "The random policy has the smallest reconstruction error when using less than 25 components, and SAPG has the highest reconstruction error for most number of components. All methods have similar reconstruction errors when using more than 25 components.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "d7e6d42e-fa2b-4bdc-aa2f-b40b7aaa1c87",
@@ -1908,7 +2169,8 @@
                     "requirements": "Code has been written to implement a neural network that reconstructs the input. The neural network is made up of two layers, and the size of the layers vary from 8 to 64 neurons. The activation function is ReLU, and Adam is used as optimizer. The loss is the L2 reconstruction error of predicted state transitions.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "8ca7f1e8-6ce8-4fb0-b191-de8a5c65b4de",
@@ -1920,31 +2182,36 @@
                             "requirements": "The neural network has been trained on state transition from PPO and the reconstruction error caculated.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "5bc4d623-5c81-4885-82c5-13b4d602487f",
                             "requirements": "The neural network has been trained on state transition from SAPG and the reconstruction error caculated.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "cf84c344-b6ee-4410-8d91-e7f5eeb5d947",
                             "requirements": "The neural network has been trained on state transition from a random policy and the reconstruction error caculated.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "217424a8-1097-4bbf-8b18-2b1d765a48b3",
                             "requirements": "The reconstruction error from PPO and SAPG is similar to each other, while the error from the random policy is much smaller. The results indicate higher diversity of states visited in SAPG and PPO, than in a random policy.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "223a96cb-8251-4cfd-ab75-8e605060bf08",
@@ -1956,31 +2223,36 @@
                             "requirements": "The neural network has been trained on state transition from PPO and the reconstruction error caculated.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "dfe2ed08-7c47-4d46-bc33-2e5bfeb14809",
                             "requirements": "The neural network has been trained on state transition from SAPG and the reconstruction error caculated.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "d6d6cff2-2e7d-401e-97bf-48e13e0ab859",
                             "requirements": "The neural network has been trained on state transition from a random policy and the reconstruction error caculated.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "ac0d81a5-ef38-4141-800e-451505c7e54c",
                             "requirements": "The reconstruction error from PPO and SAPG is similar to each other, while the error from the random policy is much smaller. The results indicate higher diversity of states visited in SAPG and PPO, than in a random policy.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "eeb30329-8be7-41bf-abff-03bc9ab7ad7c",
@@ -1992,35 +2264,42 @@
                             "requirements": "The neural network has been trained on state transition from PPO and the reconstruction error caculated. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "fcce8750-c793-4292-8d55-4b074035e2e1",
                             "requirements": "The neural network has been trained on state transition from SAPG and the reconstruction error caculated. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "c266b447-dbe9-4435-849f-df677ceefbe5",
                             "requirements": "The neural network has been trained on state transition from a random policy and the reconstruction error caculated. ",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "d1050653-f0e1-4d50-85b9-fed1d65eb5e0",
                             "requirements": "The reconstruction error from PPO and SAPG is similar to each other, while the error from the random policy is much smaller. The results indicate higher diversity of states visited in SAPG and PPO, than in a random policy.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

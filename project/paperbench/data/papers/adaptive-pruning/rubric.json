@@ -18,17 +18,20 @@
                             "requirements": "Code has been implemented such that RoBERTa can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "fa5309a4-2d43-45ef-80f6-df26a5559be2",
                             "requirements": "Code has been implemented such that T5, specifically t5-lm-adapt, can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "b4dac465-a91c-4b19-bcb6-0ccf66a65931",
@@ -40,31 +43,36 @@
                             "requirements": "Code for accessing the train and dev splits from the SST2 dataset from the GLUE benchmark has been implemented",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "5fef034a-5a8f-4ada-848c-336469238e68",
                             "requirements": "Code for accessing the train and dev splits from the MNLI dataset from the GLUE benchmark has been implemented",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Data Processing & Preparation"
                         },
                         {
                             "id": "8605df37-4a11-4c87-8eae-bfb10b6bf5b9",
                             "requirements": "Code for accessing the train and dev splits from the SQuAD 2.0 benchmark has been implemented",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "4e1da193-e3eb-4cc0-af44-74314ba83668",
                             "requirements": "Code for accessing the train and test sets from the CNN Dailymail (CNN/DM) dataset has been implemented",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "75338090-55d9-4e76-94bd-3a3939b95e02",
@@ -76,24 +84,28 @@
                             "requirements": "When evaluating models on SST2 and MNLI, the dev set accuracy is reported",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "d43a1c9e-74f8-4725-91be-58a38063639a",
                             "requirements": "When evaluating models on SQuAD, the dev set F1 score is reported",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "698b1e1c-4947-4365-a49f-10c6ab66e263",
                             "requirements": "When evaluating models on CNN/DM, the ROUGE 1/2/L scores on the test set are reported",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "6dcaf27c-daf9-4f67-b418-3aa0f352b461",
@@ -105,34 +117,40 @@
                             "requirements": "For each method trained on some dataset, the train time is measured as the time-to-accuracy of reaching 97% of the dev (/test) set performance of the finetuning baseline",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "79a20612-83df-424a-9355-068dc18032d7",
                             "requirements": "For each method, when being trained on some dataset, code has been implemented to record the max GPU memory utilization, using torch.cuda.max_memory_allocated() (or equivalent)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "240b99e2-f34e-4a0c-86c2-4454e31b6517",
                             "requirements": "For each method, when being evaluated on some dataset, the speed of inference is measured as the inference throughput (sampled processed per second)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "1ff3dcb3-be14-4770-93a8-dcf721c4e3bd",
                             "requirements": "For each method, when performing inference with some dataset, code has been implemented to record the max GPU memory utilization, using torch.cuda.max_memory_allocated() (or equivalent)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "d1c67f43-2e5c-4e31-94c7-e5e970d13ee7",
@@ -144,17 +162,20 @@
                     "requirements": "LoRA is available to be applied to modules within transformers",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "d5ec9b1a-d8cb-4196-8cfc-2923638b8483",
                     "requirements": "After training a method using LoRA adapters, before performing inference, the LoRA parameters are merged into the parameters of the model",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "589700b6-e18c-47fc-b38e-bf8d03015511",
@@ -166,14 +187,16 @@
                     "requirements": "The fine-tuning baseline is implemented by finetuning a pre-trained model on a dataset",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "791e26f6-38ea-4e1a-89a9-b0bd251a48ea",
                     "requirements": "The Mask Tuning baseline is implemented, using the implementation at https://github.com/WoosukKwon/retraining-free-pruning",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "1cd21fca-c4db-4f55-b52e-f8b54b814401",
@@ -185,31 +208,36 @@
                             "requirements": "In LoRA+Prune, LoRA adapters are first added to modules of the given model",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "e2236b08-c76c-4236-b3d6-f4c2bcd3e9e5",
                             "requirements": "In LoRA+Prune, the model with the LoRA adapters added is finetuned",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "95d71d15-54a0-421b-b2af-9e6c65e5a004",
                             "requirements": "In LoRA+Prune, once the model with LoRA adapters has finished finetuning, Mask Tuning is applied to the model",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "1ad3cbb6-04ad-4947-88c9-f4461fa33596",
                     "requirements": "The CoFi baseline (also named \"Prune+Distill\" in Section 5.2) is implemented, using the implementation at https://github.com/princeton-nlp/CoFiPruning",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "8cb5586d-c650-48a5-8697-13c3e87d9beb",
@@ -221,20 +249,24 @@
                             "requirements": "In LoRA+Prune+Distill, LoRA adapters are first added to modules of the given model",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "a7b5b5ae-5a7b-425c-b286-b753e36610d0",
                             "requirements": "In LoRA+Prune+Distill, CoFi pruning and distillation is used but with LoRA parameters only; only the $L_0$ modules (the non-negative stochastic gates in CoFi which collectively determine which weights to set to zero) and LoRA parameters are tuneable",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "1bf48b45-d2f9-492a-92b0-3bba1abbe809",
@@ -256,24 +288,28 @@
                                     "requirements": "The masked input to the APT adapter is computed as $X \\circ m_i$, where $X$ is the input to the adapter and is $m_i \\in \\mathbb{R}^d_i$ a learnable binary pruning mask",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "a1686474-6def-4ed5-8b88-7a6af0659cab",
                                     "requirements": "When APT is applied to MHA layers, $m_i$ prunes the transformers' hidden dimension",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "169a5eb2-e201-49be-bf7f-f977933291f1",
                                     "requirements": "When APT is applied to FFN layers, $m_i$ prunes the transformers' hidden dimension",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d355596f-b5f3-4f47-a840-f33fbbd3d1f1",
@@ -285,45 +321,52 @@
                                     "requirements": "For the APT adapter implementation, a dynamic rank $r_{apt}$ is defined for each weight matrix, which can vary",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "18060c53-6871-4aa5-93d5-49f962f7187d",
                                     "requirements": "For the APT adapter implementation, a new learnable weight matrix $W_A \\in \\mathbb{R}^{r_{apt} \\times d_i}$ is defined",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "ee70fcc6-17cf-490f-ba08-3f2dba12b190",
                                     "requirements": "For the APT adapter implementation, a new learnable weight matrix $W_B \\in \\mathbb{R}^{d_o \\times r_{apt}}$ is defined",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "c99479b2-0e4e-435e-a574-53a7ae8d4c7f",
                                     "requirements": "For the APT adapter implementation, the original weight matrix $W$ is kept frozen; it isn't updated during training",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "bf86efe4-a3cb-4ee3-8c7b-19ab0a3cdf49",
                                     "requirements": "For the APT adapter implementation, the new weight matrix is computed as $W + 2 \\cdot W_B W_A$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "bb7ec9df-02b9-43e0-92c9-dc1b5429ef23",
                             "requirements": "For the APT adapter implementation, the new weight matrix is multipled by the masked input",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "34cf5055-95ff-45aa-9406-eae383cb1814",
@@ -335,27 +378,32 @@
                                     "requirements": "For the APT adapter implementation, the output of the multiplication between the updated weights and masked input is masked by a learnable binary pruning mask $m_o \\mathbb{R}^d_o$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "9500d7e2-8f9a-446a-8da0-7f0e4621db39",
                                     "requirements": "When the APT adapter is applied to MHA layers, $m_o$ prunes attention heads",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "472390c9-f791-4705-ab68-92c155f904d1",
                                     "requirements": "When the APT adapter is applied to FFN layers, $m_o$ prunes internal neurons in the FFN layers",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "324e138f-5257-46d0-9e26-620a45b21fa6",
@@ -367,31 +415,36 @@
                             "requirements": "For a parameter $W_{i,j}$ that is not in an APT adapter layer, the salience is computed as $S(W_{i,j}) = \\left| W_{i,j} \\cdot \\frac{\\partial \\mathcal{L}}{\\partial W_{i,j}} \\right|$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "67496368-0dd9-4422-b0f2-6fca77abe7a6",
                             "requirements": "For an APT adapter layer, the salience is computed following equation 9 as the sum of the block-wise frozen weight salience and the corresponding tuning weight",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "7f8d2c8b-7078-4e1f-b6f2-7e2c92240b89",
                             "requirements": "Outlier-aware salience for a block is computed as $\\hat{S}(W_{:,j}) = \\tilde{S}(W_{:,j}) + \\left( \\text{Kurt}(O_{j,:}) \\right)^{\\frac{1}{2}}$, where $\\tilde{S}$ is the salience score, $O_{:,j} = W_{:,j} \\circ X_{j,:}^T$ represents the activation, and $\\text{Kurt}(\\cdot)$ stands for Kurtosis",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "6c5119f5-f5ff-43bd-a2ce-3965c4befe2c",
                             "requirements": "During training, the outlier-aware salience of each block is computed as an exponential moving-average $\\overline{S}^{(t)}(m) \\gets 0.85 \\overline{S}^{(t-1)}(m) + 0.15 \\hat{S}(m)$, where $\\overline{S}^{(t)}(m)$ is the moving-average of block $m$ at time step $t$, and $\\hat{S}(m)$ is the current outlier-aware salience score of block $m$",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "c1f38081-5e08-4d70-8160-4c24546738d5",
@@ -413,62 +466,72 @@
                                             "requirements": "Given a hidden dimensionality $d_m$ and number of attention heads $n_h$, the number of parameters of a MHA head is computed as $4 \\times d_m \\times d_m / n_h$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "4a6f0dfe-c9c0-43b6-b910-7b7257b56fe6",
                                             "requirements": "Given a hidden dimensionality $d_m$, the number of parameters of a FFN neuron is computed as $2 \\times d_m$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "87383bb6-5e78-4acd-a7fb-ce8cdcef77d1",
                                             "requirements": "Given a hidden dimensionality $d_m$, number of layers $n_L$, and number of neurons in the FFN layer $n_f$, the number of parameters associated with a transformers hidden dimension across all layers is computed as $n_L \\times (4 d_m + 2 n_f)$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "1d80f3a3-58f0-4419-976c-5786053c9b4c",
                                     "requirements": "For a block with salience $S$ and number of parameters $\\mathcal{C}$, the salience density is computed as the salience divided by the parameter number $S / \\mathcal{C}$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "a3ae8772-f9aa-4f65-a8d2-7a1f94c9ae3c",
                                     "requirements": "The salience density is only calculated for blocks that have an APT adapter applied to them",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "8e4cb47d-9829-4357-b3c3-c44799d7f6f2",
                                     "requirements": "The salience density of each block is re-computed everytime the number of parameters of the model changes",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "4221dd78-0c29-416e-abd1-fa9b0a69d0ed",
                                     "requirements": "The blocks are sorted by their salience density in descending order",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "50d7ad1a-8908-427c-9830-585bfd7086f4",
                             "requirements": "A function $f$ for identifying a block's category is implemented, following equation 13. $f$ returns 0 when block $b_i$ is a head, 1 if $b_i$ is a neuron, and 2 if $b_i$ is a dimension",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "7e92857e-e842-4acb-abc4-ffa658b7d6c0",
@@ -480,48 +543,56 @@
                                     "requirements": "Following equation 14, given any index $i$ and a sorted list of N blocks in descending order of salience density, the number of blocks in the top-$i$ blocks that are added to heads is computed as $n_h^\\prime = \\sum_{j=0}^{i-1} \\delta (0, f(b_j))$, where $\\delta (i, j)$ is the Kronecker delta function that returns 1 if $i=j$, and otherwise 0, and $f$ is the function that returns 0 when block $b_i$ is a head, 1 if $b_i$ is a neuron, and 2 if $b_i$ is a dimension",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "7de18cb9-893c-4faf-9fff-59347b183ec3",
                                     "requirements": "Following equation 14, given any index $i$ and a sorted list of N blocks in descending order of salience density, the number of blocks in the top-$i$ blocks that are added to neurons is computed as $n_f^\\prime = \\sum_{j=0}^{i-1} \\delta (1, f(b_j))$, where $\\delta (i, j)$ is the Kronecker delta function that returns 1 if $i=j$, and otherwise 0, and $f$ is the function that returns 0 when block $b_i$ is a head, 1 if $b_i$ is a neuron, and 2 if $b_i$ is a dimension",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "256c6f16-a3d6-46ce-a5b4-edc6c2a96653",
                                     "requirements": "Following equation 14, given any index $i$ and a sorted list of N blocks in descending order of salience density, the number of blocks in the top-$i$ blocks that are added to dimensions is computed as $d_m^\\prime = \\sum_{j=0}^{i-1} \\delta (2, f(b_j))$, where $\\delta (i, j)$ is the Kronecker delta function that returns 1 if $i=j$, and otherwise 0, and $f$ is the function that returns 0 when block $b_i$ is a head, 1 if $b_i$ is a neuron, and 2 if $b_i$ is a dimension",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "d3dcd793-2ff9-4ef2-89a2-0e38815a1637",
                                     "requirements": "Following equation 14, given any index $i$ and a sorted list of N blocks in descending order of salience density, the parameter number is computed as $C_{\\text{top}-i} = (4d_h^\\prime \\cdot n_h^\\prime + 2n_f^\\prime) \\cdot d_m^\\prime$, where $d_h^\\prime$ is the number of heads in the model, $n_h^\\prime$ is the number of the top-$i$ blocks that are added to heads, $n_f^\\prime$ is the number of the top-$i$ blocks that are added to neurons, and $d_m^\\prime$ is the number of the top-$i$ blocks that are added to dimensions",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "b424b0fc-5ca1-40d0-95c6-095dea897198",
                             "requirements": "In Low-cost Adaptive LM Pruning, binary search is used to get the top-$i$ salient blocks",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "215e9429-279e-4fb5-9bce-7cbf69c1f76e",
                             "requirements": "In Low-cost Adaptive LM Pruning, blocks that are marked to be pruned have their corresponding masks decreased by 0.01",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "3c85013f-a0c5-45e2-b32c-b418e247dfeb",
@@ -533,14 +604,16 @@
                             "requirements": "In Adaptive and Efficient LM Tuning, given an APT adapter $H_{apt}$, the importance score is computed as $\\mathcal{I}(H_{apt}) = \\sum_{i,j} S(W_{Bi,j})$, the summation of the parameter salience scores in $W_B$ (where $W_B \\in \\mathbb{R}^{d_o \\times r_{apt}}$ is an APT tuning parameter)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "7fd4d11b-41d3-4036-b203-9bd71cc003b5",
                             "requirements": "In Adaptive and Efficient LM Tuning, APT adapters are sorted by their importance score",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "db7f1038-efbb-44a9-8407-e891c68c19ad",
@@ -552,20 +625,24 @@
                                     "requirements": "When increasing tuning parameter from $\\Delta t$ to $Delta t^{\\prime}$, the salient layer's rank is changed from $r_{apt}$ to $r_{apt}^\\prime=\\lfloor{r_{apt} \\cdot \\frac{\\Delta_t^\\prime}{\\Delta_t }\\rfloor$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "48d8285a-bcee-412a-995e-dea44e2fff2f",
                                     "requirements": "When adding parameters, random Gaussian initialized parameters $\\mathcal{N}(0, \\sigma^2)$ are concatenated to $W_A$, and zeros are concatenated to $W_B$, where $W_A \\in \\mathbb{R}^{r_{apt} \\times d_i}$,  $W_B \\in \\mathbb{R}^{d_o \\times r_{apt}}$ are both APT tuning parameters",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "46f2680c-1aa2-44eb-8a74-b46ac73324f8",
@@ -577,7 +654,8 @@
                             "requirements": "In Efficient Self-Knowledge Distillation, at each training epoch, intermediate layers from the teacher model are randomly selected for distillation; 4 teacher layers are randomly sampled in each quarter slice of the layers (e.g. for a 12-layer network the slices would be: 0-2, 3-5, 6-8, 9-11)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "b06d3f22-5baf-43ef-9ffb-13c1bda9fcf7",
@@ -589,31 +667,36 @@
                                     "requirements": "In Efficient Self-Knowledge Distillation, the teacher-student layer-mapping function $m(\\cdot)$ is implemented to match 4 teacher layers with the closest, non-pruned student layers, using the same method introduced in CoFi (Xia et al., 2022). For each of the 4 teacher layers, the layer mapping function dynamically determines which of the student layers is closest; $\\mathop{\\arg \\min}\\limits_{j:\\mathbf{z}_{FFN}^{(j)}>0} \\text{MSE} (W_{\\text{layer}} H_s^j, H_t^i)$, where $H_s^j, H_t^i$ are hidden representations from the $j$-th student FFN layer and $i$-th teacher layer respectively, and $W_{\\text{layer}} \\in \\mathbb{R}^{d\\timesd}$ is a learnable linear transformation matrix, initialized as an identity matrix",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "39282784-429b-4b1f-97a1-729417989069",
                                     "requirements": "In Efficient Self-Knowledge Distillation, the teacher-student layer-mapping function $m(\\cdot)$ is re-computed every training step",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "28658a50-5fa0-47d4-92c2-cdafb0d751aa",
                             "requirements": "In Efficient Self-Knowledge Distillation, the hidden layer distillation loss is defined as $\\mathcal{L}_{\\text{layer}} = \\sum_{i=1}^4 \\text{MSE}(\\text{Tr}(H_s^{\\phi(i)}), H_t^i)$, where $\\text{Tr}$ denotes the tunable LoRA layer for layer transformation, initialized as an identical matrix $\\mathcal{I}$, and $\\phi(\\cdot)$ is the teacher-student layer-mapping function",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "4b5df1a0-8ade-4ffa-a0b6-07fe15c74174",
                             "requirements": "In Efficient Self-Knowledge Distillation, $\\mu$ is a moving term that linearly scales from 0 to 1 during pruning",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "b1ced87a-d33c-4737-a3cb-1aa6f74a89ee",
@@ -625,58 +708,68 @@
                                     "requirements": "In Efficient Self-Knowledge Distillation, cross-entropy loss between the pruned student's and teacher's output probability distributions $\\mathbf{p}_s$ and $\\mathbf{p}_t$ is computed as $\\mathcal{L}_{\\text{pred}} = D_{\\text{KL}}(\\mathbf{p}_s \\,\\|\\, \\mathbf{p}_t)$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "1e6df51c-71c6-4712-95bd-c3ff8f9b8d69",
                                     "requirements": "In Efficient Self-Knowledge Distillation, when training on GLUE tasks, the layer distillation is combined with the prediction-layer distillation: $\\mathcal{L}_{\\text{distill}} = \\mathcal{L}_{\\text{pred}} + 0.9 \\mathcal{L}_{\\text{layer}}$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "16f88c2e-9b4d-44b0-8417-44d14a96f729",
                                     "requirements": "In Efficient Self-Knowledge Distillation, when training on SQuAD or CNN/DM, the layer distillation is combined with the prediction-layer distillation: $\\mathcal{L}_{\\text{distill}} = 0.1 \\mathcal{L}_{\\text{pred}} + 0.9 \\mathcal{L}_{\\text{layer}}$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "3f534396-e443-46f3-9ea8-a215dd653142",
                             "requirements": "Following equation 7, the distillation objective is defined as $\\mathcal{L} = \\mu \\mathcal{L}_{\\text{distill}} + (1 - \\mu) \\mathcal{L}_{\\text{ft}}$, where $\\mathcal{L}_{ft}$ is the supervised fine-tuning objective",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "43b7fa8c-b6d9-43fb-be02-91df6e3ac7ce",
                     "requirements": "When pruning LMs with APT, the LM is first pruned and trained with the self-distillation objective for some pre-defined number of epochs, then it is fine-tuned on the same dataset for some other pre-defined number of epochs",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Experimental Setup"
                 },
                 {
                     "id": "50acfee7-499d-4b68-8205-a346d6aa16e1",
                     "requirements": "When pruning LMs with APT, given a pre-determined target sparsity $\\gamma_T$ and total number of pruning training steps $T$, the target sparsity at timestep $t$ is computed by $\\gamma_t = \\gamma_T + (1 - \\gamma_T) \\left(1 - \\frac{t}{T}\\right)^3$",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "ca6ea57b-3ed0-40ee-96e8-123036828dfb",
                     "requirements": "After training a model using APT adapters, before performing inference, the APT parameters are merged into the parameters of the model",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "96fed172-bd64-4d1d-8582-a9ff78ed9fc2",
@@ -703,31 +796,36 @@
                                             "requirements": "All models trained on GLUEuse a learning rate of 2e-4",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "83a476b8-e3d9-4ce5-b956-e3cac8d8a499",
                                             "requirements": "All models trained on GLUEuse a batch size of 32",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "d441dc31-a89e-483a-996f-4a62517c47e5",
                                             "requirements": "For every method that isn't Finetune, models trained on GLUE use 40 epochs",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "fe34b5f1-93eb-4175-b53c-5b18b04b032d",
                                             "requirements": "When training on the GLUE dataset using the Prune+Distill, LoRA+Prune+Distill, or APT methods, the first 20 epochs are used for distillation, and the remaining 20 are for training on the objective",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "df4efbf5-73f1-4101-8e0f-a9ac17690982",
@@ -739,31 +837,36 @@
                                             "requirements": "All models trained on SQuAD use a learning rate of 2e-4",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "89b01087-4722-4de3-8e4e-8d75f82f6904",
                                             "requirements": "All models trained on SQuAD use a batch size of 32",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "c99c524a-17bd-4f7d-93c1-2f4b2b2753d1",
                                             "requirements": "For every method that isn't Finetune, models trained on SQuAD use 40 epochs",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "a5c6d56b-c273-40cf-9ded-82a9267d9c42",
                                             "requirements": "When training on the SQuAD dataset using the Prune+Distill, LoRA+Prune+Distill, or APT methods, the first 20 epochs are used for distillation, and the remaining 20 are for training on the objective",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "8c0ac791-e01b-48ae-abca-e6290bce216d",
@@ -775,51 +878,60 @@
                                             "requirements": "All models trained on CNN/DM use a learning rate of 1e-4",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "2fff2695-43e9-4392-ada2-77604e02babc",
                                             "requirements": "All models trained on CNN/DM use a batch size of 16",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "f0f7160e-44ba-49de-89eb-d581aed006ee",
                                             "requirements": "For every method that isn't Finetune, models trained on CNN/DM use 16 epochs",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "908deb8d-c35b-415f-9a18-0d086bab4a87",
                                             "requirements": "When training on the CNN/DM dataset using the Prune+Distill, LoRA+Prune+Distill, or APT methods, the first 6 epochs are used for distillation, and the remaining 10 are for training on the objective",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "6287838a-d855-40c2-ba76-b3057ecfc68e",
                             "requirements": "The adapter ranks $r_{apt}$ in all APT modules are initialized to 8",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "452a6371-176b-4a01-b29b-e74f9278c08e",
                             "requirements": "The Finetune method is trained for 10 epochs",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "182530e5-82ff-4a09-8146-09a35255a2e0",
@@ -831,17 +943,20 @@
                             "requirements": "LoRA and APT adapters are added to queries and values of MHA layers in RoBERTa and T5",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "2a3669df-4e69-464a-b0c5-47b9001e2281",
                             "requirements": "LoRA and APT adapters are added to the up layer in FFN layers in RoBERTa and T5",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "0f68b07c-ac8b-48a6-a64a-d76d3544b1a2",
@@ -863,27 +978,32 @@
                                             "requirements": "RoBERTa with the FT, LoRA, LoRA+Prune, and APT methods is trained and evaluated on MNLI, SST2, and SQuAD v2 separately with 60% sparsity",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "8e9dce7a-d32e-4636-9da7-df9918647823",
                                             "requirements": "RoBERTa with the Prune+Distill and LoRA+Prune+Distill methods is trained and evaluated on MNLI and SST2 separately with 60% sparsity.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "dcc716d8-6f57-45be-b4d5-5c1b774b4b6b",
                                     "requirements": "T5 with the FT, LoRA, LoRA+Prune, and APT methods is trained and evaluated on MNLI, SST2, and CNN/DM separately with 60% sparsity",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "831a290b-bb51-4254-b41a-536500671b44",
@@ -900,31 +1020,36 @@
                                             "requirements": "The recorded metrics show that when pruning RoBERTa to 60% sparsity, APT converged about 8x faster than the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "be593611-3cdd-4a6c-89c6-726831a9382c",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa to 60% sparsity, APT used similar GPU memory during both training and inference compared to the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "7fb47445-dde2-4b4a-957a-777aedae4eae",
                                             "requirements": "The recorded metrics show that when pruning T5 to 60% sparsity, APT converged about 8x faster than the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "c6179a9c-02b7-428b-b019-16d2d490b271",
                                             "requirements": "The recorded metrics show that when pruning T5 to 60% sparsity, APT used similar GPU memory during both training and inference compared to the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "5b290859-b1d1-4219-89fe-15e6b3cee2e5",
@@ -936,31 +1061,36 @@
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, APT achieves an equal or higher performance than LoRA+Prune across all evaluations",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "fbdc9a9e-6d1a-44a4-972d-995e33e35234",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, the inference efficiency reached by APT is about the same as the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "de57690a-d1e9-4606-b8d7-dc198bc976da",
                                             "requirements": "The recorded metrics show that when pruning T5 under 60% sparsity, APT has roughly 5% better end-task performance on average than the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "737f8df7-95b8-42cb-9e59-8e05bae93052",
                                             "requirements": "The recorded metrics show that when pruning T5 under 60% sparsity, the inference efficiency reached by APT is worse than the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "8e7a9685-1cf0-42e1-b12c-b129d0872a66",
@@ -972,51 +1102,60 @@
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, APT has similar task accuracy to Prune+Distill across MNLI and SST2",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "37612400-aa24-4650-9402-9b9c536b86a5",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, APT costs roughly 40% of training memory compared to Prune+Distill",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "9f477ec1-f090-482a-919d-c9050cac0802",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, APT converges 2.5x faster than Prune+Distill",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "e1fe1c33-bdce-4ee4-a5cb-7ec2b210f6a6",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, APT achieves better task performance than LoRA+Prune+Distill",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "dc200210-82d1-4f50-ae44-b30bd24cc22b",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, APT requires less training time than LoRA+Prune+Distill",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "5a2b6715-3de9-4527-b9ae-86e28d4713b5",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa and T5 to 60% sparsity, APT requires less memory than LoRA+Prune+Distill",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "05b27156-45d5-40bf-89e9-bada7bbe4b05",
@@ -1033,38 +1172,44 @@
                                     "requirements": "For Section 5.5, the relative accuracy for some model is computed as the accuracy such model achieves when compared to the accuracy the finetuning baseline achieves",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "d406c635-3506-4ed8-bf4f-ed80d54bc7b2",
                                     "requirements": "RoBERTa with the LoRA+Prune, LoRA+Prune+Distill, and Prune+Distill methods is trained and evaluated on SST2 and MNLI separately, and the relative performance is computed using the average on SST2 and MNLI",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "24223a79-763d-4cb8-9f73-27fdd358d543",
                                     "requirements": "T5 with the LoRA+Prune method is trained and evaluated on SST2 and MNLI separately, and the relative performance is computed using the average on SST2 and MNLI",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "5a92263e-e824-4fe3-bc4f-661fc7ab5c1a",
                                     "requirements": "RoBERTa with the APT method is trained and evaluated on SST2 and MNLI separately for sparsities 40%, 50%, 60%, 70%, 80%, 90%, 95%, and the relative is computed using the average on SST2 and MNLI",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "8df3184f-06b6-4df1-8234-055b81384970",
                                     "requirements": "T5 with the APT method is trained and evaluated on SST2 and MNLI separately for sparsities 40%, 50%, 60%, 70%, 80%, 90%, and the relative performance is computed using the average on SST2 and MNLI",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "48411c0d-c518-4be5-b9e3-94631d943f54",
@@ -1076,34 +1221,40 @@
                                     "requirements": "The recorded metrics indicate that APT is about 20% faster in inference than the LoRA+Prune baseline for RoBERTa, when comparing the APT model that achieved the closest accuracy to the LoRA+Prune baseline",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "00ce14bb-60bc-461a-8958-897ca6c75a3d",
                                     "requirements": "The recorded metrics indicate that APT is about 7% more memory efficient than the LoRA+Prune baseline for RoBERTa, when comparing the APT model that achieved the closest accuracy to the LoRA+Prune baseline",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "93cb26c7-4166-42c5-8718-8c27d892d682",
                                     "requirements": "The recorded metrics indicate that APT is about 60% faster in inference than the LoRA+Prune baseline for T5, when comparing the APT model that achieved the closest accuracy to the LoRA+Prune baseline",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b7607af8-bc54-4840-9153-9a8b55409c84",
                                     "requirements": "The recorded metrics indicate that APT is about 25% more memory efficient than the LoRA+Prune baseline for T5, when comparing the APT model that achieved the closest accuracy to the LoRA+Prune baseline",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "a8de113b-d3cf-41aa-a5ff-2137c4587140",
@@ -1120,7 +1271,8 @@
                                     "requirements": "RoBERTa is trained and evaluated on SST2 and MNLI separately with 60% sparsity using a modified version of APT that doesn't use adaptive pruning (APT w/o $A_P$)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "b029f3f7-2957-4a7a-a53a-f05940ad055c",
@@ -1132,27 +1284,32 @@
                                             "requirements": "The recorded metrics show that when pruning with APT w/o $A_P$, the task performance of RoBERTa reaches roughly 94 for SST2 and 87.5 for MNLI",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "16db85a1-c6ea-4e23-86f7-5d538f4f438a",
                                             "requirements": "The recorded metrics show that when pruning with APT w/o $A_P$, the RoBERTA training speed with APT w/o $A_P$ is roughly 20% faster than full fine-tuning on the same datasets",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "66039c65-91df-4270-9216-1a31aab5756e",
                                             "requirements": "The recorded metrics show that when pruning with APT w/o $A_P$, the RoBERTA training using APT w/o $A_P$ requires roughly 60% of the memory compared to full fine-tuning on the same datasets",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "95e0ba74-3019-48f1-a65a-01f65e0038be",
@@ -1164,7 +1321,8 @@
                                     "requirements": "RoBERTa is trained using a modified version of APT that doesn't use adaptive tuning (APT w/o $A_T$) using 60% sparsity",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "03f507ad-6b1a-46d9-9318-d7794bb39540",
@@ -1176,34 +1334,40 @@
                                             "requirements": "The recorded metrics show that when pruning RoBERTa with APT w/o $A_T$, it achieves roughly 93 on SST2",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "1a57a576-01a5-42e4-bb42-cdcdaa3f45e2",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa with APT w/o $A_T$, it achieves roughly 84 on MNLI",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "26fbd16f-a67f-4464-be72-818898a86f41",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa with APT w/o $A_T$, it has a similar performance as the LoRA+Prune baseline",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "70a1b6da-2a1f-475e-b61e-8dbbd1911766",
                                             "requirements": "The recorded metrics show that when pruning RoBERTa with APT w/o $A_T$, it converged roughly 15% slower than full APT",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "dcec9c7d-8519-43a3-a582-b12869115591",
@@ -1215,7 +1379,8 @@
                                     "requirements": "RoBERTa is trained using 60% sparsity and a modified version of APT that doesn't use self-distillation (APT w/o $D_S$)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "2a30eeb9-1943-47df-81a6-112e7030e9f9",
@@ -1227,27 +1392,34 @@
                                             "requirements": "The recorded metrics show that pruning RoBERTa with APT w/o $D_S$ has roughly 20% faster training time than full APT",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Logging, Analysis & Presentation"
                                         },
                                         {
                                             "id": "9c90df0a-aa9f-4c71-be71-69f5cac2ccc0",
                                             "requirements": "The recorded metrics show that pruning RoBERTa with APT w/o $D_S$ costs roughly 10% less training memory than full APT",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

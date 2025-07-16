@@ -72,6 +72,7 @@ async def judge(
     max_depth: int,
     code_only: bool,
     reasoning_effort: str | None = None,
+    resources_provided: bool = False,
 ) -> GradedTaskNode:
     """
     Judge a single submission (a directory of files) using the specified judge.
@@ -92,7 +93,12 @@ async def judge(
             "Code Development"
         ).set_sub_tasks([])
 
-    judge_kwargs = handle_judge_kwargs(judge_type, code_only, paper, model_name, reasoning_effort)
+    if resources_provided:
+        task_tree = task_tree.resources_provided()
+
+    judge_kwargs = handle_judge_kwargs(
+        judge_type, code_only, resources_provided, paper, model_name, reasoning_effort
+    )
     judge = create_judge(
         judge_type=judge_type,
         judge_kwargs=judge_kwargs,
@@ -117,6 +123,7 @@ async def main(
     max_depth: int,
     out_dir: Path,
     code_only: bool,
+    resources_provided: bool = False,
     reasoning_effort: str | None = None,
 ):
     # Judge the submission
@@ -128,6 +135,7 @@ async def main(
         out_dir=out_dir,
         max_depth=max_depth,
         code_only=code_only,
+        resources_provided=resources_provided,
         reasoning_effort=reasoning_effort,
     )
 
@@ -199,6 +207,11 @@ if __name__ == "__main__":
         help="Only grade 'Code Development' nodes",
     )
     parser.add_argument(
+        "--resources-provided",
+        action="store_true",
+        help="Weight 'Dataset and Model Acquisition' nodes to 0",
+    )
+    parser.add_argument(
         "--reasoning-effort",
         choices=["low", "medium", "high"],
         required=False,
@@ -220,6 +233,7 @@ if __name__ == "__main__":
             max_depth=args.max_depth,
             out_dir=args.out_dir,
             code_only=args.code_only,
+            resources_provided=args.resources_provided,
             reasoning_effort=args.reasoning_effort,
         )
     )

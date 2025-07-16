@@ -99,6 +99,7 @@ class JudgeConfig(BaseModel):
     scaffold: str = "simple"
     model: str = "o3-mini-2025-01-31"
     code_only: bool = False
+    resources_provided: bool = False
     reasoning_effort: Optional[str] = "high"
     cluster_config: LocalConfig = LocalConfig(
         image="pb-grader:latest",
@@ -146,6 +147,7 @@ class PaperBenchResult:
     submission_exists: bool
     skipped_reproduction: bool
     code_only: bool
+    resources_provided: bool
     agent_output: Optional[AgentOutput] = None
     judge_output: Optional[JudgeOutput] = None
     reproduction_output: Optional[ReproductionOutput] = None
@@ -155,6 +157,7 @@ class PaperBenchResult:
             "paper_id": self.paper_id,
             "skipped_reproduction": self.skipped_reproduction,
             "code_only": self.code_only,
+            "resources_provided": self.resources_provided,
             "agent_output": None,
             "judge_output": None,
             "reproduction_output": None,
@@ -316,6 +319,7 @@ class PBTask(ComputerTask):
                     submission_exists=False,
                     skipped_reproduction=self.reproduction.skip_reproduction,
                     code_only=self.judge.code_only,
+                    resources_provided=self.judge.resources_provided,
                     agent_output=agent_output,
                     judge_output=None,
                     reproduction_output=None,
@@ -409,6 +413,7 @@ class PBTask(ComputerTask):
                 submission_exists=True,
                 skipped_reproduction=self.reproduction.skip_reproduction,
                 code_only=self.judge.code_only,
+                resources_provided=self.judge.resources_provided,
                 agent_output=agent_output,
                 judge_output=judge_output,
                 reproduction_output=reproduction_output,
@@ -603,6 +608,7 @@ class PBTask(ComputerTask):
                 model_name=self.judge.model,
                 logger=ctx_logger.bind(destinations=["run"]),
                 code_only=self.judge.code_only,
+                resources_provided=self.judge.resources_provided,
                 reasoning_effort=self.judge.reasoning_effort,
             )
         else:
@@ -617,6 +623,7 @@ class PBTask(ComputerTask):
                     logger=ctx_logger.bind(destinations=["run"]),
                     run_dir=self.run_dir,
                     code_only=self.judge.code_only,
+                    resources_provided=self.judge.resources_provided,
                     reasoning_effort=self.judge.reasoning_effort,
                 )
 
@@ -725,6 +732,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                             submission_exists=grade.paperbench_result.submission_exists,
                             skipped_reproduction=task.reproduction.skip_reproduction,
                             code_only=task.judge.code_only,
+                            resources_provided=task.judge.resources_provided,
                             agent_output=agent_output,
                             judge_output=None,
                             reproduction_output=None,
@@ -1086,6 +1094,7 @@ class PaperBench(PythonCodingEval):
             "n_samples": len(tasks_and_results),
             "skip_reproduction": self.reproduction.skip_reproduction,
             "code_only": self.judge.code_only,
+            "resources_provided": self.judge.resources_provided,
             "agent": self.solver.shortname(),
         }
 

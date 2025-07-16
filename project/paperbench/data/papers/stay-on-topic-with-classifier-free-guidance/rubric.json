@@ -23,73 +23,84 @@
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset ARC-c (https://huggingface.co/datasets/allenai/ai2_arc) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "43b57f14-20f5-494d-a275-d1e52303249a",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset ARC-e (https://huggingface.co/datasets/allenai/ai2_arc) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "79ab826f-06c7-43eb-ad3c-ad17fada9878",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset BoolQ (https://huggingface.co/datasets/google/boolq) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "a215688a-0d56-42ce-bc96-61c395391a53",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset HellaSwag (https://rowanzellers.com/hellaswag/) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "dbed549d-88ee-4990-a8f6-c628dd1641c2",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset PiQA (https://github.com/ybisk/ybisk.github.io/tree/master/piqa) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "873a2ed0-4c28-4548-9f82-099b29b3a8d8",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset SciQ (https://huggingface.co/datasets/allenai/sciq) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "2213f8f0-f2a6-4fae-a61d-4805c3720969",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset TriviaQA (https://huggingface.co/datasets/mandarjoshi/trivia_qa) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "b78526fe-3d10-4b8c-a9c5-d139f41bd292",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset WinoGrande (https://huggingface.co/datasets/allenai/winogrande) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "8329045d-344f-4d51-b95a-0b0056c4220a",
                                     "requirements": "Code has been implemented such that the zero-shot benchmark dataset Lambada (https://huggingface.co/datasets/EleutherAI/lambada_openai) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "837b7902-ec4e-4aa4-b17c-bae83104c462",
                             "requirements": "The evaluation harness has been reproduced, either by directly using the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or by reproducing the Language Model Evaluation Harness",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "d86cb9e3-d8d0-4013-96a6-9f982eefd4f7",
@@ -106,24 +117,28 @@
                                             "requirements": "Classifier-Free Guidance (CFG) inference is implemented as described in equation 7 in Section 2.2 such that it can be run on the GPT2 family of models",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "bc1168ce-1669-4aa8-9f2c-d806a8941d27",
                                             "requirements": "The implementation of CFG which can be used for the GPT2 family of models includes a mutable (not hardcoded) hyper-parameter which can be used to specify the guidance strength",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "bcec9a7d-70da-45a0-a588-abba95fa574b",
                                             "requirements": "As outlined in Section 3.1, the implementation of CFG which can be used for the GPT2 family of models starts the unconditional prompt $\\log p_{\\theta}(w_i | w_{j < i})$ with the last token of the initial prompt",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "f7386fb8-da3c-4cb4-9a53-28447e7677c0",
@@ -135,27 +150,32 @@
                                             "requirements": "Classifier-Free Guidance (CFG) inference is implemented as described in equation 7 in Section 2.2 such that it can be run on the Pythia family of models",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "10f12f5c-862c-4f98-bce0-401e0583ca99",
                                             "requirements": "The implementation of CFG which can be used for the Pythia family of models includes a mutable (not hardcoded) hyper-parameter which can be used to specify the guidance strength",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "d7afdeb5-d464-4645-bb95-7d5d1dd3088f",
                                             "requirements": "As outlined in Section 3.1, the implementation of CFG which can be used for the Pythia family of models starts the unconditional prompt $\\log p_{\\theta}(w_i | w_{j < i})$ with the last token of the initial prompt",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "9252f603-4133-4d84-b588-c82e55468721",
@@ -172,24 +192,28 @@
                                             "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 model family with and without CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively)",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "3ca1db72-d16e-4fbf-9747-d1aa24e881bc",
                                             "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 model family for at least 5 of the 9 datasets shown in Table 5.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "28101afd-ce96-4e08-b04a-935159ac6f97",
                                             "requirements": "The performance of the evaluated models from the GPT2 model family on the zero-shot benchmark (accuracy or exact match, depending on the dataset) has been measured for at least 5 of the 9 datasets shown in Table 5.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "36a13f7e-a2a1-418e-a7b1-8a16662a1282",
@@ -201,40 +225,48 @@
                                             "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the Pythia model family with and without CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively)",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "a01f51d8-42d6-4e91-9a15-0a480f35d0c8",
                                             "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the Pythia model family for at least 5 of the 9 datasets shown in Table 5.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "66ed13a5-f926-498c-a6dc-f6a926a76175",
                                             "requirements": "The performance of the evaluated models from the Pythia model family on the zero-shot benchmark (accuracy or exact match, depending on the dataset) has been measured for at least 5 of the 9 datasets shown in Table 5.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "db320ab7-c3bc-4c86-8739-53267fbfd40e",
                     "requirements": "The measured performance metrics on the zero-shot benchmark show that using CFG (\\gamma=1.5) outperforms not using CFG (\\gamma=1) across all evaluated models and datasets, with the exception of ARC (challenge) and Winogrande.",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Result Analysis"
+                    "task_category": "Result Analysis",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "9a70e578-aab0-44a4-bc4b-0bb63175b131",
@@ -256,17 +288,20 @@
                                     "requirements": "Code has been implemented such that the GSM8K dataset for arithmetic reasoning tasks (https://huggingface.co/datasets/openai/gsm8k) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "25ecc1e6-b1a6-472e-8490-c62db7d0943e",
                                     "requirements": "Code has been implemented such that the AQuA dataset for arithmetic reasoning tasks (https://huggingface.co/datasets/nguyen-brat/aqua) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "c4d3f07a-0195-40f4-ae06-fa65cf5d7d7a",
@@ -283,24 +318,28 @@
                                             "requirements": "Classifier-Free Guidance (CFG) inference is implemented as described in equation 7 in Section 2.2 such that it can be run on the Guanaco65B model.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "7d4e559d-57ab-454c-b418-2a29e7005ff4",
                                             "requirements": "The implementation of CFG which can be used for the Guanaco65B model includes a mutable (not hardcoded) hyper-parameter which can be used to specify the guidance strength",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "331299b9-5b4f-45a5-8e7e-8749fdca7871",
                                             "requirements": "As outlined in Section 3.1, the implementation of CFG which can be used for the Guanaco65B model starts the unconditional prompt $\\log p_{\\theta}(w_i | w_{j < i})$ with the last token of the initial prompt.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "db5f1f8c-ec4f-4857-9a78-55d29ba6f063",
@@ -312,27 +351,32 @@
                                             "requirements": "Classifier-Free Guidance (CFG) inference is implemented as described in equation 7 in Section 2.2 such that it can be run on the WizardLM-30B model.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "f5bb6a9b-9599-4bd3-9352-bb673c9be084",
                                             "requirements": "The implementation of CFG which can be used for the WizardLM-30B model includes a mutable (not hardcoded) hyper-parameter which can be used to specify the guidance strength",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "3321df8c-c84e-4db7-b3a0-ce784311ef83",
                                             "requirements": "As outlined in Section 3.1, the implementation of CFG which can be used for the WizardLM-30B model starts the unconditional prompt $\\log p_{\\theta}(w_i | w_{j < i})$ with the last token of the initial prompt.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "7f31322c-cb18-4f9a-ab04-c988cbe44ba5",
@@ -359,31 +403,36 @@
                                                             "requirements": "Code has been implemented such that when Guanaco65B is evaluated on GSM8k, the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it can be used as the evaluation harness.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "906d86fa-3210-4332-855a-220761268104",
                                                             "requirements": "Code has been implemented such that when evaluated, Guanaco65B is prompted with the few-shot prompt for GSM8k from Wang et al. 2023: Self-Consistency Improves Chain of Thought Reasoning in Language Models",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         },
                                                         {
                                                             "id": "a35c7964-0519-4cf5-b7db-b6b5af8dac67",
                                                             "requirements": "Code has been implemented such that when Guanaco65B is evaluated on GSM8k, the initial prompt is $w_p$, such that only $w_p$ is up-weighted and not $w_{cot}$ and the model's answer $w_{a}$, as described at the end of Section 3.2.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Method Implementation"
                                                         },
                                                         {
                                                             "id": "9033bacd-94f1-497e-9cd0-8ce0755c30d9",
                                                             "requirements": "Code has been implemented such that Guanaco65B can be evaluated on GSM8k with guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2]  (as per Figure 2)",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 },
                                                 {
                                                     "id": "d4d2505b-2345-4017-9bc7-5252ebd5175f",
@@ -395,34 +444,40 @@
                                                             "requirements": "Guanaco65B has been evaluated on GSM8k with Wang et al. 2023 self-consistency Chain-of-Thought using the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "0979bbed-aa76-4f3e-b9ed-c9de82f6ab9d",
                                                             "requirements": "For the evaluation of Guanaco65B on GSM8k with Wang et al. 2023 self-consistency Chain-of-Thought has been correctly executed for guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2] as outlined in section 3.2",
                                                             "weight": 2,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "495dbdd2-9afb-4a38-bc84-8c658ed3bf51",
                                                             "requirements": "For the evaluation of Guanaco65B on GSM8k, the metric '% of chains ending in a invalid answer' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "7a6728bd-1ca8-4a0b-a297-af9a9f2c9399",
                                                             "requirements": "For the evaluation of Guanaco65B on GSM8k, the metric 'final answer accuracy' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "4a520cf7-08b4-484a-86d6-8574a87ab2a6",
@@ -439,31 +494,36 @@
                                                             "requirements": "Code has been implemented such that when WizardLM-30B is evaluated on GSM8k, the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it can be used as the evaluation harness.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "61e62fe0-70d3-46f7-b2d1-709dbbeb590f",
                                                             "requirements": "Code has been implemented such that when evaluated, WizardLM-30B is prompted with the few-shot prompt for GSM8k from Wang et al. 2023: Self-Consistency Improves Chain of Thought Reasoning in Language Models",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         },
                                                         {
                                                             "id": "660acd57-8372-4e1d-9f6d-f072c6a6160b",
                                                             "requirements": "Code has been implemented such that when WizardLM-30B is evaluated on GSM8k, the initial prompt is $w_p$, such that only $w_p$ is up-weighted and not $w_{cot}$ and the model's answer $w_{a}$, as described at the end of Section 3.2.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Method Implementation"
                                                         },
                                                         {
                                                             "id": "31f5447c-9279-4f96-b5af-861e45af19e2",
                                                             "requirements": "Code has been implemented such that WizardLM-30B can be evaluated on GSM8k with guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2]  (as per Figure 2)",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 },
                                                 {
                                                     "id": "fa1ae066-c47f-40c6-8bb7-68b103d1ac74",
@@ -475,37 +535,44 @@
                                                             "requirements": "WizardLM-30B has been evaluated on GSM8k with Wang et al. 2023 self-consistency Chain-of-Thought using the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "5854f301-274d-4536-830e-a7493259743d",
                                                             "requirements": "For the evaluation of WizardLM-30B on GSM8k with Wang et al. 2023 self-consistency Chain-of-Thought has been correctly executed for guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2] as outlined in section 3.2",
                                                             "weight": 2,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "a7939935-5b72-4727-ac26-650f33046c0b",
                                                             "requirements": "For the evaluation of WizardLM-30B on GSM8k, the metric '% of chains ending in a invalid answer' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "fcf6f88d-4ceb-4857-a733-3df1bcb3f785",
                                                             "requirements": "For the evaluation of WizardLM-30B on GSM8k, the metric 'final answer accuracy' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "3ca0ea3a-6971-4f40-b0eb-29c03840c356",
@@ -527,31 +594,36 @@
                                                             "requirements": "Code has been implemented such that when Guanaco65B is evaluated on AQuA, the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it can be used as the evaluation harness.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "6f5a98fd-4023-4aab-b218-6109566d39d6",
                                                             "requirements": "Code has been implemented such that when evaluated, Guanaco65B is prompted with the few-shot prompt for AQuA from Wang et al. 2023: Self-Consistency Improves Chain of Thought Reasoning in Language Models",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         },
                                                         {
                                                             "id": "30fbfac7-f241-45a1-a2fd-c4045f180e7e",
                                                             "requirements": "Code has been implemented such that when Guanaco65B is evaluated on AQuA, the initial prompt is $w_p$, such that only $w_p$ is up-weighted and not $w_{cot}$ and the model's answer $w_{a}$, as described at the end of Section 3.2.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Method Implementation"
                                                         },
                                                         {
                                                             "id": "776e377c-4854-4f0a-9946-d02b94c6f3f3",
                                                             "requirements": "Code has been implemented such that Guanaco65B can be evaluated on AQuA with guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2]  (as per Figure 2)",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 },
                                                 {
                                                     "id": "0a67f644-eb66-41a2-baf7-36741afcdcd2",
@@ -563,34 +635,40 @@
                                                             "requirements": "Guanaco65B has been evaluated on AQuA with Wang et al. 2023 self-consistency Chain-of-Thought using the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "8cae1c09-0161-4c38-b700-e5de9d6f3060",
                                                             "requirements": "For the evaluation of Guanaco65B on AQuA with Wang et al. 2023 self-consistency Chain-of-Thought has been correctly executed for guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2] as outlined in section 3.2",
                                                             "weight": 2,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "38b620c3-0990-4111-b446-d2caf6654d25",
                                                             "requirements": "For the evaluation of Guanaco65B on AQuA, the metric '% of chains ending in a invalid answer' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "a97c8bb9-a40b-4ebb-85ba-cbb08090872a",
                                                             "requirements": "For the evaluation of Guanaco65B on AQuA, the metric 'final answer accuracy' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         },
                                         {
                                             "id": "ad463745-63e4-4a8c-b6e5-e5a9013ad6ad",
@@ -607,31 +685,36 @@
                                                             "requirements": "Code has been implemented such that when WizardLM-30B is evaluated on AQuA, the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it can be used as the evaluation harness.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "db44a8a1-97b7-4c35-9183-8e0111a648e9",
                                                             "requirements": "Code has been implemented such that when evaluated, WizardLM-30B is prompted with the few-shot prompt for AQuA from Wang et al. 2023: Self-Consistency Improves Chain of Thought Reasoning in Language Models",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         },
                                                         {
                                                             "id": "efddca04-bec5-467a-95df-1eaa0c10cb36",
                                                             "requirements": "Code has been implemented such that when WizardLM-30B is evaluated on AQuA, the initial prompt is $w_p$, such that only $w_p$ is up-weighted and not $w_{cot}$ and the model's answer $w_{a}$, as described at the end of Section 3.2.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Experimental Setup"
                                                         },
                                                         {
                                                             "id": "e5ee4ec4-7033-45a6-b694-fd24ecaf735e",
                                                             "requirements": "Code has been implemented such that WizardLM-30B can be evaluated on AQuA with guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2]  (as per Figure 2)",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Development"
+                                                            "task_category": "Code Development",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 },
                                                 {
                                                     "id": "c20faab1-fc49-41ab-9807-686bb96b841d",
@@ -643,43 +726,52 @@
                                                             "requirements": "WizardLM-30B has been evaluated on AQuA with Wang et al. 2023 self-consistency Chain-of-Thought using the Language Model Evaluation Harness (Gao et al., 2021, github.com/EleutherAI/lm-evaluation-harness) or an equivalent reproduction of it",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "7c719f0c-e535-4a63-bfd6-2b0c335d625b",
                                                             "requirements": "For the evaluation of WizardLM-30B on AQuA with Wang et al. 2023 self-consistency Chain-of-Thought has been correctly executed for guidance strengths [1, 1.1, 1.25, 1.5, 1.75, 2] as outlined in section 3.2",
                                                             "weight": 2,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "56fa92f2-17eb-437b-9d27-533be60101ed",
                                                             "requirements": "For the evaluation of WizardLM-30B on AQuA, the metric '% of chains ending in a invalid answer' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         },
                                                         {
                                                             "id": "d7203e03-46f7-413a-9179-656f6def956e",
                                                             "requirements": "For the evaluation of WizardLM-30B on AQuA, the metric 'final answer accuracy' has been correctly measured across all guidance strengths.",
                                                             "weight": 1,
                                                             "sub_tasks": [],
-                                                            "task_category": "Code Execution"
+                                                            "task_category": "Code Execution",
+                                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                                         }
                                                     ],
-                                                    "task_category": null
+                                                    "task_category": null,
+                                                    "finegrained_task_category": null
                                                 }
                                             ],
-                                            "task_category": null
+                                            "task_category": null,
+                                            "finegrained_task_category": null
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "bd41cfd9-007c-4987-bf25-3bfc2d1ac278",
@@ -696,17 +788,20 @@
                                     "requirements": "For small values of gamma (less than 1.5), CFG is shown to increase the % of chains ending in a valid answer when tested on the GSM8K dataset, following Figure 2 (Bottom)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "e47a76ae-554f-4a4e-8c77-1ad226a6ebed",
                                     "requirements": "For large values of gamma (over 1.5), CFG is shown to maintain a small invalid % of chains ending in a invalid answer while causing a drop in accuracy when tested on the GSM8K dataset, following Figure 2.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "217d6a3f-5312-4fa1-b4f5-acf4c1f73504",
@@ -718,23 +813,28 @@
                                     "requirements": "For small values of gamma (less than 1.5), CFG is shown to increase the % of chains ending in a valid answer while increasing model accuracy when tested on the AQuA dataset, following Figure 17.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "364fe992-0840-4fc8-9e38-28834b43e7ba",
                                     "requirements": "For large values of gamma (over 1.5), CFG is shown to maintain a small % of chains ending in a invalid answer while causing a drop in accuracy when tested on the AQuA dataset, following Figure 17.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "6f359147-5dd3-43f3-80c5-fbf263dd0e2b",
@@ -756,7 +856,8 @@
                                     "requirements": "Code has been implemented such that the HumanEval dataset (https://github.com/openai/human-eval) can be used, obtaining it from its official source or equivalent mirrors",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Dataset and Model Acquisition"
                                 },
                                 {
                                     "id": "1e8916bc-5a46-4d46-a3a7-aae9d9c8cb67",
@@ -768,55 +869,64 @@
                                             "requirements": "Classifier-Free Guidance (CFG) inference is implemented as described in equation 7 in Section 2.2 such that it can be run on the CodeGen family of models (CodeGen-350M-mono, CodeGen-2B-mono, CodeGen-6B-mono)",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "0c8c0598-a5c0-4484-8d16-b98671646528",
                                             "requirements": "The implementation of CFG which can be used for the CodeGen family of models (CodeGen-350M-mono, CodeGen-2B-mono, CodeGen-6B-mono) includes a mutable (not hardcoded) hyper-parameter which can be used to specify the guidance strength",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "ff66683d-f2cf-4d57-b235-d028dfc1711c",
                                             "requirements": "As outlined in Section 3.1, the implementation of CFG which can be used for the CodeGen family of models (CodeGen-350M-mono, CodeGen-2B-mono, CodeGen-6B-mono) starts the unconditional prompt $\\log p_{\\theta}(w_i | w_{j < i})$ with the last token of the initial prompt.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "8b8c4106-59a9-47f3-bfaf-3390f9b25c4f",
                                     "requirements": "Code has been implemented such that the CodeGen model family can be evaluated on HumanEval with guidance strengths [1.0, 1.1, 1.25, 1.5, 1.75, 2.0] as outlined in Footnote 3",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "78e019d5-21f7-4358-b5e8-1c898dbfa93a",
                                     "requirements": "Code has been implemented such that the CodeGen model family can be evaluated on HumanEval with a sampling temperatures of [0.2, 0.6, 0.8] as outlined in Figure 3.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "fdddda96-3a26-4234-b00f-dccd5cadc763",
                                     "requirements": "Code has been implemented such that the CodeGen model family performance on HumanEval can be measured with pass@k, for k = 1, 10, 100 as outlined in Section 3.3.1 and in Footnote 4.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "cdf2074b-47ad-4299-93f1-52783c9b4a59",
                                     "requirements": "Code for measuring the number of wins, ties and losses across HumanEval Samples between CFG (\\gamma=1.25) and no CFG (\\gamma=1) has been implemented for CodeGen-350M-mono for temperatures 0.2, 0.6, 0.8 has been implemented. A win is when CFG answers a sample correctly while no CFG does not, a loss is the reciprocal case, and a tie is when CFG and no CFG both get the sample correct or both get the sample incorrect.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "c7bc26ba-0d8f-4c09-8f1f-ae81aa822e10",
@@ -828,20 +938,24 @@
                                     "requirements": "The CodeGen model family(CodeGen-350M-mono, CodeGen-2B-mono, CodeGen-6B-mono) has been evaluted on HumanEval at guidance strengths of [1.0, 1.1, 1.25, 1.5, 1.75, 2.0], and various sampling temperatures at [0.2, 0.6, 0.8]. The pass@k performance has been measured for k=1,10, 100. As outlined in Section 3.3.",
                                     "weight": 3,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "05934697-7753-4280-944f-09529cf93d71",
                                     "requirements": "The number of wins, ties and losses across HumanEval samples between CFG (\\gamma=1.25) and no CFG (\\gamma=1) for CodeGen-350M-mono across temperatures 0.2, 0.6, 0.8 has been measured",
                                     "weight": 3,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "85371c89-16e8-4b1e-b687-bb95bb7e89bf",
@@ -858,37 +972,44 @@
                                     "requirements": "Across guidance strengths [1.0, 1.1, 1.25, 1.5, 1.75, 2.0], performance metrics measured at a sampling temperature of 0.2 for models 350M-mono, 2B-mono, and 6B-mono, across k-values of 1, 10, and 100, show that using a guidance strength greater than 1.0 (CFG) generally leads to better performance compared to using a guidance strength of 1.0 (no CFG). However, the optimal guidance strength (gamma) varies depending on the specific combination of model size and k-value, as demonstrated in Table 2 of the paper.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "1887f8a6-816e-451d-b640-f2f30b9db85e",
                                     "requirements": "Across guidance strengths [1.0, 1.1, 1.25, 1.5, 1.75, 2.0], performance metrics measured at a sampling temperature of 0.2 for models 350M-mono, 2B-mono, and 6B-mono,  show that the pass@1 rate increases with CFG across $1 \\leq \\gamma \\leq 1.5$ and degrades thereafter",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "13058151-a818-4987-b6e3-313821d63a97",
                                     "requirements": "Across guidance strengths [1.0, 1.1, 1.25, 1.5, 1.75, 2.0], performance metrics measured at a sampling temperature of 0.2 for models 350M-mono, 2B-mono, and 6B-mono, across k-values of 1, 10, and 100, show that high k values (pass@100), CFG hurts performance, with guidance strength = 1 (no CFG) outperforming all other guidance strengths for each model at pass@100. As pointed out in Section 3.3.1",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "3beb3495-e001-4c6d-9a53-f9c253f6490d",
                             "requirements": "In terms of win rate, for CodeGen-350M-mono, CFG with gamma = 1.25 is found to outperform CFG with gamma=1 on HumanEval tasks at pass@1, across all temperatures 0.2, 0.6 and 0.8, roughly matching the results in Figure 3 (NOT Table 3 as written in the paper - this is an error)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "03a482fb-d0b3-4e0e-84ba-f7496d3af560",
@@ -910,24 +1031,28 @@
                                     "requirements": "Code has been implemented for determining the inference FLOP count for each of the models successfully evaluated in 3.1 as outlined in https://github.com/google-research/electra/blob/master/flops_computation.py (and in the addendum), with and without CFG.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "3a1e0124-f2bc-4bb9-8fbe-cbafa2b39ccc",
                                     "requirements": "Code has been implemented for pairing the inference FLOP with the model's evaluation's performance results from 3.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 },
                                 {
                                     "id": "acc961fa-f5b9-4bd9-8649-aba832a6ed20",
                                     "requirements": "Code has been implemented such that an ANCOVA regression analysis on paired FLOP-performance data from two given models can be run, such that it can be determined whether the FLOP/performance relationship is statistically different between the two models. As per Appendix C.2 and section 4.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "e12b8a28-86d1-48c3-8e09-6e0e3012361b",
@@ -939,30 +1064,36 @@
                                     "requirements": "The inference FLOP count for each of the models successfully evaluated in 3.1 with and without CFG has been computed as outlined in https://github.com/google-research/electra/blob/master/flops_computation.py and paired with the evaluation results from 3.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "0c6856a6-6f59-40f0-9b49-80abfec0bf08",
                                     "requirements": "The ANCOVA regression analysis has been run on the performance data of at least 5 of the 9 tasks from Section 3.1, comparing the FLOPs/performance relationship between models with CFG and equivalent models twice the size without CFG. The results of the ANCOVA regression analysis have been logged.",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Logging, Analysis & Presentation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "0bf71c77-8ce3-4878-b277-8856d10ebc26",
                     "requirements": "The ANCOVA results show that across the majority of the tasks, there is a statistically in-significant difference (p=0.01) in terms of performance/FLOPS between using a model with CFG and using a model twice the size but with vanilla prompting (no CFG). For for the remaining tasks, there is an even amount of tasks that favour CFG and tasks that favour 2x vanilla. These results roughly match what is shown in Table 6 (NOT Table 9 as stated in the paper - this is an error).",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Result Analysis"
+                    "task_category": "Result Analysis",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "0f057b09-5df1-4955-98c8-65d2176c0065",
@@ -974,7 +1105,8 @@
                     "requirements": "Code has been implemented such that around 32k samples from the P3 dataset (https://huggingface.co/datasets/bigscience/P3) can be used, obtaining the dataset from its official source or equivalent mirrors. As outlined in Section 5 and the addendum.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Dataset and Model Acquisition"
                 },
                 {
                     "id": "de262f1f-8247-4b20-85b5-94baeaffa90d",
@@ -991,24 +1123,28 @@
                                     "requirements": "Classifier-Free Guidance (CFG) inference is implemented as described in equation 7 in Section 2.2 such that it can be run on the Falcon-7b-Base model",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "d6ae86d0-856c-403c-993b-91f87ad53f09",
                                     "requirements": "The implementation of CFG which can be used for the Falcon-7b-Base model of models includes a mutable (not hardcoded) hyper-parameter which can be used to specify the guidance strength",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "fa75e956-d82d-4148-95fd-7c034246100d",
                                     "requirements": "As outlined in Section 3.1, the implementation of CFG which can be used for the Falcon-7b-Base model starts the unconditional prompt $\\log p_{\\theta}(w_i | w_{j < i})$ with the last token of the initial prompt",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "5043b03e-11df-4536-b28f-a7f6914b064f",
@@ -1020,34 +1156,40 @@
                                     "requirements": "Classifier-Free Guidance (CFG) inference is implemented as described in equation 7 in Section 2.2 such that it can be run on the Falcon-7b-Instruct model",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "84f2d615-9843-48af-9c81-a85ff84cb6e5",
                                     "requirements": "The implementation of CFG which can be used for the Falcon-7b-Instruct model of models includes a mutable (not hardcoded) hyper-parameter which can be used to specify the guidance strength",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "ad6259e5-4211-4344-97c3-5ba0d2145976",
                                     "requirements": "As outlined in Section 3.1, the implementation of CFG which can be used for the Falcon-7b-Instruct model starts the unconditional prompt $\\log p_{\\theta}(w_i | w_{j < i})$ with the last token of the initial prompt",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "03721f72-87d3-4e1a-a475-5e5c2269a4ea",
                     "requirements": "Code for measuring the average logit entropy has been implemented, where entropy is defined $H(p) = -\\sum_k p_k \\log p_k$, equivalent to the scipy implementation as outlined in the Addendum.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 },
                 {
                     "id": "4c213fb4-197a-4483-b25a-f832c73f2659",
@@ -1059,17 +1201,20 @@
                             "requirements": "Falcon-7b-Base has been run with (\\gamma=1.5) and without (\\gamma=1) CFG on P3 while measuring the average logit entropy over the sequence",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "0b370f02-654c-444a-90e7-ce47d8318b42",
                             "requirements": "The measured logit entropies shows that the CFG inference (\\gamma=1.5) entropy distribution is lower on average vanilla inference (\\gamma=1) entropy distribution, as pointed out in Section 5.1 and shown in Figure 18a.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "b5dfc935-b348-4313-93b2-ecacd6148e48",
@@ -1091,24 +1236,28 @@
                                             "requirements": "Code has been implemented for measuring the top-p overlap for some p, where two top-p vocab distributions are input and their inner product is taken to calculate the overlap, as shown in Figure 18b.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "dbfc55c1-253e-4a83-9933-4225f713cc69",
                                             "requirements": "Code has been implemented for measuring the perplexity of completion tokens compatible with the CFG and instruction-tuned models.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "b4b221de-55ca-4bbe-86ba-a84e4a9e2ad5",
                                             "requirements": "Code has been implemented for measuring the spearman correlation between two sets of measured perplexities.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "a22ba658-29c9-4a64-a541-395b99c4e55a",
@@ -1120,27 +1269,32 @@
                                             "requirements": "Falcon-7b-Base has been run with (\\gamma=1.5) and Falcon-7b-instruct has been run without (\\gamma=1) CFG on P3 while measuring the average logit entropy over the sequence.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "d4ff56a5-2c36-449e-9c9c-f04cc7406767",
                                             "requirements": "Falcon-7b-Base has been run with (\\gamma=1.5) and Falcon-7b-instruct has been run without (\\gamma=1) CFG on P3 while measuring top-p overlap between the two at top-p=90%.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "11e5f977-ec10-40b7-bcdf-36396eebfc97",
                                             "requirements": "Falcon-7b-Base has been run with (\\gamma=1.5) and Falcon-7b-instruct has been run without (\\gamma=1) CFG on P3 while measuring the generation perplexity of the two models.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "58de107b-53a6-42d6-a0a5-1224e20e09dc",
@@ -1152,27 +1306,32 @@
                                     "requirements": "The measured logit entropies show that CFG and instruction-tuned models produce similar entropy across generation samples, as shown in Figure 18a.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "4e501537-9c5b-405d-bf50-8e2e2555a056",
                                     "requirements": "The measure top-p overlaps show that CFG and instruction-tuned models have vocabulary distributions that are largely not overlapping, with a top-p overlap of less than 0.3 as outlined in section 5.2 and highlighted in Figure 18b.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "884f1af6-3d92-4a29-ac27-e7613dae8b10",
                                     "requirements": "The logged spearman correlations show that significant spearman correlations ($r_{s}>.7$) between the perplexities of Instruction-Tuned models and CFG models are observed for longer prompts, as shown in Figure 5 (NOT Table 5 as stated in the paper - this is an error) and pointed out in Section 5.2.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "5140765f-8e39-4b89-886e-cc238b2f7a25",
@@ -1189,30 +1348,36 @@
                                     "requirements": "Code to calculate the differences in token log probabilities across the entire vocabulary with CFG at each generation step has been developed as described in Section 5.3, i.e. $P(w_t \\mid w_{<t}) - \\log P(w_T \\mid \\hat{w})$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "0298b200-a4f2-44f4-80ed-d86191f46609",
                                     "requirements": "Falcon-7B-base has been sampled with CFG (\\gamma > 1) on the prompt 'The dragon flew over Paris, France', and no negative prompt, measuring the differences log probabilities across the entire vocabulary at each generation step.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d9cf875e-720d-46a1-92ca-c4f4fb2979ea",
                             "requirements": "The results show that CFG encourages token related to 'dragon' and 'Paris' and discourages other topics and regions, by noting more tokens related to the former in the top5 at each time step, and more tokens related to the latter in the bottom5 at each time step. As shown in Table 3.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "75b989e7-e3dc-42f6-acea-5d88051d0e6b",
@@ -1239,24 +1404,28 @@
                                             "requirements": "Code has been implemented such that the toxicity dataset (https://huggingface.co/datasets/thesofakillers/jigsaw-toxic-comment-classification-challenge) can be used, obtaining it from the huggingface repository specified in the addendum.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Dataset and Model Acquisition"
                                         },
                                         {
                                             "id": "784f3d0a-d203-4d73-9735-c796e9d01640",
                                             "requirements": "Code has been implemented such that the pretrained classifier used for toxicity evaluation and guidance ('unitary/toxic-bert') can be used, as noted in footnote 10 and Section 6.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Dataset and Model Acquisition"
                                         },
                                         {
                                             "id": "5a8d113c-8881-4ea5-82a7-9cf47af47ae9",
                                             "requirements": "FUDGE has been set up following Yang & Klein 2021 for GPT-2 to enable classifier guidance on the task of toxicity detection",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "4542ca22-01c5-460c-a36d-9211f86cb8c2",
@@ -1268,20 +1437,24 @@
                                             "requirements": "For each sample in the toxicity dataset, GPT-2 is prompted with the sample followed by 'Don't be mean' using CFG, FUDGE and no guidance (i.e. vanilla) and its outputs have been generated.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "034ce94b-90ab-4f20-a1f6-244712fb3a44",
                                             "requirements": "The ''unitary/toxic-bert' has been used to classify the generated outputs of vanilla, CFG and FUDGE GPT-2 on the toxicity dataset when prompted with \"Don't be mean\". The increase in likelihood of classifying the outputs as 'not toxic' between CFG and vanilla and FUDGE and vanilla has been measured.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "a73d22b4-bf6b-44e9-9c28-37cde7d3bbae",
@@ -1298,31 +1471,36 @@
                                             "requirements": "Code has been implemented such that the sentiment IMBD dataset (https://huggingface.co/datasets/stanfordnlp/imdb) can be used, obtaining it from its official source or equivalent mirrors",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Dataset and Model Acquisition"
                                         },
                                         {
                                             "id": "e19fd65f-5c5b-4ec4-8c18-3c5e21d54d4a",
                                             "requirements": "Code has been implemented such that the pretrained classifier used for sentiment guidance ('bhadresh-savani/distilbert-base-uncased-emotion') can be used, as noted in footnote 10 and Section 6.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Dataset and Model Acquisition"
                                         },
                                         {
                                             "id": "e0e79e7d-96fe-4c8e-b160-2fe1d1c376b8",
                                             "requirements": "Code has been implemented such that the pretrained classifier used for sentiment evaluation ('stevhliu/my_awesome_model') can be used, as noted in footnote 10 and Section 6.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Dataset and Model Acquisition"
                                         },
                                         {
                                             "id": "d3ebdc42-6c14-45f8-b49e-8b8f5b460fed",
                                             "requirements": "FUDGE has been set up following Yang & Klein 2021 for GPT-2 to enable classifier guidance on the task of sentiment detection",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "ba9aac21-4efa-41fc-85f1-1d93c32115c6",
@@ -1334,34 +1512,42 @@
                                             "requirements": "For each sample in IMDB, GPT-2 is prompted with the sample followed by 'That was a good movie!' using CFG, FUDGE and no guidance (i.e. vanilla) and its outputs have been generated.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "a1fdc3a9-0c74-4ff7-8c38-e23c120dbde2",
                                             "requirements": "The 'stevhliu/my_awesome_model' has been used to classify the generated outputs of vanilla, CFG and FUDGE GPT-2 on IMDB when prompted with 'That was a good movie!' The increase in likelihood of classifying the outputs as positive sentiment between CFG and vanilla and FUDGE and vanilla has been measured.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "225debd0-3ce3-46a0-9729-79bef3467b27",
                     "requirements": "As a result of running the toxicity and/or sentiment analysis experiment(s), comparing the difference between measured % increased in classification likelihood with FUDGE and CFG shows that CFG is able to steer guidance to a much greater degree, with the % increase being higher when using CFG than when using FUDGE for guidance, as shown in Table 4.",
                     "weight": 2,
                     "sub_tasks": [],
-                    "task_category": "Result Analysis"
+                    "task_category": "Result Analysis",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

@@ -14,6 +14,16 @@ VALID_TASK_CATEGORIES = {
     "Subtree",
 }
 
+VALID_FINEGRAINED_TASK_CATEGORIES = {
+    "Environment & Infrastructure Setup",
+    "Dataset and Model Acquisition",
+    "Data Processing & Preparation",
+    "Method Implementation",
+    "Experimental Setup",
+    "Evaluation, Metrics & Benchmarking",
+    "Logging, Analysis & Presentation",
+}
+
 TASK_CATEGORY_QUESTIONS = {
     "Code Development": (
         "Does the code in the submission contain a correct implementation of this?"
@@ -36,26 +46,29 @@ class TaskNode:
     weight: int
     sub_tasks: Sequence["TaskNode"] = field(default_factory=list)
     task_category: str | None = None
+    finegrained_task_category: str | None = None
 
     def __post_init__(self):
         if not isinstance(self.weight, (int, float)):
             raise ValueError("Weight must be a number.")
 
-        if self.weight <= 0:
-            raise ValueError("Weight must be a positive number.")
+        if self.weight < 0:
+            raise ValueError("Weight must be non-negative.")
 
         if self.task_category and self.task_category not in VALID_TASK_CATEGORIES:
-            # TODO: bring back error after we finalize all rubrics
             logger.warning(f"Invalid task category: {self.task_category}")
-            # raise ValueError(f"Invalid task category: {self.task_category}")
+
+        if (
+            self.finegrained_task_category
+            and self.finegrained_task_category not in VALID_FINEGRAINED_TASK_CATEGORIES
+        ):
+            logger.warning(f"Invalid finegrained task category: {self.finegrained_task_category}")
 
         if not self.is_leaf() and self.task_category:
             raise ValueError(f"Non-leaf node '{self.id}' cannot have a task category.")
 
         if self.is_leaf() and not self.task_category:
-            # TODO: bring back error after we finalize all rubrics
             logger.warning(f"Leaf node '{self.id}' doesn't have a task category.")
-            # raise ValueError(f"Leaf node '{self.id}' doesn't have a task category.")
 
     def is_leaf(self) -> bool:
         """Check if the node is a leaf node (has no sub-tasks)."""
@@ -162,6 +175,9 @@ class TaskNode:
     def set_task_category(self, new_task_category: str) -> "TaskNode":
         return replace(self, task_category=new_task_category)
 
+    def set_finegrained_task_category(self, new_category: str) -> "TaskNode":
+        return replace(self, finegrained_task_category=new_category)
+
     @classmethod
     def from_dict(cls, data: dict) -> "TaskNode":
         try:
@@ -172,6 +188,7 @@ class TaskNode:
                 weight=data["weight"],
                 sub_tasks=sub_tasks,
                 task_category=data.get("task_category"),
+                finegrained_task_category=data.get("finegrained_task_category"),
             )
         except KeyError as e:
             node_id = data.get("id", "unknown")
@@ -185,6 +202,7 @@ class TaskNode:
             "weight": self.weight,
             "sub_tasks": [task.to_dict() for task in self.sub_tasks],
             "task_category": self.task_category,
+            "finegrained_task_category": self.finegrained_task_category,
         }
 
     def find_path_to_descendant(self, descendant_id: str) -> list["TaskNode"] | None:
@@ -299,6 +317,7 @@ class TaskNode:
                 weight=self.weight,
                 sub_tasks=[],
                 task_category=self.task_category,
+                finegrained_task_category=self.finegrained_task_category,
             )
 
         # Recursively prune sub-tasks
@@ -312,6 +331,7 @@ class TaskNode:
             weight=self.weight,
             sub_tasks=new_sub_tasks,
             task_category=self.task_category,
+            finegrained_task_category=self.finegrained_task_category,
         )
 
     def duplicate_with_new_ids(self) -> "TaskNode":
@@ -326,6 +346,45 @@ class TaskNode:
         they have at least one valid child after pruning.
         """
         return reduce_to_category(self, "Code Development")
+
+    def resources_provided(self) -> "TaskNode":
+        """
+        Returns a new tree where any node categorized as 'Dataset and Model Acquisition'
+        has its weight set to 0, excluding it from contributing to scoring.
+
+        Use for evaluating submissions where datasets and models are already provided.
+        """
+        return zero_weight_by_category(
+            self, finegrained_task_category="Dataset and Model Acquisition"
+        )
+
+
+def zero_weight_by_category(
+    node: TaskNode,
+    task_category: Optional[str] = None,
+    finegrained_task_category: Optional[str] = None,
+) -> TaskNode:
+    """
+    Returns a new tree where any node matching the specified category
+    has its weight set to 0.
+    """
+    if (task_category is None) == (finegrained_task_category is None):
+        raise ValueError("Must provide exactly one of task_category or finegrained_task_category")
+
+    if node.is_leaf():
+        if (task_category is not None and node.task_category == task_category) or (
+            finegrained_task_category is not None
+            and node.finegrained_task_category == finegrained_task_category
+        ):
+            return node.set_weight(0)
+        return node
+
+    new_sub_tasks = [
+        zero_weight_by_category(sub_task, task_category, finegrained_task_category)
+        for sub_task in node.sub_tasks
+    ]
+
+    return node.set_sub_tasks(new_sub_tasks)
 
 
 def reduce_to_category(node: TaskNode, category: str) -> TaskNode | None:
@@ -349,7 +408,7 @@ def reduce_to_category(node: TaskNode, category: str) -> TaskNode | None:
     if not filtered_sub_tasks and node.task_category != category:
         return None
 
-    return replace(node, sub_tasks=filtered_sub_tasks)
+    return node.set_sub_tasks(filtered_sub_tasks)
 
 
 def generate_task_category(node: TaskNode, model: str = "gpt-4o") -> str:

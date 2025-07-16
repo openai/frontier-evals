@@ -13,17 +13,20 @@
                     "requirements": "The U-Net architecture implementation from lucidrain's denoising-diffusion-pytorch repository is available",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Method Implementation"
                 },
                 {
                     "id": "46ca1cd4-7129-4337-98d7-484d69e98ea0",
                     "requirements": "Code for accessing the train and validation sets from the ImageNet dataset has been implemented",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Dataset and Model Acquisition"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "6161672d-3770-4394-a506-d744d2a0f297",
@@ -50,76 +53,88 @@
                                             "requirements": "During training the Dependent Coupling model for in-painting, for each $i$-th sample in each mini-batch, the mask is drawn randomly by tiling the image into 64 tiles of equal sizes; each tile is selected to enter the mask with probability $p = 0.3$",
                                             "weight": 2,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "036df75d-d021-4560-b6d0-906ddc881275",
                                             "requirements": "During training the Dependent Coupling model for in-painting, for each $i$-th sample in each mini-batch, the mask that is computed takes the same value for all channels in a given spatial location",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "551ad22d-eaf1-42b1-b662-704f748d0c5d",
                                             "requirements": "During training the Dependent Coupling model for in-painting, for each $i$-th sample in each mini-batch, the mask is applied to an image from the ImageNet training set such that masked regions contain random noise, computed as $x_0 = \\xi \\circ x_1 + (1-\\xi) \\circ \\zeta$, where $\\circ$ denotes the Hadamard (elementwise) product, and the random noise $\\zeta \\in \\mathbb{R}^{C \\times W \\times H}, \\zeta \\sim N(0, Id)$ is used to initialize the pixels within the masked region (separate noise is used for each channel), and $\\xi$ denotes the mask",
                                             "weight": 2,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "75cc97d2-9f78-4d91-8cdd-406e86c92c70",
                                     "requirements": "During training the Dependent Coupling model for in-painting, for each $i$-th sample in each mini-batch, a channel is added which is uniformly filled with the sample's class value",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "ee1e4da3-1dd9-4aea-b537-356b46205382",
                                     "requirements": "During training the Dependent Coupling model for in-painting, for each $i$-th sample in each mini-batch, the time $t$ is uniformly sampled between 0 and 1, as $t_i \\sim U(0, 1)$",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "8c2b4e77-f1ed-4e73-98e9-71be856aa0e2",
                                     "requirements": "During training the Dependent Coupling model for in-painting, for each $i$-th sample in a mini-batch, the interpolant $I_{t_i}$ is computed as $I_{t_i} = t x_0^i + (1-t) x_1^i$, where $x_0$ is the masked image, $x_1$ is the original ImageNet image, and $t$ is the sampled time",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "2326b8d4-922a-42ca-8e25-2fc0d5e546e6",
                                     "requirements": "During training the Dependent Coupling model for in-painting, for each $i$-th sample in a mini-batch, the time-derivative interpolant $\\dot{I}_{t_i}$ is computed as $\\dot{I}_{t_i} = x_1 - x_0$, where $x_0$ is the masked image, $x_1$ is the original ImageNet image, and $t$ is the sampled time",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "718205ed-8bb4-40d5-8a9a-7c8c4694e4b0",
                                     "requirements": "During training the Dependent Coupling model for in-painting, the approximate velocity field $b_t(x, \\xi)$ is defined such that $b_t(x, \\xi) = 0$ except in the masked regions of the image; the output of the approximate velocity field is masked to enforce that the unmasked pixels remain fixed. Here, $x$ denotes some image and $\\xi$ denotes the conditioning variable. The approximate velocity field only acts on the image, not the additional class channel that has been appended",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "cbe7cd9e-8c54-46c7-8b13-b7d36f755814",
                                     "requirements": "During training the Dependent Coupling model for in-painting, the loss for a minibatch is computed as $\\hat{L}_b(\\hat{b}) = n_b^{-1} \\sum_{i=1}^{n_b} \\left[ |\\hat{b}_{t_i}(I_{t_i})|^2 - 2\\dot{I}_{t_i} \\cdot \\hat{b}_{t_i}(I_{t_i}) \\right]$, where $n_b$ is the number of samples in the $i$-th minibatch, $\\hat{b}_{t_i}$ is the approximate velocity field, $I_{t_i}$ is the interpolant, and $\\dot{I}_{t_i}$ is the time-derivative interpolant",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "8190541a-ba46-4229-bd12-5d9bc99b0ac6",
                                     "requirements": "During training the Dependent Coupling model for in-painting, the model is trained using the Adam optimizer",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "8ba72cd8-7af7-4cce-b07d-34e30aeb9456",
@@ -136,44 +151,52 @@
                                             "requirements": "During sampling with the Dependent Coupling model for in-painting, the mask is drawn randomly by tiling the image into 64 tiles of equal sizes; each tile is selected to enter the mask with probability $p = 0.3$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "c6ba9100-ddf4-4188-8416-a63081e4ceea",
                                             "requirements": "During sampling with the Dependent Coupling model for in-painting, the mask that is computed takes the same value for all channels in a given spatial location",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "d9883334-d824-4aee-8f98-ac4eb660fd5c",
                                             "requirements": "During sampling with the Dependent Coupling model for in-painting, the mask is applied to the input image such that masked regions contain random noise, computed as $x_0 = \\xi \\circ x_1 + (1-\\xi) \\circ \\zeta$, where $\\circ$ denotes the Hadamard (elementwise) product, and the random noise $\\zeta \\in \\mathbb{R}^{C \\times W \\times H}, \\zeta \\sim N(0, Id)$ is used to initialize the pixels within the masked region (separate noise is used for each channel), and $\\xi$ denotes the mask. This input image is from the ImageNet validation or test set",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "3fd598f3-f9a3-421c-abfc-db3edee67cfe",
                                     "requirements": "When sampling with the Dependent Coupling model for in-painting, for each $i$-th sample in each mini-batch, a channel is added which is uniformly filled with the sample's class value",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "35183fae-4786-4b84-b1e7-a49ef31ba90c",
                                     "requirements": "When sampling with the Dependent Coupling model for in-painting, given $N \\in \\mathbb{N}$ total iterations, on the $i$-th iteration the sample $\\hat{X}_{i+1}$ is computed as $\\hat{X}_i + N^{-1}\\hat{b}_{i/N}(\\hat{X}_i)$, where $\\hat{X}_0$ is the original masked image, and $\\hat{b}_{i/N}$ is the approximate velocity field at time $i/N$. The final result after $N$ iterations is the in-painted image",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "38265471-4094-4d21-b73b-0931c49f21ac",
@@ -190,52 +213,60 @@
                                     "requirements": "During training the Uncoupled Interpolant model for in-painting, for each $i$-th sample in each mini-batch, the initial image is sampled as gaussian noise; $x_0 \\sim \\mathcal{N}(0, Id)$",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "f823b47a-bc58-4ab5-b59a-eec1f7b04183",
                                     "requirements": "During training the Uncoupled Interpolant model for in-painting, for each $i$-th sample in each mini-batch, a channel is added which is uniformly filled with the sample's class value",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "d5402a39-7e66-47ae-a577-686aeceb7e0b",
                                     "requirements": "During training the Uncoupled Interpolant model for in-painting, for each $i$-th sample in each mini-batch, the time $t$ is uniformly sampled between 0 and 1, as $t_i \\sim U(0, 1)$",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "3a9c64b6-5def-4278-ae63-f194f873c488",
                                     "requirements": "During training the Uncoupled Interpolant model for in-painting, for each $i$-th sample in a mini-batch, the interpolant $I_{t_i}$ is computed as $I_{t_i} = t x_0^i + (1-t) x_1^i$, where $x_0$ is the noisy image, $x_1$ is the original ImageNet image, and $t$ is the sampled time",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "44d89bd8-3321-4f3d-842f-8e7421e91cdd",
                                     "requirements": "During training the Uncoupled Interpolant model for in-painting, for each $i$-th sample in a mini-batch, the time-derivative interpolant $\\dot{I}_{t_i}$ is computed as $\\dot{I}_{t_i} = x_1 - x_0$, where $x_0$ is the noisy image, $x_1$ is the original ImageNet image, and $t$ is the sampled time",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "4730f7b6-cbae-4b1f-8527-7c451cc50c97",
                                     "requirements": "During training the Uncoupled Interpolant model for in-painting, the loss for a minibatch is computed as $\\hat{L}_b(\\hat{b}) = n_b^{-1} \\sum_{i=1}^{n_b} \\left[ |\\hat{b}_{t_i}(I_{t_i})|^2 - 2\\dot{I}_{t_i} \\cdot \\hat{b}_{t_i}(I_{t_i}) \\right]$, where $n_b$ is the number of samples in the $i$-th minibatch, $\\hat{b}_{t_i}$ is the approximate velocity field, $I_{t_i}$ is the interpolant, and $\\dot{I}_{t_i}$ is the time-derivative interpolant",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "74e1ae29-3878-4030-b964-b9b46d8ce6d2",
                                     "requirements": "During training the Uncoupled Interpolant model for in-painting, the model is trained using the Adam optimizer",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "3e382e93-de82-4d6a-9cd6-320d450ed0d8",
@@ -247,20 +278,24 @@
                                     "requirements": "During sampling with the Uncoupled Interpolant model for in-painting, the initial image is sampled as gaussian noise; $x_0 \\sim \\mathcal{N}(0, Id)$",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "e9d03723-1f93-496f-aaa1-9800fea87b1c",
                                     "requirements": "When sampling with the Uncoupled Interpolant model for in-painting, given $N \\in \\mathbb{N}$ total iterations, on the $i$-th iteration the sample $\\hat{X}_{i+1}$ is computed as $\\hat{X}_i + N^{-1}\\hat{b}_{i/N}(\\hat{X}_i)$, where $\\hat{X}_0$ is the original gaussian noisy image, and $\\hat{b}_{i/N}$ is the approximate velocity field at time $i/N$. The final result after $N$ iterations is the in-painted image",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "be963c22-61d8-45d0-93ff-57eb932aec94",
@@ -282,83 +317,96 @@
                                             "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in each mini-batch, an image from the ImageNet training set is first downsampled by cropping to 64x64 if the original resolution was 256x256, or it is cropped to 256x256 if the original resolution was 512x512",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         },
                                         {
                                             "id": "af9c0ad4-8e25-4f4e-bd78-78bbaa8bb869",
                                             "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in each mini-batch, nearest neighbour interpolation is applied to upsample the cropped image back to the original resolution",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         },
                                         {
                                             "id": "f701ec5c-f4e1-48b7-9f74-cfce8826fadf",
                                             "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in each mini-batch, Gaussian noise is added to the downsampled and upsampled ImageNet image; $x_0 = \\mathcal{U} ( \\mathcal{D} (x_1)) + \\zeta$, where $\\zeta \\sim \\mathcal{N}(0, Id)$, $\\mathcal{U}$ is the upsampling operation, and $\\mathcal{D}$ is the downsampling operation",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "36ae2f00-8362-4e46-afa3-84293258b53d",
                                             "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in each mini-batch, the image that has been downsampled, upsampled, and had gaussian noise added to it is appended to the original ImageNet image along the channel dimension to create the corrupted image",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "f118676d-f100-4a4c-810e-43758c7183fc",
                                     "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in each mini-batch, a channel is added which is uniformly filled with the sample's class value",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Data Processing & Preparation"
                                 },
                                 {
                                     "id": "d790efdd-c92c-4eca-8a98-808e228e5282",
                                     "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in each mini-batch, the time $t$ is uniformly sampled between 0 and 1, as $t_i \\sim U(0, 1)$",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "6b23bcf6-f14e-4dc7-89f7-10dca66c402e",
                                     "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in a mini-batch, the interpolant $I_{t_i}$ is computed as $I_{t_i} = t x_0^i + (1-t) x_1^i$, where $x_0$ is the corrupted image, $x_1$ is the original ImageNet image, and $t$ is the sampled time",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "5aa12bc7-58ad-4119-951b-2d4da8ff82ec",
                                     "requirements": "During training the Dependent Coupling model for super-resolution, for each $i$-th sample in a mini-batch, the time-derivative interpolant $\\dot{I}_{t_i}$ is computed as $\\dot{I}_{t_i} = x_1 - x_0$, where $x_0$ is the corrupted image, $x_1$ is the original ImageNet image, and $t$ is the sampled time",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "b3d613a2-6116-4439-bbe4-e059d15ec476",
                                     "requirements": "During training the Dependent Coupling model for super-resolution, the velocity field only acts on the interpolant image, not the additional class channel that has been appended, or the low-resolution image that has been appended",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "ff8dbe4e-1509-44f5-9abe-b2db93a560c9",
                                     "requirements": "During training the Dependent Coupling model for super-resolution, the loss for a minibatch is computed as $\\hat{L}_b(\\hat{b}) = n_b^{-1} \\sum_{i=1}^{n_b} \\left[ |\\hat{b}_{t_i}(I_{t_i})|^2 - 2\\dot{I}_{t_i} \\cdot \\hat{b}_{t_i}(I_{t_i}) \\right]$, where $n_b$ is the number of samples in the $i$-th minibatch, $\\hat{b}_{t_i}$ is the approximate velocity field, $I_{t_i}$ is the interpolant, and $\\dot{I}_{t_i}$ is the time-derivative interpolant",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "75958462-f3ab-4b2a-8bb1-688647a26ef6",
                                     "requirements": "During training the Dependent Coupling model for super-resolution, the model is trained using the Adam optimizer",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "d64c1db5-50d9-4a9c-a8da-140762af5389",
@@ -375,61 +423,72 @@
                                             "requirements": "During sampling with the Dependent Coupling model for super-resolution, an image from the ImageNet validation or test set is sampled, then it is first downsampled by cropping to 64x64 if the original resolution was 256x256, or it is cropped to 256x256 if the original resolution was 512x512",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         },
                                         {
                                             "id": "52dab287-6086-4c13-88a5-0f804bfbda87",
                                             "requirements": "During sampling with the Dependent Coupling model for super-resolution, nearest neighbour interpolation is applied to upsample the cropped image back to the original resolution",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "3a59ebee-e895-4a9f-b7ee-10edb27cf345",
                                             "requirements": "During sampling with the Dependent Coupling model for super-resolution, Gaussian noise is added to the downsampled and upsampled ImageNet image; $x_0 = \\mathcal{U} ( \\mathcal{D} (x_1)) + \\zeta$, where $\\zeta \\sim \\mathcal{N}(0, Id)$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "9d2ac48f-1d73-41d9-ac3d-24df7f9ea6a9",
                                             "requirements": "During sampling with the Dependent Coupling model for super-resolution, the image that has been downsampled, upsampled, and had gaussian noise added to it is appended to the original ImageNet image along the channel dimension to create the corrupted image",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "3c8fd9d0-3819-400f-b04c-1962b0f688d9",
                                     "requirements": "When sampling with the Dependent Coupling model for super-resolution, for each $i$-th sample in each mini-batch, a channel is added which is uniformly filled with the sample's class value",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "547af5aa-6d91-40bb-932c-85f92d1b2ea1",
                                     "requirements": "When sampling with the Dependent Coupling model for super-resolution, given $N \\in \\mathbb{N}$ total iterations, on the $i$-th iteration the sample $\\hat{X}_{i+1}$ is computed as $\\hat{X}_i + N^{-1}\\hat{b}_{i/N}(\\hat{X}_i)$, where $\\hat{X}_0$ is the original corrupted image, and $\\hat{b}_{i/N}$ is the approximate velocity field at time $i/N$. The final result after $N$ iterations is the image at a higher resolution",
                                     "weight": 2,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "190a2c3f-cc9d-4fa7-ac4a-119bcc1d3419",
             "requirements": "The Frechet Inception Distance (FID) metric has been implemented",
             "weight": 1,
             "sub_tasks": [],
-            "task_category": "Code Development"
+            "task_category": "Code Development",
+            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
         },
         {
             "id": "9b348049-ecfb-47e9-9a74-4672a4bc8f83",
@@ -451,104 +510,120 @@
                                     "requirements": "The approximate velocity model is implemented as the U-net from the lucidrain's denoisingdiffusion-pytorch repository",
                                     "weight": 5,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "ba327b00-fdd7-4073-b129-93e5e176e204",
                                     "requirements": "The U-net velocity model has the \"dim_mults\" argument set to (1, 1, 2, 3, 4) (note the default value for the Unet module from the lucidrain's denoisingdiffusion-pytorch repository is (1, 2, 4, 8))",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "0bd8d434-8fae-4159-b89b-199a83f18bbf",
                                     "requirements": "The U-net velocity model has the \"dim\" argument set to 256 (note there is no default value for the Unet module from the lucidrain's denoisingdiffusion-pytorch repository for the dim argument)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "9c00369e-a138-48b5-b2e7-d8abe24fba7a",
                                     "requirements": "The U-net velocity model has the \"learned_sinusoidal_cond\" argument set to True (note the default value for the Unet module from the lucidrain's denoisingdiffusion-pytorch repository is False)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "33409f2f-bbef-4e46-bb41-b2d3e0787ca4",
                                     "requirements": "The U-net velocity model has the \"learned_sinusoidal_dim\" argument set to 32 (note the default value for the Unet module from the lucidrain's denoisingdiffusion-pytorch repository is 16)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "c4401ce0-0110-4207-81b6-2193ea7abe15",
                                     "requirements": "The U-net velocity model has the \"attn_dim_head\" hyperparameter set to 64 (note the default value for the Unet module from the lucidrain's denoisingdiffusion-pytorch repository is 32)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "f0329e30-4cd9-41d8-9916-8af46fb59b83",
                                     "requirements": "The U-net velocity model has the \"attn_heads\" hyperparameter set to 4 (note the default value for the Unet module from the lucidrain's denoisingdiffusion-pytorch repository is 4)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "eaf72173-961d-4f44-aad3-a67eb4298868",
                                     "requirements": "The U-net velocity model has the \"random_fourier_features\" hyperparameter set to False (note the default value for the Unet module from the lucidrain's denoisingdiffusion-pytorch repository is False)",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "67af86d8-2639-49fb-9a96-9e3c90812565",
                             "requirements": "A learning rate scheduler is used, which starts at a learning rate of 2e-4 and scaling the learning rate by $\\gamma=0.99$ every $N=1000$ steps",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "cd04efc2-b2b5-493f-b412-c32f72f7fdba",
                             "requirements": "Weight decay is not used",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "cb0f23e1-3efc-49cc-a71b-28a65ab3bb22",
                             "requirements": "Gradient norms are clipped at 10,000 (this is the norm of the entire set of parameters taken as a vector, the default type of norm clipping in PyTorch library)",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "ebc3e8cf-b1bc-43bc-b24f-8168213cbbc1",
                             "requirements": "The Dopri solver from the torchdiffeq library is used to solve the ODEs",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "7de84bdb-63f9-4a76-99f9-ae89546b1f32",
                             "requirements": "All models are trained with a batch size of 32",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "7c7ebd70-364d-4bae-ac1c-dcc3ce514c4a",
                             "requirements": "All models are trained for 200,000 gradient steps",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "dbab7a9e-ab7b-4ae5-9513-f99b6e1a6a44",
@@ -565,31 +640,36 @@
                                     "requirements": "The Uncoupled Interpolant model is trained on ImageNet",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "948edecc-0bbb-42e9-b2a1-0ecf3dab4e1a",
                                     "requirements": "Using the Uncoupled Interpolant model that has been trained on ImageNet, FID-50k is computed on the ImageNet validation set",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "2933a4be-d28a-4bc0-bd5e-dac5e7d37560",
                                     "requirements": "The Dependent Coupling model is trained on ImageNet",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "9edcca4e-a0ce-44e7-b200-4c8298bb5986",
                                     "requirements": "Using the Dependent Coupling model that has been trained on ImageNet, FID-50k is computed on the ImageNet validation set",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "8007b690-aceb-4bbd-a577-ba50addab3bb",
@@ -601,20 +681,24 @@
                                     "requirements": "The Uncoupled Interpolant model achieves FID-50k around 1.35",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "79043fe8-a08a-415a-ba2a-7adb16ca0ff0",
                                     "requirements": "The Dependent Coupling model achieves FID-50k around 1.15",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "4dc5d72a-dc7d-4bf2-b67f-58a7089ae008",
@@ -631,24 +715,28 @@
                                     "requirements": "The Dependent Coupling model is trained on ImageNet",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "07327a66-c38f-4ce8-9359-cb87f284441d",
                                     "requirements": "Using the Dependent Coupling model that has been trained on ImageNet, FID-50k is computed on the ImageNet train set by comparing against 50k random samples from the training set",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "58ed3cb6-14ec-4750-bac0-c401a69418c9",
                                     "requirements": "Using the Dependent Coupling model that has been trained on ImageNet, FID-50k is computed on the ImageNet validation set",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "fa43aa13-6664-4219-b692-ecc8cc1a38b2",
@@ -660,24 +748,30 @@
                                     "requirements": "The Dependent Coupling model achieves train FID-50k around 2.15 for the super-resolution task",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "33e2261e-9038-4931-a8e0-6a2587a87c7a",
                                     "requirements": "The Dependent Coupling model achieves validation FID-50k around 2.05 for the super-resolution task",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

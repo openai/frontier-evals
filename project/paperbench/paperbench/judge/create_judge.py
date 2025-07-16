@@ -37,6 +37,7 @@ def handle_reasoning_effort(judge_kwargs: dict, reasoning_effort: str | None) ->
 def handle_judge_kwargs(
     judge_type: str,
     code_only: bool = False,
+    resources_provided: bool = False,
     paper: Paper | None = None,
     model_name: str | None = None,
     reasoning_effort: str | None = None,
@@ -45,7 +46,7 @@ def handle_judge_kwargs(
     Prepares the right judge kwargs based on the judge type, model name and paper
     To be fed into `create_judge` typically.
     """
-    judge_kwargs = {"code_only": code_only}
+    judge_kwargs = {"code_only": code_only, "resources_provided": resources_provided}
     if judge_type == "dummy":
         return judge_kwargs
     judge_kwargs["model"] = model_name

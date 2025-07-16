@@ -18,31 +18,36 @@
                             "requirements": "Code has been implemented such that a ViT-Base model pre-trained on ImageNet-1K can be loaded into memory using the timm repository",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "resnet50",
                             "requirements": "Code has been implemented such that a ResNet-50 model pre-trained on ImageNet-1K can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "visionmamba",
                             "requirements": "Code has been implemented such that a VisionMamba model pre-trained on ImageNet-1K can be loaded into memory",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "quantized-models",
                             "requirements": "Quantized 8-bit and 6-bit ViT-Base models are created using PTQ4ViT, using 32 randomly selected training samples from the ImageNet-1K training set as training data",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "datasets",
@@ -54,41 +59,48 @@
                             "requirements": "The ImageNet-1K dataset is obtained.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "e66011b0-67aa-4e40-8b89-028c61e5cd61",
                             "requirements": "The ImageNet-C dataset is obtained, which contains corrupted images in 15 types and 5 severity levels for each type.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "imagenet-r",
                             "requirements": "The ImageNet-R dataset containing artistic renditions of 200 ImageNet classes is obtained",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "imagenet-v2",
                             "requirements": "The ImageNet-V2 matched frequency subset dataset is obtained",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "imagenet-sketch",
                             "requirements": "The ImageNet-Sketch dataset containing black and white sketches is obtained",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "baseline-implementations",
@@ -105,17 +117,20 @@
                             "requirements": "The LAME baseline is implemented from https://github.com/fiveai/LAME",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "t3a-implementation",
                             "requirements": "The T3A baseline is implemented from https://github.com/matsuolab/T3A",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "gradient-based-baselines",
@@ -127,24 +142,28 @@
                             "requirements": "The TENT baseline is implemented from https://github.com/DequanWang/tent",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "cotta-implementation",
                             "requirements": "The CoTTA baseline is implemented from https://github.com/qinenergy/cotta",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "sar-implementation",
                             "requirements": "The SAR baseline is implemented from https://github.com/mr-eggplant/SAR",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "baseline-hyperparameters",
@@ -166,17 +185,20 @@
                                             "requirements": "LAME uses a batch size of 64",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "537a4b4a-345d-47b5-9146-ecce04342a68",
                                             "requirements": "For the kNN affinity matrix in LAME, $k=5$",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "t3a-hyperparams",
@@ -188,20 +210,24 @@
                                             "requirements": "T3A uses a batch size of 64",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "12e08875-9130-45b4-9a69-94178bcd8294",
                                             "requirements": "In T3A, the number of supports to restore $M$ is set to 20",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "gradient-based-hyperparams",
@@ -218,31 +244,36 @@
                                             "requirements": "TENT uses a batch size of 64",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "4402b969-ad0c-401b-b475-2574749898bb",
                                             "requirements": "TENT uses SGD as the update rule",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "ccc0dd8a-31c6-490d-aa37-4f7c642edf7a",
                                             "requirements": "TENT uses a momentum of 0.9",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "df17b005-f142-47e8-9286-1efa94d7905d",
                                             "requirements": "TENT uses a learning rate of 0.001",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "cotta-hyperparams",
@@ -254,52 +285,60 @@
                                             "requirements": "In CoTTA, SGD is used as the optimizer",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "0c456209-b018-4be2-a9c7-8f37c7054ad3",
                                             "requirements": "In CoTTA, momentum=0.9 is used",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "80160b60-f7b2-403b-aa54-d91dd652fcf0",
                                             "requirements": "In CoTTA, a learning rate of 0.05 is used",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "476efd2f-57c6-4b5d-9f14-390af179b353",
                                             "requirements": "In CoTTA, a batch size of 64 is used",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "4f065829-610e-4af4-91dd-816dec9ae57e",
                                             "requirements": "In COTTA, the augmentation threshold $p_{th}$ is set to 0.1",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "e03e23d6-98c1-476c-90df-280bc268b90f",
                                             "requirements": "In COTTA, for images below the threshold, 32 augmentations are used, including color jitter, random affine, Gaussian blur, random horizontal flip, and Gaussian noise",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "c3ed3ffe-bc19-4615-88da-b6f38d8b34d0",
                                             "requirements": "In COTTA, the restoration probability is set to 0.01, and the EMA factor $\\\\alpha$ for teacher update is set to 0.999",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "sar-hyperparams",
@@ -311,54 +350,64 @@
                                             "requirements": "SAR uses SGD as its optimizer",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "891b9f8e-9a71-41d8-8498-db75c554f37b",
                                             "requirements": "SAR uses momentum=0.9",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "fb2c9926-ef49-465d-8794-5201caa9c15c",
                                             "requirements": "SAR uses a learning rate of 0.001",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "a643ce62-16f3-49aa-84c5-5f55ffd03b1e",
                                             "requirements": "SAR uses a batch size of 64",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "95ba7d30-f4d7-4a15-befd-9fc6b3db57ce",
                                             "requirements": "In SAR the entropy threshold is $E_0$ is set to $0.4\\\\times\\\\ln C$, where $C$ is the number of task classes",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         },
                                         {
                                             "id": "87cca796-5257-46d8-bcca-2234287aa96b",
                                             "requirements": "In SAR the trainable parameters are the affine parameters of the layer normalization modules from blocks1 to blocks8 for ViT-Base",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Experimental Setup"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "foa-implementation",
@@ -375,14 +424,16 @@
                             "requirements": "A mechanism is implemented to calculate and store the source domain statistics (mean and standard deviation) of the N-th layer's CLS token features, computed over a set of source training samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "prompt-insertion",
                             "requirements": "The input prompt mechanism is implemented to add learnable prompts to the inputs following the required arrangement: [CLS token, learnable prompts, patch embeddings].",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "fitness-function",
@@ -399,41 +450,48 @@
                                             "requirements": "For each $x \\in X_t$, the term $\\sum_{c \\in C} -\\hat{y}_c \\log \\hat{y}_c$ is computed, where $X_t$ is the current batch of test samples, $C$ is the set of all classes, and $\\hat{y}_c$ is the predicted probability for class c",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "94f30003-f275-41a4-b76c-6fdd51721246",
                                             "requirements": "The above expression ($\\sum_{c \\in C} -\\hat{y}_c \\log \\hat{y}_c$) is summed over all $x \\in X_t$.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "cdd126eb-86a2-4c3a-91f1-b217bff9456c",
                                     "requirements": "The difference in means is computed correctly, as the sum over $x \\in X_t$ of $\\lambda * ||\\mu_i(X_t) - \\mu_i^S|| _2$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "4c1b3e06-ded8-4fb0-866a-0f09af607afe",
                                     "requirements": "The difference in standard deviations is computed correctly, as the sum over $x \\in X_t$ of $||\\sigma_i(X_t) - \\sigma_i^S||_2$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "new-uuid-fitness-sum",
                                     "requirements": "The total fitness value is computed correctly by summing all components: the entropy term over X_t and all activation discrepancy terms (means and standard deviations).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "cma-optimizer",
@@ -445,20 +503,24 @@
                                     "requirements": "Given a population size K, the t-th prompt $p^{(t)}_k$ is sampled K times i.i.d. (k=1,...,K) via $p^{(t)}_k \\sim m^{(t)} + \\tau^{(t)} \\mathcal{N}(0, \\sigma^{(t)})$, where $m^{(t)}$ is the mean vector, $\\tau^{(t)}$ is the step size, and $\\sigma^{(t)}$ is the covariance matrix at iteration t.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "6fce355f-d43f-467d-b7ba-c324ff4cb17d",
                                     "requirements": "Each prompt p^{(t)}_k is concatenated with the embeddings of test batch X_t as input to the model, producing fitness values v_k. These K fitness values are then used to update the parameters via the CMA algorithm.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "activation-shifting",
@@ -470,7 +532,8 @@
                             "requirements": "A mechanism is implemented to calculate and store the source domain statistics (mean and standard deviation) of the N-th layer's CLS token features, computed over a set of source training samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         },
                         {
                             "id": "shifting-mechanism",
@@ -482,41 +545,48 @@
                                     "requirements": "For each batch of elements $X_t$, the mean of the elements is computed as $\\mu_N(X_t)$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "6ae1951a-9046-4c4f-8b80-2dced089f876",
                                     "requirements": "For each batch of elements $X_t$, an update is made as $\\mu_N(t) = \\alpha * \\mu_N(X_t) + (1 - \\alpha) * \\mu_N(t-1)$, where $\\alpha$ is a configurable hyperparameter.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "37a2aa82-25db-467c-ac20-52110ea68af0",
                                     "requirements": "The shifting direction $d_t$ is set to $\\mu^S_N - \\mu_N(t)$, where $\\mu^S_N$ is the mean of the $N$-th final layer CLS feature calculated over source in-distribution samples $\\mathcal{D}_S$.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "88178132-a2d9-4804-9516-b5e9d31d1a49",
                                     "requirements": "To shift the output of the OOD data points from the t-th batch to match the in-distribution domain, $\\gamma * d_t$ is added to the $N$-th layer's CLS feature $e^0_N$, where gamma is a configurable hyperparameter.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "activation-shifting-initialization",
                             "requirements": "The activation shifting moving average muN(0) is correctly initialized using the statistics of the first batch muN(X1).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Method Implementation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "92d65971-acb0-4d33-b25b-174a025cb8af",
@@ -528,83 +598,96 @@
                             "requirements": "The number of prompt embeddings N_p is set to 3.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "0c2acf08-070a-4f66-8c39-cd6ba26c141b",
                             "requirements": "Prompts are initialized uniformly.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "c33f98df-8d41-434b-9c27-ce71f7e6d6d1",
                             "requirements": "The batch size (BS) is set to 64.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "bc867c99-9d7f-4d50-9af6-b46ede203b16",
                             "requirements": "The population size K is set to 28.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "69c93e10-4535-477d-84d3-63ce712405e3",
                             "requirements": "Lambda is set to 0.4 on ImageNet-C/V2/Sketch",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "03d22003-456f-4288-8d22-25a829efdd54",
                             "requirements": "Lambda is set to 0.2 on ImageNet-R",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "7bf85e71-77f0-4f81-836e-03d5d56a9a29",
                             "requirements": "For activation shifting, alpha is set to 0.1.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "38ece210-c07a-4f8d-baf7-7e99a3a203f3",
                             "requirements": "The step size gamma for activation shifting is set to 1.0.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "new-uuid-1",
                             "requirements": "The model precision is set to 32-bits by default unless otherwise specified.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "new-uuid-2",
                             "requirements": "The full ImageNet-1K validation set is used for computing source statistics.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Data Processing & Preparation"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "new-uuid-3",
                     "requirements": "The statistics $\\{\\mu^S_i, \\sigma^S_i\\}^N_{i=0}$ are computed and stored for use in FOA.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Data Processing & Preparation"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "5c936169-f87c-401a-8522-a87b9593ee5a",
@@ -616,17 +699,20 @@
                     "requirements": "Classification accuracy on OOD examples is implemented correctly.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 },
                 {
                     "id": "3487990e-09b6-40b7-9b48-c3321e67898c",
                     "requirements": "ECE (expected calibration error), the difference between predicted probabilities and actual outcomes in a probabilistic model, is implemented correctly.",
                     "weight": 1,
                     "sub_tasks": [],
-                    "task_category": "Code Development"
+                    "task_category": "Code Development",
+                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "full-precision-evaluation",
@@ -648,17 +734,20 @@
                                     "requirements": "The accuracies on all 15 corruptions are calculated for the baseline methods (NoAdapt, LAME, T3A).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "09a51455-c656-404b-be52-09999f529fb7",
                                     "requirements": "The ECE scores on all 15 corruptions are calculated for the baseline methods (NoAdapt, LAME, T3A).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "imagenet-c-gradients",
@@ -670,17 +759,20 @@
                                     "requirements": "The accuracies on all 15 corruptions are calculated for the gradient-based methods (TENT, CoTTA, SAR) and FOA.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "413cecbd-59a4-451c-a60c-fad885bf33b5",
                                     "requirements": "The ECE scores on all 15 corruptions are calculated for the gradient-based methods (TENT, CoTTA, SAR) and FOA.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "imagenet-c-foa",
@@ -692,55 +784,64 @@
                                     "requirements": "FOA has a higher average accuracy score than all other methods.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "f49179f6-5d63-4117-abbd-2ef7c0325499",
                                     "requirements": "FOA has a lower average ECE score than all other methods.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "14e863e3-c953-424b-b059-aa126b261f88",
                                     "requirements": "LAME and T3A perform around the same or worse than NoAdapt both on average accuracy and on average ECE.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "e358b89e-c75f-448b-812f-734fca9e69d4",
                                     "requirements": "TENT, CoTTA, and SAR have higher average accuracy than the gradient-free methods (LAME and T3A).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "e008e8e1-0d6e-4411-8f46-69b07656d430",
                                     "requirements": "Compared to SAR, the average accuracy of FOA is 2-6% higher.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "564653b0-70a0-4143-9d2d-5eb90ed2a833",
                                     "requirements": "Compared to SAR, the average ECE of FOA is 2-6% lower.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "fa981c83-ca1a-4122-bce2-2a5045cf3b13",
                                     "requirements": "FOA's ECE score is more than 10% lower than that of TENT.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "additional-benchmarks",
@@ -757,17 +858,20 @@
                                     "requirements": "The accuracies on all 3 benchmarks are calculated for the baseline methods (NoAdapt, LAME, T3A).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "76d49374-1496-4dc3-970d-0c2890bca42f",
                                     "requirements": "The ECE scores on all 3 benchmarks are calculated for the baseline methods (NoAdapt, LAME, T3A).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "5a3734e5-1ced-44da-9f6f-e92e06b56500",
@@ -779,17 +883,20 @@
                                     "requirements": "The accuracies on all 3 benchmarks are calculated for the gradient-based methods (TENT, CoTTA, SAR).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "e337c8f0-f757-41a8-95bd-d4d4972ea034",
                                     "requirements": "The ECE scores on all 3 benchmarks are calculated for the gradient-based methods (TENT, CoTTA, SAR).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "a38e7a44-9743-4ab2-99cc-3c3a03f254c4",
@@ -801,23 +908,28 @@
                                     "requirements": "The average accuracy value of FOA is comparable or higher than the average accuracy values of the other methods.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "6613dcf6-8941-42bb-a969-c03179a75d93",
                                     "requirements": "The average ECE value of FOA is comparable or lower than the average ECE values of the other methods.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "quantized-evaluation",
@@ -834,17 +946,20 @@
                             "requirements": "The accuracies on all 15 corruptions are calculated for the methods (NoAdapt, T3A, and FOA) using 8-bit quantized ViT",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "8bit-ece",
                             "requirements": "The ECE scores on all 15 corruptions are calculated for the methods (NoAdapt, T3A, and FOA) using 8-bit quantized ViT",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "6bit-evaluation",
@@ -856,17 +971,20 @@
                             "requirements": "The accuracies on all 15 corruptions are calculated for the methods (NoAdapt, T3A, and FOA) using 6-bit quantized ViT",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "6bit-ece",
                             "requirements": "The ECE scores on all 15 corruptions are calculated for the methods (NoAdapt, T3A, and FOA) using 6-bit quantized ViT",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "quantized-model-trends",
@@ -878,20 +996,24 @@
                             "requirements": "FOA outperforms T3A significantly in both accuracy and ECE scores on both 8-bit and 6-bit models",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "foa-8bit-tent-32bit",
                             "requirements": "FOA with 8-bit ViT achieves better accuracy than TENT with 32-bit ViT (with a > 2% improvement).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "f17fd16f-7482-4b1f-9137-3f054a537ad0",
@@ -908,14 +1030,16 @@
                             "requirements": "FOA is trained for all subsets of the following three components on ImageNet-C: 1) The entropy term in the fitness function, 2) The activation discrepepancy term in the fitness function, 3) Use of activation shifting.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "c6a02904-c8bf-4d68-901e-b68c2b7c39d2",
                             "requirements": "The average accuracy and ECE score is computed over all 15 corruptions of ImageNet-C on all the runs of FOA.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "5ad03194-bb16-4690-8292-0ceffca68545",
@@ -927,41 +1051,48 @@
                                     "requirements": "CMA with Entropy fitness performs poorer than NoAdapt.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "4c40bfda-0437-4354-bef3-6a903d6ee43d",
                                     "requirements": "Using Activation Discrepancy fitness causes a > 5 % increase in accuracy compared to NoAdapt.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "60c1e713-4492-4558-a5f1-c38655056b52",
                                     "requirements": "Using only activation shifting causes a > 2 % increase in accuracy compared to NoAdapt",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "ec71c4f7-a73b-4dd5-a35e-0f7b336b9a79",
                                     "requirements": "When combining all three components, the accuracy is comparable to or higher than all other component combinations",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "f0373fea-4f62-4d85-831d-e968cdf0e13b",
                                     "requirements": "When combining all three components, the ECE score is comparable to or lower than all other component combinations.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "8c39cb2c-7ddb-4bc9-b649-f2eebd6fce3f",
@@ -973,14 +1104,16 @@
                             "requirements": "FOA is trained with population sizes K equal to 2, 3, ..., 28, on the Gaussian corrputed samples from ImageNet-C.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "ee156450-cd1a-4863-996d-00b569b899da",
                             "requirements": "The accuracy and ECE values are computed for the above values of K, both on FOA and on NoAdapt, on the Gaussian noise corrupted samples from ImageNet-C (severity level 5).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "108f25cc-1fee-454e-8a11-2e3747487c9d",
@@ -992,27 +1125,32 @@
                                     "requirements": "At K = 2, FOA outperforms NoAdapt and T3A in accuracy.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "46befbf5-4bc6-41dc-9cba-ec49c08a6936",
                                     "requirements": "At K = 6, FOA is comparable to or is better than TENT in accuracy.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "b4b1643c-c2f7-4027-95bf-06dffd840008",
                                     "requirements": "The accuracy of FOA converges as K goes past 15.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "54100d2d-efb8-4a09-9608-f1928f1cc742",
@@ -1024,31 +1162,36 @@
                             "requirements": "FOA is trained with N_p values equal to 1, 2, ..., 10, on the Gaussian corrputed samples from ImageNet-C.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "be075650-2f5c-4237-92fa-7b6832ce34b7",
                             "requirements": "The accuracy and ECE values are computed for the above values of N_p, both on FOA and on NoAdapt, , on the Gaussian noise corrupted samples from ImageNet-C (severity level 5).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "25d31a1a-498a-44a8-8c48-25dd2e06be05",
                             "requirements": "The accuracy only makes minor variations across different values of N_p.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Logging, Analysis & Presentation"
                         },
                         {
                             "id": "51f85c1f-45c8-4f63-b636-cbcb687c43ff",
                             "requirements": "The ECE only maks minor variations across different values of N_p.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "1c69a918-18c5-48c5-8781-f5de195c52f6",
@@ -1060,34 +1203,40 @@
                             "requirements": "FOA is trained with Q values equal to 16, 32, 64, 100, 200, 400, 800, 1600, where Q is the number of source training samples used for calculating the source statistics, on the Gaussian corrupted samples from ImageNet-C.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "1e18930c-fd61-4c7c-9e71-2e0d46018726",
                             "requirements": "The accuracy and ECE values are computed for the above values of Q, both on FOA and on NoAdapt, , on the Gaussian noise corrupted samples from ImageNet-C (severity level 5).",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "684701d0-8160-4bb6-b7da-aedb1a3f4576",
                             "requirements": "The accuracy is stable when Q goes past 32.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         },
                         {
                             "id": "4a0dce24-a6c0-4d68-915e-3959c7e0792e",
                             "requirements": "The ECE is stable when Q goes past 32.",
                             "weight": 2,
                             "sub_tasks": [],
-                            "task_category": "Result Analysis"
+                            "task_category": "Result Analysis",
+                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         },
         {
             "id": "97504b3e-b7b9-46ac-9bb3-57216e06db3a",
@@ -1109,24 +1258,28 @@
                                     "requirements": "Two storage mechanisms are implemented for interval-based updates: FOA-I V1 stores CLS token features between updates, while FOA-I V2 stores original input images between updates.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "interval-update",
                                     "requirements": "After every I samples, CMA optimization is performed using all stored samples as a batch, followed by deleting all I stored samples.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "forward-pass",
                                     "requirements": "Model inference is correctly performed all the samples via a forward pass.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "interval-experiments",
@@ -1138,24 +1291,28 @@
                                     "requirements": "FOA-I is trained and evaluated with intervals I = {4, 8, 16, 32, 64} as shown in Table 6.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "noadapt-baseline",
                                     "requirements": "NoAdapt baseline performance is measured.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "tent-baseline",
                                     "requirements": "TENT baseline with batch size 64 is measured.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "interval-results",
@@ -1167,20 +1324,24 @@
                                     "requirements": "FOA-I with I=4 outperforms TENT (with batch size 64), both in terms of accuracy score and ECE score.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "interval-scaling",
                                     "requirements": "FOA-I with smaller intervals (e.g., I=4) shows better performance than with I=64.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "memory-usage",
@@ -1197,24 +1358,28 @@
                                     "requirements": "Memory usage is measured for different batch sizes for NoAdapt, TENT, CoTTA, FOA, and FOA (8-bit), measuring both runtime and peak GPU memory usage.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "memory-8bit",
                                     "requirements": "Memory usage for 8-bit models is calculated as 0.25x of the corresponding 32-bit model measurements, following Liu et al. (2021b).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "3100d5c8-761f-4529-8046-f1cd0d6e45fb",
                                     "requirements": "Memory usage is measured for different interval lengths for FOA-I V1 (which stores features between updates) and FOA-I V2 (which stores images between updates).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "memory-results",
@@ -1226,34 +1391,40 @@
                                     "requirements": "The memory usage of FOA is comparable or slightly higher than that of NoAdapt over all batch sizes.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "gradient-memory",
                                     "requirements": "FOA uses significantly less memory than gradient-based methods for all batch sizes.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "2ce903d7-0dc1-424a-8b2a-d07ebaec0e01",
                                     "requirements": "FOA-I V1 and FOA-I V2 use less memory than FOA.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "57793664-3d52-444d-b5aa-023b4a4ad271",
                                     "requirements": "Quantizing models to 8 bits reduces memory usage.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Method Implementation"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "design-choices",
@@ -1270,14 +1441,16 @@
                                     "requirements": "Code is implemented to allow training only the normalization layer parameters of ViT-Base while keeping other parameters frozen",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "prompt-training",
                                     "requirements": "Code is implemented to allow training only the input prompt parameters while keeping the ViT-Base model parameters frozen",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Development"
+                                    "task_category": "Code Development",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "optimizer-implementations",
@@ -1289,17 +1462,20 @@
                                             "requirements": "SGD optimizer is implemented with momentum of 0.9 and configurable learning rate",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "cma-implementation",
                                             "requirements": "CMA optimizer is implemented with configurable population size and step size",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "loss-implementations",
@@ -1311,20 +1487,24 @@
                                             "requirements": "Entropy minimization loss is implemented for test-time adaptation",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "fitness-loss",
                                             "requirements": "The fitness function from Equation 5 combining entropy and activation discrepancy is implemented",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "design-experiments",
@@ -1336,24 +1516,28 @@
                                     "requirements": "The model is trained with different learnable parameters (norm layers only vs prompts only) and the accuracy scores and ECE scores are computed",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "optimizer-experiments",
                                     "requirements": "The model is trained with different optimizers (SGD vs CMA) and the accuracy scores and ECE scores are computed",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "loss-experiments",
                                     "requirements": "The model is trained with different loss functions (entropy vs fitness from equation 5) and the accuracy scores and ECE scores are computed",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Experimental Setup"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "design-results",
@@ -1365,27 +1549,32 @@
                                     "requirements": "Direct replacement of SGD with CMA for entropy-based TTA is shown to be infeasible (accuracy degrading to a smaller percentage on the order of 0.1%).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Experimental Setup"
                                 },
                                 {
                                     "id": "prompt-effectiveness",
                                     "requirements": "Using prompts with CMA and the devised fitness function achieves effective performance.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Method Implementation"
                                 },
                                 {
                                     "id": "sgd-fitness-effectiveness",
                                     "requirements": "The proposed fitness function (Eqn. 5) achieves excellent performance even with SGD learning, showing significant improvement (> 8% increase in average accuracy) compared to TENT with entropy loss.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "model-variants",
@@ -1407,24 +1596,28 @@
                                             "requirements": "A new learnable 7x7 Conv layer is implemented with the same number of input and output channels as the input image (3).",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "resnet-prompt-init",
                                             "requirements": "The Conv layer weights are initialized with uniform initialization, similar to ViT prompts.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "resnet-prompt-addition",
                                             "requirements": "The prompt output is element-wise added to the input image before being passed to the ResNet model.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "resnet-baselines",
@@ -1436,31 +1629,36 @@
                                             "requirements": "The ResNet-50 model pretrained on ImageNet is obtained and evaluated without any adaptation.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "resnet-bn-setup",
                                             "requirements": "BN Adapt is implemented to update batch normalization statistics using test time samples with batch size 64.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "resnet-baseline-eval",
                                             "requirements": "Both methods are evaluated with exactly the same test data samples and ordering.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "resnet-gradient",
                                     "requirements": "The gradient-based methods (TENT, SAR), NoAdapt, BN Adapt, SGD FOA and FOA are evaluated on ResNet-50 on ImageNet-C Gaussian noise level 5.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "resnet-results",
@@ -1472,20 +1670,24 @@
                                             "requirements": "FOA outperforms BNAdapt, both in accuracy and ECE.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "63ded527-cd6b-49e1-ade5-c6e1b6fc2cea",
                                             "requirements": "FOA has lower accuracy than TENT.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "visionmamba-experiments",
@@ -1502,38 +1704,44 @@
                                             "requirements": "N_p=3 learnable prompt embeddings are created with the same dimension as patch embeddings and initialized with uniform initialization.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "mamba-prompt-concat",
                                             "requirements": "The prompts are concatenated at the beginning of the sequence of patch embeddings, before being passed to the VisionMamba blocks.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         },
                                         {
                                             "id": "mamba-mask-handling",
                                             "requirements": "The attention masks and position embeddings are adjusted to account for the additional prompt tokens.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Method Implementation"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "mamba-baselines",
                                     "requirements": "The NoAdapt baseline is evaluated on VisionMamba on ImageNet-C Gaussian noise level 5.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "mamba-gradient",
                                     "requirements": "The gradient-based methods (TENT, SAR), NoAdapt, BN Adapt, SGD FOA and FOA are evaluated on VisionMamba on ImageNet-C Gaussian noise level 5.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "mamba-results",
@@ -1545,23 +1753,28 @@
                                             "requirements": "FOA achieves accuracy and ECE scores that are comparable to or better than TENT.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         },
                                         {
                                             "id": "804f5639-b465-486b-bb6e-4bfdbfc0bfea",
                                             "requirements": "FOA achieves accuracy and ECE scores that are comparable to or better than SAR.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Result Analysis"
+                                            "task_category": "Result Analysis",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "noniid-scenarios",
@@ -1583,17 +1796,20 @@
                                             "requirements": "The ImageNet-C test data stream is arranged such that samples are encountered in class order, with instances from each class appearing consecutively.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         },
                                         {
                                             "id": "label-shift-eval",
                                             "requirements": "Performance is evaluated on ImageNet-C (severity level 5) test samples arranged in class order.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "mixed-domain-setup",
@@ -1605,34 +1821,40 @@
                                             "requirements": "A single data stream is created that randomly mixes test samples from all 15 corruption types of ImageNet-C.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         },
                                         {
                                             "id": "mixed-domain-random",
                                             "requirements": "The test data stream is created by randomly interleaving samples from all 15 corruption types of ImageNet-C.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Development"
+                                            "task_category": "Code Development",
+                                            "finegrained_task_category": "Data Processing & Preparation"
                                         },
                                         {
                                             "id": "mixed-domain-eval",
                                             "requirements": "Performance is evaluated on the mixed stream containing randomly interleaved samples from all corruption types.",
                                             "weight": 1,
                                             "sub_tasks": [],
-                                            "task_category": "Code Execution"
+                                            "task_category": "Code Execution",
+                                            "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                         }
                                     ],
-                                    "task_category": null
+                                    "task_category": null,
+                                    "finegrained_task_category": null
                                 },
                                 {
                                     "id": "method-comparison",
                                     "requirements": "The three methods TENT, SAR, FOA are evaluated under the non-i.i.d. conditions (online imbalanced label shift and mixed domain shift).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         },
                         {
                             "id": "noniid-results",
@@ -1644,20 +1866,24 @@
                                     "requirements": "The performance of all methods (TENT, SAR, FOA) shows some degradation under non-i.i.d. scenarios compared to i.i.d. scenarios, but FOA's degradation is bounded (ECE increase < 5%, accuracy decrease < 8%).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "relative-performance",
                                     "requirements": "FOA maintains better performance than TENT and SAR under both non-i.i.d. settings (online imbalanced label shifts and mixed domain shifts).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 },
                 {
                     "id": "indistribution-comparison",
@@ -1669,14 +1895,16 @@
                             "requirements": "The original ImageNet validation set is loaded without any corruptions or modifications.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Development"
+                            "task_category": "Code Development",
+                            "finegrained_task_category": "Dataset and Model Acquisition"
                         },
                         {
                             "id": "3e77debc-d638-49c8-9597-56ee903b95b2",
                             "requirements": "NoAdapt, TENT, CoTTA, SAR, and FOA are evaluated with consistent batch size 64 and using exactly the same validation samples.",
                             "weight": 1,
                             "sub_tasks": [],
-                            "task_category": "Code Execution"
+                            "task_category": "Code Execution",
+                            "finegrained_task_category": "Experimental Setup"
                         },
                         {
                             "id": "clean-evaluation",
@@ -1688,38 +1916,46 @@
                                     "requirements": "For each method, relative accuracy decline from NoAdapt is calculated by subtracting its accuracy from NoAdapt's 85.17% baseline.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Code Execution"
+                                    "task_category": "Code Execution",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "noadapt-comparison",
                                     "requirements": "FOA maintains baseline NoAdapt accuracy with minimal degradation (< 2 %).",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "other-methods-comparison",
                                     "requirements": "FOA outperforms or is comparable to TENT, CoTTA, and SAR in terms of maintaining in-distribution accuracy.",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 },
                                 {
                                     "id": "ece-comparison",
                                     "requirements": "FOA achieves lower ECE on in-distribution data compared to NoAdapt",
                                     "weight": 1,
                                     "sub_tasks": [],
-                                    "task_category": "Result Analysis"
+                                    "task_category": "Result Analysis",
+                                    "finegrained_task_category": "Evaluation, Metrics & Benchmarking"
                                 }
                             ],
-                            "task_category": null
+                            "task_category": null,
+                            "finegrained_task_category": null
                         }
                     ],
-                    "task_category": null
+                    "task_category": null,
+                    "finegrained_task_category": null
                 }
             ],
-            "task_category": null
+            "task_category": null,
+            "finegrained_task_category": null
         }
     ],
-    "task_category": null
+    "task_category": null,
+    "finegrained_task_category": null
 }

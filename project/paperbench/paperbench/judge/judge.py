@@ -245,6 +245,7 @@ class Judge(ABC):
         log_path: Path | None = None,
         max_depth: int = 999,
         code_only: bool = False,
+        resources_provided: bool = False,
         *args,
         **kwargs,
     ):
@@ -257,6 +258,7 @@ class Judge(ABC):
         self.log_path: Path | None = log_path
         self.max_depth: int = max_depth
         self.code_only: bool = code_only
+        self.resources_provided: bool = resources_provided
 
         # Reproduction script and log
         self.reproduce_sh_path: Path = self.submission_dir / "reproduce.sh"

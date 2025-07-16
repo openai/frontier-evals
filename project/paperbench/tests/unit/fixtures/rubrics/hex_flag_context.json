@@ -1,0 +1,23 @@
+
+{
+    "id": "4b9e1b5e-98a1-4f3c-88fa-fb9e7846c1bb",
+    "requirements": "The directory contains all the expected flags.",
+    "weight": 1,
+    "sub_tasks": [
+        {
+            "id": "4b9e1b5e-98a1-4f3c-88fa-fb9e7846c1bb",
+            "requirements": "The submission contains a single file named 'flag.txt' at the root of the directory and has contents '0xaa0d6b4a'.",
+            "weight": 1,
+            "sub_tasks": [
+                {
+                    "id": "a6fef6f9-82dc-4a06-b1e9-1a4f3f6384a1",
+                    "requirements": "The submission has all features specified, such as the proper flag contents.",
+                    "weight": 1,
+                    "sub_tasks": [],
+                    "task_category": "Code Development"
+                }
+            ],
+            "task_category": null
+        }
+    ]
+}

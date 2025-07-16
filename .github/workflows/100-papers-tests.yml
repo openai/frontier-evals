@@ -1,0 +1,76 @@
+name: Run PaperBench Tests
+
+on:
+  pull_request:
+    paths: [ 'project/paperbench/**']
+    branches: [ '**' ]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      test_branch:
+        description: 'Branch to run the tests on'
+        required: false
+        default: 'main'
+
+jobs:
+  test:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Install dependencies
+      working-directory: ./project/paperbench
+      run: |
+        echo "setuptools<78.0.0" > /tmp/constraints.txt
+        export PIP_CONSTRAINT=/tmp/constraints.txt
+        python -m pip install --upgrade pip
+        pip install -e ../alcatraz
+        pip install "nanoeval @ git+https://github.com/openai/preparedness.git#subdirectory=project/nanoeval"
+        pip install "nanoeval_alcatraz @ git+https://github.com/openai/preparedness.git#subdirectory=project/nanoeval_alcatraz"
+        # Finally install paperbench
+        pip install -e ".[dev]"
+
+    - uses: docker/setup-buildx-action@v3
+      with:
+        driver: docker
+        install: true
+
+    - name: Build pb-env (local)
+      working-directory: ./project/paperbench
+      run: |
+        docker buildx build \
+          --builder default \
+          --platform=linux/amd64 \
+          --load \
+          -t pb-env \
+          -f paperbench/agents/Dockerfile.base paperbench/agents/
+
+    - name: Build dummy
+      working-directory: ./project/paperbench
+      run: |
+        docker buildx build \
+          --builder default \
+          --platform=linux/amd64 \
+          --load \
+          -t dummy \
+          -f paperbench/agents/dummy/Dockerfile paperbench/agents/dummy/
+
+    - name: Run tests
+      working-directory: ./project/paperbench
+      run: |
+        pytest -n 10 -v -rs

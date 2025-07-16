@@ -1,0 +1,75 @@
+{
+    "id": "4b9e1b5e-98a1-4f3c-88fa-fb9e7846c1bb",
+    "requirements": "The directory contains all the expected flags.",
+    "weight": 1,
+    "sub_tasks": [
+        {
+            "id": "a6fef6f9-82dc-4a06-b1e9-1a4f3f6384a1",
+            "requirements": "The submission contains a file named 'flag.txt' at the root of the directory and has contents '0xb7f27114'.",
+            "weight": 1,
+            "sub_tasks": [],
+            "task_category": "Code Development"
+        },
+        {
+            "id": "f86e9e2d-53a1-4fba-941b-929c4dbea4af",
+            "requirements": "The directory 'other_directory' contains all the expected flags.",
+            "weight": 1,
+            "sub_tasks": [
+                {
+                    "id": "f16f1d19-92ec-4bb9-b24a-5b3a85c1df8f",
+                    "requirements": "The submission contains a file named 'flag.txt' in the directory 'other_directory' and has contents '0x3d21842e'.",
+                    "weight": 1,
+                    "sub_tasks": [],
+                    "task_category": "Code Development"
+                }
+            ],
+            "task_category": null
+        },
+        {
+            "id": "d41d8cd9-7f00-4e9a-9fc5-3e3a09fd6dd1",
+            "requirements": "The directory 'directory' contains all the expected flags.",
+            "weight": 1,
+            "sub_tasks": [
+                {
+                    "id": "0f6c1b7d-9656-4c4b-95fa-5cf85d4c9a5e",
+                    "requirements": "The submission contains a file named 'flag.txt' in the directory 'directory' and has contents '0x8cb0a25c'.",
+                    "weight": 1,
+                    "sub_tasks": [],
+                    "task_category": "Code Development"
+                },
+                {
+                    "id": "c6e73fa6-2626-4c18-8535-efaa2d8e72d0",
+                    "requirements": "The directory 'directory/nested_directory' contains all the expected flags.",
+                    "weight": 1,
+                    "sub_tasks": [
+                        {
+                            "id": "7a0c812a-c0c5-4c68-b47b-0e66d6a09f87",
+                            "requirements": "The submission contains a file named 'flag.txt' in the directory 'directory/nested_directory' and has contents '0xaa0e790'.",
+                            "weight": 1,
+                            "sub_tasks": [],
+                            "task_category": "Code Development"
+                        },
+                        {
+                            "id": "e60dc8f8-bf34-4c69-88f0-8cf8f2d645d0",
+                            "requirements": "The directory 'directory/nested_directory/other_nested_directory' contains all the expected flags.",
+                            "weight": 1,
+                            "sub_tasks": [
+                                {
+                                    "id": "6a7e71a9-0e48-4613-9bf3-f1d0d34a76fa",
+                                    "requirements": "The submission contains a file named 'flag.txt' in the directory 'directory/nested_directory/other_nested_directory' and has contents '0xb68f914b'.",
+                                    "weight": 1,
+                                    "sub_tasks": [],
+                                    "task_category": "Code Development"
+                                }
+                            ],
+                            "task_category": null
+                        }
+                    ],
+                    "task_category": null
+                }
+            ],
+            "task_category": null
+        }
+    ],
+    "task_category": null
+}

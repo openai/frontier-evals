@@ -1,0 +1,7 @@
+{
+    "id": "da2c8cfe-116c-4f74-8583-5af8a36fbee7",
+    "requirements": "The submission contains a single file named 'flag.txt' at the root of the directory and has contents '0xaa0d6b4a'.",
+    "weight": 1,
+    "sub_tasks": [],
+    "task_category": "Code Development"
+}

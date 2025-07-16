@@ -1,0 +1,43 @@
+{
+    "id": "ab12cd34-ef56-7890-ab12-cd34ef567890",
+    "requirements": "The directory contains all the expected flags.",
+    "weight": 1,
+    "sub_tasks": [
+        {
+            "id": "1234abcd-5678-90ef-ab12-3456cdef7890",
+            "requirements": "The submission contains a file named '1.txt' at the root of the directory and has contents '0xa5a2eb3e'.",
+            "weight": 1,
+            "sub_tasks": [],
+            "task_category": "Code Development"
+        },
+        {
+            "id": "2345bcde-6789-01fa-bc23-4567def89012",
+            "requirements": "The submission contains a file named '2.txt' at the root of the directory and has contents '0xe314cd90'.",
+            "weight": 1,
+            "sub_tasks": [],
+            "task_category": "Code Development"
+        },
+        {
+            "id": "3456cdef-7890-12ab-cd34-5678ef901234",
+            "requirements": "The submission contains a file named '3.txt' at the root of the directory and has contents '0xc57ff2de'.",
+            "weight": 1,
+            "sub_tasks": [],
+            "task_category": "Code Development"
+        },
+        {
+            "id": "4567def0-8901-23bc-de45-6789f0123456",
+            "requirements": "The submission contains a file named '4.txt' at the root of the directory and has contents '0xbf30b35f'.",
+            "weight": 1,
+            "sub_tasks": [],
+            "task_category": "Code Development"
+        },
+        {
+            "id": "5678ef01-9012-34cd-ef56-7890a1234567",
+            "requirements": "The submission contains a file named '5.txt' at the root of the directory and has contents '0x97c3573f'.",
+            "weight": 1,
+            "sub_tasks": [],
+            "task_category": "Code Development"
+        }
+    ],
+    "task_category": null
+}

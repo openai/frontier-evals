@@ -1,0 +1,7 @@
+{
+    "id": "9930b3ea-1e4f-4e9b-8cb7-e96947c450ef",
+    "requirements": "This task should always receive a score of 1.0, independent of what's submitted.",
+    "weight": 1,
+    "sub_tasks": [],
+    "task_category": "Code Development"
+}

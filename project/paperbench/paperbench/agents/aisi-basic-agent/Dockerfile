@@ -20,3 +20,7 @@ RUN conda run -n ${CONDA_ENV_NAME} pip install "git+https://github.com/openai/ch
 
 # copy remaining agent files into ${AGENT_DIR}
 COPY . ${AGENT_DIR}
+
+RUN cd ${AGENT_DIR}/inspect_ai && git init
+RUN conda run -n ${CONDA_ENV_NAME} pip install ${AGENT_DIR}/inspect_ai/
+

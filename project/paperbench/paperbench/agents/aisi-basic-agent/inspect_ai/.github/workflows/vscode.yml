@@ -1,0 +1,40 @@
+on:
+  push:
+    tags:
+      - "v[0-9]*"
+    paths:
+      - "tools/vscode/**"
+      - ".github/workflows/vscode.yml"
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "tools/vscode/**"
+      - ".github/workflows/vscode.yml"
+  workflow_dispatch:
+
+name: Build VS Code Ext
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.x"
+      - run: |
+          pushd tools/vscode
+          yarn install --immutable --immutable-cache --check-cache
+
+      - name: Build Extension
+        run: |
+          pushd tools/vscode
+          yarn vsce package
+
+      - name: Upload extension to Actions Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inspect-vscode
+          path: "tools/vscode/inspect*.vsix"

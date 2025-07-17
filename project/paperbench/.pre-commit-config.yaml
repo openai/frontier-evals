@@ -10,3 +10,4 @@ repos:
     hooks:
       - id: isort
         args: [--line-length=100, --profile=black]
+exclude: 'paperbench/agents/aisi-basic-agent/inspect_ai'

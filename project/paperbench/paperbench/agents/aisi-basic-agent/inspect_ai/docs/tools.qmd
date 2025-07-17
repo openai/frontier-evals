@@ -1,0 +1,33 @@
+---
+title: Tool Basics
+---
+
+## Overview
+
+Many models now have the ability to interact with client-side Python functions in order to expand their capabilities. This enables you to equip models with your own set of custom tools so they can perform a wider variety of tasks.
+
+Inspect natively supports registering Python functions as tools and providing these tools to models that support them. Inspect also includes several standard tools for code execution, text editing, computer use, web search, and web browsing.
+
+::: callout-note
+### Tools and Agents
+
+One application of tools is to run them within an agent scaffold that pursues an objective over multiple interactions with a model. The scaffold uses the model to help make decisions about which tools to use and when, and orchestrates calls to the model to use the tools. This is covered in more depth in the [Agents](agents.qmd) section.
+:::
+
+## Standard Tools
+
+{{< include _tools-standard.md >}}
+
+If you are only interested in using the standard tools, check out their respective documentation links above. To learn more about creating your own tools read on below.
+
+## Defining Tools
+
+Here we'll describe the basics of defining and using a custom tool. See the [Custom Tools](tools-custom.qmd) article for details on more advanced custom tool features including sandboxing, error handling, and dynamic tool definitions. 
+
+{{< include _tools-basics.md >}}
+
+## Learning More
+
+- [Custom Tools](tools-custom.qmd) provides details on more advanced custom tool features including sandboxing, error handling, and dynamic tool definitions. 
+
+- [Standard Tools](tools-standard.qmd) describes Inspect's built-in tools for code execution, text editing computer use, web search, and web browsing.

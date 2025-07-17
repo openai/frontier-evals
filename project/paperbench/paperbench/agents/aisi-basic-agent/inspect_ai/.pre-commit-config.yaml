@@ -1,0 +1,22 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.6
+    hooks:
+      # Run the linter.
+      - id: ruff
+        args: [--fix]
+      # Run the formatter.
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-json
+        # The following are JSONC files.
+        exclude: '(^\.vscode/|^tools/vscode/|jsconfig\.json$|tsconfig\.json$)'
+      - id: check-yaml
+      - id: debug-statements
+      - id: detect-private-key
+      - id: requirements-txt-fixer

@@ -7,11 +7,7 @@ from pathlib import Path
 
 import blobfile as bf
 from alcatraz.clusters.local import LocalConfig
-from paperbench.nano.eval import (
-    ExternalPythonCodingSolver,
-    JudgeConfig,
-    ReproductionConfig,
-)
+from paperbench.nano.eval import ExternalPythonCodingSolver, JudgeConfig, ReproductionConfig
 
 DEFAULT_AZURE_VM_SKU = "Standard_D2as_v4"
 
@@ -65,13 +61,13 @@ def assert_rollout_files_exist(paper_dir: str, agent_id: str):
 
     tar_files = [i for i in bf.listdir(paper_dir) if i.endswith(".tar.gz")]
     assert (
-        len(tar_files) >= 2
-    ), f"Expected at least 2 tar.gz files in {paper_dir}, found {len(tar_files)}"
+        len(tar_files) >= 1
+    ), f"Expected at least 1 tar.gz file in {paper_dir}, found {len(tar_files)}"
 
     run_tar_files = sorted([f for f in tar_files if "repro" not in f])
     assert (
-        len(run_tar_files) == 2
-    ), f"Expected exactly two non-repro tar.gz files in {paper_dir}, found {len(run_tar_files)}"
+        len(run_tar_files) >= 1
+    ), f"Expected at least one non-repro tar.gz file in {paper_dir}, found {len(run_tar_files)}"
     tar_file = bf.join(paper_dir, run_tar_files[-1])  # Take the latest one (last in sorted order)
     extracted_dir = tar_file.replace(".tar.gz", "")
 

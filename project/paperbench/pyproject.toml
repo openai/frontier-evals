@@ -25,6 +25,8 @@ dependencies = [
     "tiktoken>=0.9.0",
     "python-dateutil>=2.9.0",
     "unidecode>=1.3.8",
+    "nanoeval @ ../nanoeval",
+    "nanoeval_alcatraz @ ../nanoeval_alcatraz",
     "structlog>=25.1.0",
 ]
 

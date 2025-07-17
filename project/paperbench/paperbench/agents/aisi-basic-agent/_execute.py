@@ -7,7 +7,10 @@ from inspect_ai.util import sandbox
 def code_viewer(language: str, code_param: str) -> ToolCallViewer:
     def viewer(tool_call: ToolCall) -> ToolCallView:
         code = tool_call.arguments.get(code_param, None)
-        code = (code or tool_call.function).strip()
+        try:
+            code = (code or tool_call.function).strip()
+        except Exception as e:
+            code = f"ERROR: unable to parse tool call: {e}"
         call = ToolCallContent(
             title=language,
             format="markdown",
@@ -43,20 +46,28 @@ def bash(timeout: int | None = None, user: str | None = None) -> Tool:
           The output of the command.
         """
         # execute the command
-        result = await sandbox().exec(
-            cmd=["bash", "--login", "-c", cmd],
-            timeout=timeout,
-            user=user,
-            env={
-                "DEBIAN_FRONTEND": "noninteractive",
-                "GIT_TERMINAL_PROMPT": "0",
-            },
-        )
-        # return output (including stderr if any)
-        output = ""
-        if result.stderr:
-            output = f"{result.stderr}\n"
-        return f"{output}{result.stdout}"
+        try:
+            # stop hanging on stdin for apply_patch
+            cmd_specific_timeout = None
+            if "apply_patch" in cmd and "<<" in cmd:
+                cmd_specific_timeout = 30
+
+            result = await sandbox().exec(
+                cmd=["bash", "--login", "-c", cmd],
+                timeout=cmd_specific_timeout,
+                user=user,
+                env={
+                    "DEBIAN_FRONTEND": "noninteractive",
+                    "GIT_TERMINAL_PROMPT": "0",
+                },
+            )
+            # return output (including stderr if any)
+            output = ""
+            if result.stderr:
+                output = f"{result.stderr}\n"
+            return f"{output}{result.stdout}"
+        except Exception as e:
+            return f"ERROR: unable to execute command: {e}"
 
     return execute
 
@@ -88,7 +99,12 @@ def python(timeout: int | None = None, user: str | None = None) -> Tool:
         Returns:
           The output of the Python code.
         """
-        result = await sandbox().exec(cmd=["python3"], input=code, timeout=timeout, user=user)
+        result = await sandbox().exec(
+            cmd=["python3"],
+            input=code,
+            timeout=timeout,
+            user=user,
+        )
         # return output (including stderr if any)
         output = ""
         if result.stderr:

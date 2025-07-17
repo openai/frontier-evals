@@ -352,7 +352,9 @@ async def test_mixed_content(computer: ComputerInterface) -> None:
 
 @pytest.mark.asyncio
 async def test_warn_if_exceeds_threshold(
-    computer: ComputerInterface, capsys: pytest.CaptureFixture[str]
+    computer: ComputerInterface,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     """
     Test that if the remote directory has more entries than `warn_threshold`,
@@ -375,9 +377,13 @@ async def test_warn_if_exceeds_threshold(
             remote_walk.append((root, dirs, files))
 
         captured = capsys.readouterr()
-        assert "WARNING: Directory" in captured.out, (
-            f"Expected a warning when exceeding threshold, got:\n{captured.out}"
+
+        is_warning_present = (
+            any("WARNING: Directory" in record.getMessage() for record in caplog.records)
+            or "WARNING: Directory" in captured.out
         )
+
+        assert is_warning_present, "Expected a warning when exceeding threshold!"
 
 
 @pytest.mark.asyncio

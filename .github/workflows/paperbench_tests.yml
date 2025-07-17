@@ -5,6 +5,7 @@ on:
     paths: [ 'project/paperbench/**']
     branches: [ '**' ]
     types: [opened, synchronize, reopened, ready_for_review]
+
   workflow_dispatch:
     inputs:
       test_branch:
@@ -43,7 +44,7 @@ jobs:
         driver: docker
         install: true
 
-    - name: Build pb-env (local)
+    - name: Build pb-env
       working-directory: ./project/paperbench
       run: |
         docker buildx build \
@@ -56,4 +57,4 @@ jobs:
     - name: Run tests
       working-directory: ./project/paperbench
       run: |
-        uv run pytest -n 10 -v -rs
+        uv run pytest -n 10 -vrs

@@ -10,10 +10,10 @@ from structlog.stdlib import BoundLogger
 
 from paperbench.infra.alcatraz import put_file_in_computer, tar_and_extract_from_computer
 from paperbench.scripts.run_reproduce import reproduce
-from paperbench.utils import get_dotenv
+from paperbench.utils import find_dotenv
 
 logger = structlog.stdlib.get_logger(component=__name__)
-load_dotenv(get_dotenv())
+load_dotenv(find_dotenv())
 
 
 async def put_submission_in_computer(

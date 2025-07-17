@@ -5,12 +5,6 @@ import pytest
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
-        "--no-cache",
-        action="store_true",
-        default=False,
-        help="Download and prepare all datasets from scratch.",
-    )
-    parser.addoption(
         "--slow",
         action="store_true",
         default=False,

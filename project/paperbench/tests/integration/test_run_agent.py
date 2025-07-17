@@ -1,343 +1,656 @@
 import json
+import os
+import shutil
 import tarfile
 import tempfile
 import uuid
-from contextlib import contextmanager
-from typing import Generator
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Iterator
 
 import blobfile as bf
 import pytest
 import structlog.stdlib
+from configs import (
+    LOCAL_AISI_SOLVER_CONFIG,
+    LOCAL_DUMMY_SOLVER_CONFIG,
+    LOCAL_JUDGE_CONFIG,
+    LOCAL_REPRODUCTION_CONFIG,
+    LOCAL_REPRODUCTION_WITHOUT_SKIP_CONFIG,
+)
 from dotenv import load_dotenv
-
-load_dotenv()
 from nanoeval.eval import EvalSpec
 from nanoeval.evaluation import run
 from nanoeval.setup import global_exit_stack
-from utils import (
-    assert_rollout_files_exist,
-    check_group_log_for_errors,
-    create_fake_submission,
-    setup_judge_config,
-    setup_reproduction_config,
-    setup_solver,
-)
+from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver
+from pytest import fixture
 
 from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.nano.entrypoint import DefaultRunnerArgs
-from paperbench.nano.eval import PaperBench
+from paperbench.nano.eval import (
+    PaperBench,
+)
 from paperbench.nano.logging import PaperBenchLibraryConfig, setup_logging
-from paperbench.utils import create_run_dir, create_run_id, in_ci, is_docker_running
+from paperbench.nano.structs import (
+    JudgeConfig,
+    ReproductionConfig,
+)
+from paperbench.utils import find_dotenv, get_commit_hash, in_ci, is_docker_running
+
+load_dotenv(find_dotenv())
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
+LOCAL_RUNS_DIR = Path(__file__).parent / "runs"
+REMOTE_RUNS_DIR = "az://100paperslogs/testing/"
+GIT_COMMIT_HASH = get_commit_hash()
+AZURE_STORAGE_KEY = os.getenv("AZURE_STORAGE_KEY")
 
-@contextmanager
-def run_dir_ctx_manager() -> Generator[str, None, None]:
+
+@dataclass(frozen=True)
+class Rollout:
+    """A dataclass representing a rollout."""
+
+    run_group_id: str
+    run_group: str
+    run_id: str
+    run: str
+    most_recent_submission: str | None
+
+
+@fixture
+def local_dummy_rollout() -> Iterator[Rollout]:
+    """Builds a minimal dummy rollout structure."""
+
     with tempfile.TemporaryDirectory() as runs_dir:
-        yield runs_dir
+        run_group_id = f"{datetime.now(timezone.utc):%Y-%m-%dT%H-%M-%S-UTC}_run-group_dummy"
+        run_id = f"lca-on-the-line_{uuid.uuid4().hex}"
+
+        run_group = bf.join(runs_dir, run_group_id)
+        run = bf.join(run_group, run_id)
+
+        submission_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S-UTC")
+        submission = bf.join(run, "submissions", submission_time, "submission")
+        logs = bf.join(submission, "logs")
+
+        for dirpath in [
+            run_group,
+            run,
+            submission,
+            logs,
+        ]:
+            bf.makedirs(dirpath)
+
+        for fpath, content in [
+            (bf.join(run_group, "group.log"), ""),
+            (bf.join(run, "run.log"), ""),
+            (bf.join(logs, "docker.log"), "Hello from Docker!"),
+            (bf.join(logs, "run.log"), ""),
+        ]:
+            with bf.BlobFile(fpath, "w") as f:
+                f.write(content)
+
+        for fname in ["grade.json", "metadata.json", "status.json"]:
+            with bf.BlobFile(bf.join(run, fname), "w") as f:
+                json.dump({}, f)
+
+        tarball = bf.join(run, "submissions", submission_time, "submission.tar.gz")
+
+        with tarfile.open(tarball, "w:gz"):
+            pass
+
+        yield Rollout(
+            run_group_id=run_group_id,
+            run_group=run_group,
+            run_id=run_id,
+            run=run,
+            most_recent_submission=submission,
+        )
+
+
+async def _generate_rollout(
+    solver_config: PythonCodingSolver,
+    judge_config: JudgeConfig,
+    reproduction_config: ReproductionConfig,
+    runs_dir: str,
+    resume_run_group_id: str | None = None,
+    n_tries: int = 1,
+    exist_ok: bool = False,
+) -> str:
+    """Creates a rollout for an agent and returns the run directory. Assumes `runs_dir` is unique."""
+
+    if not exist_ok:
+        assert not bf.exists(runs_dir), f"Expected runs dir to not exist at {runs_dir}"
+
+    bf.makedirs(runs_dir)
+
+    async with global_exit_stack:
+        setup_logging(PaperBenchLibraryConfig())
+
+        paperbench = PaperBench(
+            paper_split="testing",
+            solver=solver_config,
+            judge=judge_config,
+            reproduction=reproduction_config,
+            runs_dir=runs_dir,
+            resume_run_group_id=resume_run_group_id,
+            n_tries=n_tries,
+        )
+
+        eval_spec = EvalSpec(
+            eval=paperbench,
+            runner=DefaultRunnerArgs(max_retries=0),
+        )
+
+        await run(eval_spec)
+
+    return runs_dir
+
+
+def _get_rollout(runs_dir: str) -> Rollout:
+    """A layer of indirection for a rollout to make testing easier. Assumes `runs_dir` contains a single run group and run."""
+
+    assert bf.exists(runs_dir), f"Expected runs dir to exist at {runs_dir}"
+    assert bf.isdir(runs_dir), f"Expected there to be a directory at {runs_dir}"
+
+    run_groups = list(bf.listdir(runs_dir))
+
+    assert len(run_groups) == 1, "Expected exactly one run group directory."
+
+    run_group = bf.join(runs_dir, run_groups[0])
+    runs = [d for d in bf.listdir(run_group) if bf.isdir(bf.join(run_group, d))]
+
+    assert len(runs) == 1, "Expected exactly one run directory."
+
+    run = bf.join(run_group, runs[0])
+    submissions = bf.join(run, "submissions")
+
+    assert bf.exists(submissions), f"Expected a submissions directory at {submissions}"
+
+    timestamps = sorted(d for d in bf.listdir(submissions))
+
+    assert len(timestamps) >= 1, "Expected rollout to generate at least one submission."
+
+    latest = timestamps[-1]
+    submission_folder = bf.join(submissions, latest)
+    submission = bf.join(submission_folder, "submission.tar.gz")
+
+    assert bf.exists(submission), f"Submission tarball {submission} does not exist."
+
+    most_recent_submission = bf.join(submission_folder, "submission")
+
+    if bf.exists(most_recent_submission):
+        return Rollout(
+            run_group_id=run_groups[0],
+            run_group=run_group,
+            run_id=runs[0],
+            run=run,
+            most_recent_submission=most_recent_submission,
+        )
+
+    bf.makedirs(most_recent_submission)
+
+    # Tarball handling:
+    # 1) Copy the tarball (possibly remote) to a local tmp file so `tarfile` can read it.
+    # 2) Extract locally into a tmp directory, stripping the timestamp prefix.
+    # 3) Copy the extracted tree back to `most_recent_submission` (local or remote) via `blobfile`.
+    with tempfile.NamedTemporaryFile(suffix=".tar.gz") as tmpfile:
+        local_submission = tmpfile.name
+        bf.copy(submission, local_submission, overwrite=True)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with tarfile.open(local_submission, "r:gz") as tf:
+                for member in tf.getmembers():
+                    assert member.name.startswith(latest), (
+                        f"Expected one extracted folder called {latest} in submission.tar.gz file, "
+                        f"but found {member.name}!"
+                    )
+
+                    member.name = member.name[len(latest) + 1 :]
+                    tf.extract(member, path=tmpdir)
+
+            for root, _, files in os.walk(tmpdir):
+                for fname in files:
+                    src_path = os.path.join(root, fname)
+                    rel_path = os.path.relpath(src_path, tmpdir)
+                    dst_path = bf.join(most_recent_submission, rel_path)
+                    dst_dir = os.path.dirname(dst_path)
+
+                    if not bf.exists(dst_dir):
+                        bf.makedirs(dst_dir)
+
+                    bf.copy(src_path, dst_path)
+
+    return Rollout(
+        run_group=run_group,
+        run_group_id=run_groups[0],
+        run=run,
+        run_id=runs[0],
+        most_recent_submission=most_recent_submission,
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
 @pytest.mark.parametrize(
-    "agent_id",
+    "solver_config, reproduction_config, judge_config, runs_dir",
     [
-        pytest.param(
-            agent_id,
-            marks=(
-                pytest.mark.skipif(
-                    in_ci() and (agent_id != "dummy"),
-                    reason="Only running LocalCluster dummy rollouts in CI",
-                )
-            ),
-        )
-        for agent_id in ("dummy", "aisi-basic-agent-openai-dev")
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
     ],
 )
-async def test_rollout(
-    agent_id: str,
+async def test_dummy_agent_generates_expected_files(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
 ) -> None:
-    """
-    Test that executing an agent rollout runs without errors and produces expected output. We do not
-    perform reproduction or grading in this test.
-    """
-    with run_dir_ctx_manager() as runs_dir:
-        solver = setup_solver(agent_id)
-        judge_config = setup_judge_config()
-        reproduction_config = setup_reproduction_config()
-        async with global_exit_stack:
-            setup_logging(PaperBenchLibraryConfig())
-            runner_args = DefaultRunnerArgs(max_retries=0)
-            paperbench = PaperBench(
-                paper_split="debug",
-                solver=solver,
-                judge=judge_config,
-                runs_dir=runs_dir,
-                reproduction=reproduction_config,
-            )
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
 
-            # Run evaluation; we run like this to avoid setting rlimit via nanoeval_entrypoint
-            await run(EvalSpec(eval=paperbench, runner=runner_args))
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
 
-        run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert len(run_dirs) == 1, (
-            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
-        )
-        run_group_dir = bf.join(runs_dir, run_dirs[0])
+    rollout = _get_rollout(unique_runs_dir)
 
-        check_group_log_for_errors(run_group_dir)
+    # Then
+    assert bf.exists(bf.join(rollout.run_group, "group.log"))
+    assert bf.exists(bf.join(rollout.run, "run.log"))
+    assert rollout.most_recent_submission is not None
+    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "run.log"))
+    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "docker.log"))
+    assert bf.exists(bf.join(rollout.most_recent_submission, "submission", "reproduce.sh"))
 
-        paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert len(paper_dirs) == 1, (
-            f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
-        )
-        paper_dir = bf.join(run_group_dir, paper_dirs[0])
 
-        assert_rollout_files_exist(paper_dir, agent_id)
+@pytest.mark.asyncio
+@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running.")
+@pytest.mark.parametrize(
+    "solver_config, reproduction_config, judge_config, runs_dir",
+    [
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
+    ],
+)
+async def test_dummy_agents_docker_log_contains_hello_from_docker(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
+) -> None:
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
+
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
+
+    rollout = _get_rollout(unique_runs_dir)
+
+    # Then
+    assert rollout.most_recent_submission is not None
+    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "docker.log"))
+
+    docker_log = bf.join(rollout.most_recent_submission, "logs", "docker.log")
+
+    with bf.BlobFile(docker_log, "rb") as f:
+        log_content = f.read().decode("utf-8")
+
+        assert "Hello from Docker!" in log_content
+
+
+@pytest.mark.asyncio
+@pytest.mark.slow()
+@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running.")
+@pytest.mark.skipif(in_ci(), reason="Skip non-dummy runs in CI.")
+@pytest.mark.parametrize(
+    "solver_config, reproduction_config, judge_config, runs_dir",
+    [
+        (
+            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
+    ],
+)
+async def test_aisi_agent_generates_expected_files(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
+) -> None:
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
+
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
+
+    rollout = _get_rollout(unique_runs_dir)
+
+    # Then
+    assert bf.exists(bf.join(rollout.run_group, "group.log"))
+    assert bf.exists(bf.join(rollout.run, "run.log"))
+    assert rollout.most_recent_submission is not None
+    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "agent.log"))
+    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "docker.log"))
+    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "inspect.log"))
 
 
 @pytest.mark.asyncio
 @pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
-@pytest.mark.skipif(in_ci(), reason="Not running resume tests in CI")
-async def test_resuming() -> None:
-    """
-    Test that we can resume a partially-completed run group using the dummy agent. We construct a run group that has one
-    fake "rice" run, and resume it, using n_tries=3, i.e., we expect 2 additional runs to be executed. We
-    do not perform reproduction or grading
-    """
-    agent_id = "dummy"
-    with run_dir_ctx_manager() as runs_dir:
-        # Create a partially-completed run group, containing one "rice" run
-        run_group_id = uuid.uuid4().hex
-        run_id = create_run_id("rice")
-        run_dir = create_run_dir(run_group_id, run_id, runs_dir)
-        create_fake_submission(run_dir)
-
-        solver = setup_solver(agent_id)
-        judge_config = setup_judge_config()
-        reproduction_config = setup_reproduction_config()
-        async with global_exit_stack:
-            setup_logging(PaperBenchLibraryConfig())
-            runner_args = DefaultRunnerArgs(max_retries=0)
-            paperbench = PaperBench(
-                paper_split="debug",
-                solver=solver,
-                judge=judge_config,
-                runs_dir=runs_dir,
-                reproduction=reproduction_config,
-                resume_run_group_id=run_group_id,
-                n_tries=3,
-            )
-
-            # Run evaluation; we run like this to avoid setting rlimit via nanoeval_entrypoint
-            await run(EvalSpec(eval=paperbench, runner=runner_args))
-
-        run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert len(run_dirs) == 1, (
-            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
-        )
-        run_group_dir = bf.join(runs_dir, run_dirs[0])
-
-        check_group_log_for_errors(run_group_dir)
-
-        paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert len(paper_dirs) == 3, (
-            f"Expected exactly 3 paper directories in {run_group_dir}, found {len(paper_dirs)}"
-        )
-
-        # Check the existing run was skipped
-        paper_dir = bf.join(run_group_dir, run_id)
-        with bf.BlobFile(bf.join(paper_dir, "run.log"), "r") as f:
-            run_log = f.read()
-        assert "skipping rollouts" in run_log.lower(), f"Expected run {run_id} to be skipped"
-
-        # Check that two runs were executed
-        for paper_dir in paper_dirs:
-            if paper_dir == run_id:  # Skip the original fake run
-                continue
-            assert_rollout_files_exist(bf.join(run_group_dir, paper_dir), agent_id)
-
-
-@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
-@pytest.mark.skipif(in_ci(), reason="Not running reproduction tests in CI")
-async def test_reproduction() -> None:
-    """
-    Test reproduction produces the expected output when using the dummy agent. We create a fake result of a rollout.
-    Grading is not performed in this test.
-    """
-    with run_dir_ctx_manager() as runs_dir:
-        # Create a partially-completed run group, containing one "rice" run
-        run_group_id = uuid.uuid4().hex
-        run_id = create_run_id("rice")
-        run_dir = create_run_dir(run_group_id, run_id, runs_dir)
-        create_fake_submission(run_dir)
-
-        solver = setup_solver("dummy")
-        judge_config = setup_judge_config()
-        reproduction_config = setup_reproduction_config(skip_reproduction=False)
-        async with global_exit_stack:
-            setup_logging(PaperBenchLibraryConfig())
-            runner_args = DefaultRunnerArgs(max_retries=0)
-            paperbench = PaperBench(
-                paper_split="debug",
-                solver=solver,
-                judge=judge_config,
-                runs_dir=runs_dir,
-                reproduction=reproduction_config,
-                resume_run_group_id=run_group_id,
-            )
-
-            # Run evaluation; we run like this to avoid setting rlimit via nanoeval_entrypoint
-            await run(EvalSpec(eval=paperbench, runner=runner_args))
-
-        run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert len(run_dirs) == 1, (
-            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
-        )
-        run_group_dir = bf.join(runs_dir, run_dirs[0])
-
-        check_group_log_for_errors(run_group_dir)
-
-        paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert len(paper_dirs) == 1, (
-            f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
-        )
-        paper_dir = bf.join(run_group_dir, paper_dirs[0])
-
-        # Check execution metadata
-        pattern = bf.join(paper_dir, "**/*_executed_metadata.json")
-        executed_metadata_files = list(bf.glob(pattern))
-        assert len(executed_metadata_files) == 1, (
-            f"Expected one execution metadata file in {paper_dir}, found {len(executed_metadata_files)}"
-        )
-        executed_metadata_file = executed_metadata_files[0]
-        execution_metadata = json.load(bf.BlobFile(executed_metadata_file, "r"))
-        assert execution_metadata["repro_script_exists"], (
-            f"repro_script_exists is False in {executed_metadata_file}"
-        )
-        assert execution_metadata["repro_execution_time"] > 0, (
-            f"repro_execution_time expected to be greater than 0 in {executed_metadata_file}"
-        )
-        assert "hello_world" not in execution_metadata["files_before_reproduce"], (
-            f"hello_world not expected to exist before reproduce.sh in {executed_metadata_file}"
-        )
-        assert "hello_world" in execution_metadata["files_after_reproduce"], (
-            f"hello_world expected to be created by reproduce.sh in {executed_metadata_file}"
-        )
-
-        # Check reproduced submission
-        pattern = bf.join(paper_dir, "**/*_executed.tar.gz")
-        executed_tar_files = list(bf.glob(pattern))
-        assert len(executed_tar_files) == 1, (
-            f"Expected one executed tar.gz file in {paper_dir}, found {len(executed_tar_files)}"
-        )
-        executed_tar_file = executed_tar_files[0]
-
-        with tempfile.TemporaryDirectory() as tmp_submission_dir:
-            with bf.BlobFile(executed_tar_file, "rb") as f:
-                with tarfile.open(fileobj=f) as tar:
-                    tar.extractall(path=tmp_submission_dir)
-
-            checkpoint_dirs = [
-                i
-                for i in bf.listdir(tmp_submission_dir)
-                if bf.isdir(bf.join(tmp_submission_dir, i))
-            ]
-            assert len(checkpoint_dirs) == 1, (
-                f"Expected exactly one checkpoint directory in {tmp_submission_dir}, found {len(checkpoint_dirs)}"
-            )
-            checkpoint_dir = bf.join(tmp_submission_dir, checkpoint_dirs[0])
-
-            assert bf.exists(bf.join(checkpoint_dir, "reproduce.sh")), (
-                f"reproduce.sh not found in {checkpoint_dir}"
-            )
-            assert bf.exists(bf.join(checkpoint_dir, "hello_world")), (
-                f"hello_world not found in {checkpoint_dir}"
-            )
-
-
-@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
 @pytest.mark.parametrize(
-    "judge_scaffold, grade_locally",
+    "solver_config, reproduction_config, judge_config, runs_dir",
     [
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
         pytest.param(
-            judge_scaffold,
-            grade_locally,
-            marks=(pytest.mark.skipif(in_ci(), reason="Not running grading tests in CI")),
-        )
-        for judge_scaffold in ("dummy", "simple")
-        for grade_locally in (True, False)
+            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+            marks=pytest.mark.slow(),
+        ),
     ],
 )
-async def test_grading(
-    judge_scaffold: str,
-    grade_locally: bool,
+async def test_agent_group_log_does_not_contain_errors(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
 ) -> None:
-    """
-    Test grading produces the expected output when using the dummy agent. We create a fake result of a rollout,
-    skip reproduction, and then grade the submission.
-    """
-    with run_dir_ctx_manager() as runs_dir:
-        # Create a partially-completed run group, containing one "rice" run
-        run_group_id = uuid.uuid4().hex
-        run_id = create_run_id("rice")
-        run_dir = create_run_dir(run_group_id, run_id, runs_dir)
-        create_fake_submission(run_dir)
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
 
-        solver = setup_solver("dummy")
-        judge_config = setup_judge_config(
-            skip_grading=False,
-            scaffold=judge_scaffold,
-            grade_locally=grade_locally,
-        )
-        reproduction_config = setup_reproduction_config()
-        async with global_exit_stack:
-            setup_logging(PaperBenchLibraryConfig())
-            runner_args = DefaultRunnerArgs(max_retries=0)
-            paperbench = PaperBench(
-                paper_split="debug",
-                solver=solver,
-                judge=judge_config,
-                runs_dir=runs_dir,
-                reproduction=reproduction_config,
-                resume_run_group_id=run_group_id,
-            )
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
 
-            # Run evaluation; we run like this to avoid setting rlimit via nanoeval_entrypoint
-            await run(EvalSpec(eval=paperbench, runner=runner_args))
+    rollout = _get_rollout(unique_runs_dir)
+    group_log = bf.join(rollout.run_group, "group.log")
 
-        run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert len(run_dirs) == 1, (
-            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
-        )
-        run_group_dir = bf.join(runs_dir, run_dirs[0])
+    # Then
+    assert bf.exists(bf.join(rollout.run_group, "group.log"))
 
-        check_group_log_for_errors(run_group_dir)
+    with bf.BlobFile(group_log, "rb") as f:
+        log_content = f.read().decode("utf-8").lower()
+        assert "error" not in log_content
 
-        paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert len(paper_dirs) == 1, (
-            f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
-        )
-        paper_dir = bf.join(run_group_dir, paper_dirs[0])
 
-        # Check grader output
-        pattern = bf.join(paper_dir, "**/*.json")
-        grader_output_files = [i for i in bf.glob(pattern) if i.endswith("_grader_output_0.json")]
-        assert len(grader_output_files) == 1, (
-            f"Expected one grader output file in {paper_dir}, found {len(grader_output_files)}"
-        )
-        grader_output_file = grader_output_files[0]
-        grader_output = json.load(bf.BlobFile(grader_output_file, "r"))  # check we can load
+@pytest.mark.asyncio
+@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
+@pytest.mark.parametrize(
+    "solver_config, reproduction_config, judge_config, runs_dir",
+    [
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
+        pytest.param(
+            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+            marks=pytest.mark.slow(),
+        ),
+    ],
+)
+async def test_agent_receives_valid_grade_for_its_rollout(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
+) -> None:
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
 
-        if judge_scaffold == "dummy":
-            assert grader_output["score"] == 1.0, (
-                f"score expected to be 1.0 in {grader_output_file} when using dummy judge scaffold"
-            )
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
 
-        _ = GradedTaskNode.from_dict(
-            grader_output["graded_task_tree"]
-        )  # Check graded task tree can be loaded
+    rollout = _get_rollout(unique_runs_dir)
+    fpath = bf.join(rollout.run, "grade.json")
 
-        # Check grade.json
-        assert bf.exists(bf.join(paper_dir, "grade.json")), f"grade.json not found in {paper_dir}"
+    # Then
+    assert bf.exists(fpath)
+
+    data = json.load(bf.BlobFile(fpath, "r"))  # Check it can run without error
+
+    assert "paperbench_result" in data
+    assert isinstance(data["paperbench_result"], dict)
+    assert "judge_output" in data["paperbench_result"]
+    assert isinstance(data["paperbench_result"]["judge_output"], dict)
+    assert "graded_task_tree" in data["paperbench_result"]["judge_output"]
+    assert isinstance(data["paperbench_result"]["judge_output"]["graded_task_tree"], dict)
+
+    graded_task_tree = data["paperbench_result"]["judge_output"]["graded_task_tree"]
+    GradedTaskNode.from_dict(graded_task_tree)  # Check it can run without error
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
+@pytest.mark.skipif(in_ci(), reason="Skip execution of agent submissions in CI.")
+@pytest.mark.parametrize(
+    "solver_config, reproduction_config, judge_config, runs_dir",
+    [
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_WITHOUT_SKIP_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
+    ],
+)
+async def test_reproduced_rollout_produces_valid_execution_metadata(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
+) -> None:
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
+
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
+
+    rollout = _get_rollout(unique_runs_dir)
+    pattern = bf.join(rollout.run, "**/submission_executed_metadata.json")
+    metadata_paths = list(bf.glob(pattern))
+
+    # Then
+    assert len(list(metadata_paths)) == 1
+
+    metadata_path = metadata_paths[0]
+
+    assert bf.exists(metadata_path)
+
+    metadata = json.load(bf.BlobFile(metadata_path, "r"))
+
+    assert "repro_script_exists" in metadata
+    assert isinstance(metadata["repro_script_exists"], bool)
+    assert metadata["repro_script_exists"]
+
+    assert "repro_execution_time" in metadata
+    assert isinstance(metadata["repro_execution_time"], (int, float))
+    assert metadata["repro_execution_time"] > 0
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
+@pytest.mark.skipif(in_ci(), reason="Skip execution of agent submissions in CI.")
+@pytest.mark.parametrize(
+    "solver_config, reproduction_config, judge_config, runs_dir",
+    [
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_WITHOUT_SKIP_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
+        pytest.param(
+            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_WITHOUT_SKIP_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+            marks=pytest.mark.slow(),
+        ),
+    ],
+)
+async def test_rollout_with_reproduction_step_produces_an_executed_submission(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
+) -> None:
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
+
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
+
+    rollout = _get_rollout(unique_runs_dir)
+    executed_submissions = bf.glob(bf.join(rollout.run, "**/submission_executed.tar.gz"))
+
+    # Then
+    assert len(list(executed_submissions)) >= 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
+@pytest.mark.parametrize(
+    "solver_config, reproduction_config, judge_config, runs_dir",
+    [
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
+    ],
+)
+async def test_resuming_dummy_agent_rollouts_generates_more_rollouts(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
+    local_dummy_rollout: Rollout,
+) -> None:
+    # Given
+    n_tries = 2
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
+
+    shutil.copytree(  # Copy over a single run
+        local_dummy_rollout.run_group,
+        bf.join(unique_runs_dir, local_dummy_rollout.run_group_id),
+        dirs_exist_ok=True,
+    )
+
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+        resume_run_group_id=local_dummy_rollout.run_group_id,
+        n_tries=n_tries,
+        exist_ok=True,
+    )
+
+    # Then
+    run_groups = [d for d in bf.listdir(unique_runs_dir) if bf.isdir(bf.join(unique_runs_dir, d))]
+
+    assert len(run_groups) == 1
+
+    run_group = bf.join(unique_runs_dir, run_groups[0])
+    runs = [d for d in bf.listdir(run_group) if bf.isdir(bf.join(run_group, d))]
+    group_log = bf.join(run_group, "group.log")
+
+    assert len(runs) == n_tries
+    assert bf.exists(group_log)
+
+    with bf.BlobFile(group_log, "rb") as f:
+        log_content = f.read().decode("utf-8")
+
+        assert log_content.count("Grades saved to") == n_tries
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
+@pytest.mark.parametrize(
+    "solver_config, reproduction_config, judge_config, runs_dir",
+    [
+        (
+            LOCAL_DUMMY_SOLVER_CONFIG,
+            LOCAL_REPRODUCTION_CONFIG,
+            LOCAL_JUDGE_CONFIG,
+            LOCAL_RUNS_DIR,
+        ),
+    ],
+)
+async def test_rollout_runs_when_varying_grade_locally_parameter(
+    solver_config: PythonCodingSolver,
+    reproduction_config: ReproductionConfig,
+    judge_config: JudgeConfig,
+    runs_dir: str,
+) -> None:
+    # Given
+    unique_runs_dir = bf.join(runs_dir, GIT_COMMIT_HASH, uuid.uuid4().hex)
+
+    # When
+    await _generate_rollout(
+        solver_config=solver_config,
+        judge_config=judge_config,
+        reproduction_config=reproduction_config,
+        runs_dir=unique_runs_dir,
+    )
+
+    rollout = _get_rollout(unique_runs_dir)
+
+    # Then
+    assert bf.exists(bf.join(rollout.run, "grade.json"))

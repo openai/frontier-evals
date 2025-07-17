@@ -1,6 +1,7 @@
 import io
 import logging
 import os
+import subprocess
 import tarfile
 import time
 import uuid
@@ -82,7 +83,7 @@ def get_experiments_dir() -> Path:
     return get_root().parent / "experiments"
 
 
-def get_dotenv() -> Path:
+def find_dotenv() -> Path:
     """Returns an absolute path to the .env file."""
 
     return get_root().parent / ".env"
@@ -94,9 +95,13 @@ def get_timestamp() -> str:
     return time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
 
 
-def create_run_id(
-    paper_id: str,
-) -> str:
+def get_commit_hash() -> str:
+    """Returns the current Git commit hash."""
+
+    return subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode("ascii")
+
+
+def create_run_id(paper_id: str) -> str:
     """Creates a run ID."""
 
     return f"{paper_id}_{str(uuid.uuid4())}"

@@ -70,6 +70,12 @@ the application. Usually you just need to set `OPENAI_API_KEY` or
 
 ## Running SWELancer
 
+> Note: SWELancer is designed to run with internet disabled. At the moment,
+> this is only supported on Linux systems, as it relies on `iptables`. To run
+> SWELancer on MacOS, you will need to enable internet access. Simply add the
+> `swelancer.disable_internet=False` argument to any of the run commands below.
+> Note that running swelancer with internet enabled is not well tested.
+
 We've implemented a [DummySolver](swelancer/solvers/dummy/solver.py) which can
 be used to verify that the evaluation works as intended:
 

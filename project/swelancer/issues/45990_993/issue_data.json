@@ -1,0 +1,6 @@
+{
+    "price": 250.0,
+    "title": "[HOLD for payment 2024-08-19] [$250] [Wave Control] Update the Report field list type creation flow",
+    "issue_repo_steps": "Action performed: None\n\nExpected result: None\n\nActual result: None",
+    "html_description": "When creating a list-type report field, we need to make sure the Initial value option comes after the list of values AND the List values option shows the created values as a comma-separated list, as shown below.\r\n\r\nNote that the list values should not truncate but wrap to next line\r\n\r\n![image](https://github.com/user-attachments/assets/bc64b5d2-1529-4a3d-8ac6-7d4dc13c067f)\r\n\r\n\n<details><summary>Upwork Automation - Do Not Edit</summary>\n    <ul>\n        <li>Upwork Job URL: https://www.upwork.com/jobs/~0124fe6a5dd4337910</li>\n        <li>Upwork Job ID: 1815657257015158749</li>\n        <li>Last Price Increase: 2024-07-23</li>\n<li>Automatic offers: </li>\n<ul>\n<li>shubham1206agra | Reviewer | 103272331</li>\n<li>Krishna2323 | Contributor | 103272333</li>\n</ul></li>\n    </ul>\n</details>\n\n<details><summary>Issue Owner</summary>Current Issue Owner: @</details>\n\n<details><summary>Issue Owner</summary>Current Issue Owner: @muttmuure</details>"
+}

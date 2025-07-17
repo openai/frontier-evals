@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools<78.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = 'swelancer'
+version = "0.1.0"
+dependencies = [
+    "alcatraz",
+    "flask>=3.1.1",
+    "nanoeval",
+    "nanoeval-alcatraz",
+    "python-dotenv>=1.0.1",
+    "tiktoken",
+]
+requires-python = ">=3.11"
+
+[tool.setuptools]
+packages = { find = { include = ["swelancer", "swelancer.*"] } }
+
+[tool.uv.sources]
+nanoeval = { path = "../nanoeval", editable = true }
+alcatraz = { path = "../alcatraz", editable = true }
+nanoeval-alcatraz = { path = "../nanoeval_alcatraz", editable = true }
+
+[tool.pyright]
+extraPaths = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
+typeCheckingMode = "off"  # we use mypy
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "playwright>=1.52.0",
+    "poethepoet>=0.34.0",
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+    "pytest-subtests>=0.14.2",
+    "ruff>=0.11.10",
+]
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+extend-exclude = ["issues", "runtime_utils", "runtime_scripts"]
+[tool.mypy]
+strict = true
+local_partial_types = true
+# These two make life easier if you use a lot of untyped libraries:
+warn_return_any = false
+allow_untyped_calls = true
+# Do not use `ignore_missing_imports`, instead use:
+disable_error_code = ["import-untyped"]
+# If you don't want to force use of type annotations:
+# allow_incomplete_defs = true
+# allow_untyped_defs = true
+# allow_any_generics = true
+exclude = "^(issues|runtime_utils|runtime_scripts)(/|$)"
+mypy_path = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
+[[tool.mypy.overrides]]
+module = ["alcatraz.*", "preparedness_turn_completer.*", "nanoeval.*", "nanoeval_alcatraz.*"]
+ignore_errors = true
+warn_unused_ignores = false
+
+[tool.poe.tasks]
+lint = "ruff check --fix"
+typecheck = "mypy ."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+subtests_report = "sequential"

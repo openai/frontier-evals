@@ -8,10 +8,11 @@ repos:
       # picks up config from [tool.ruff] in pyproject.toml
       - id: ruff-format
         name: ruff-format (black-style)
-        files: (?x)^project/paperbench/
+        files: (?x)^project/(paperbench|swelancer)/
+
       # Lenient hook: runs auto‑fix on all files using a lenient config.
       - id: ruff
-        name: ruff (auto-fix)
+        name: ruff-lenient (auto-fix)
         args:
           - --config=./.ruff_autofix_minimal.toml
           - --unsafe-fixes
@@ -19,12 +20,12 @@ repos:
       
       # Strict hook: runs lint only on files opted-in projects (using strict config pulled from pyproject.toml)
       - id: ruff
-        name: ruff (lint)
+        name: ruff-strict (lint)
         args:
           - --fix
           - --fix-only
           - --exit-non-zero-on-fix
-        files: (?x)^project/(alcatraz|nanoeval|paperbench)/
+        files: (?x)^project/(alcatraz|nanoeval|paperbench|swelancer)/
 
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
@@ -34,5 +35,8 @@ repos:
         name: uv-lock-paperbench
         args: [--project, project/paperbench]
         files: (?x)^project/paperbench/
-
-exclude: 'project/paperbench/paperbench/agents/aisi-basic-agent/inspect_ai'
+      - id: uv-lock
+        name: uv-lock-swelancer
+        args: [--project, project/swelancer]
+        files: (?x)^project/swelancer/
+exclude: '(?x)^(project/paperbench/paperbench/agents/aisi-basic-agent/inspect_ai|project/swelancer/issues)/'

@@ -1,0 +1,9 @@
+FROM swelancer_x86:latest
+
+ARG ISSUE_ID
+ENV ISSUE_ID=${ISSUE_ID}
+
+RUN ansible-playbook -i "localhost," --connection=local /app/tests/setup_expensify.yml
+
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
+CMD ["/app/tests/run.sh"]

@@ -1,0 +1,6 @@
+FROM swelancer_x86:latest
+
+ENV RUNTIME_SETUP="true"
+
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
+CMD ["/app/tests/run.sh"]

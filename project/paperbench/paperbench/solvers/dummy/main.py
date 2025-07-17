@@ -1,16 +1,13 @@
-"""A dummy agent which creates an empty `reproduce.sh` script."""
-
 import getpass
 import os
 import subprocess
 import sys
-from pathlib import Path
 
 if os.environ.get("DEBUG", None) == "1":
     os.system("tail -f /dev/null")  # block indefinitely
 
 
-# check if gpu is avail on machine
+# check if gpu is available on machine
 try:
     subprocess.run(["nvidia-smi"], check=True)
     print("nvidia-smi command executed successfully.")
@@ -30,6 +27,3 @@ else:
 
 print("The script is being run with the following python interpreter:")
 print(sys.executable)
-
-cwd = Path(__file__).parent
-workspace_data_dir = cwd.parent / "data"

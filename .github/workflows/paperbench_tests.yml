@@ -53,16 +53,6 @@ jobs:
           -t pb-env \
           -f paperbench/Dockerfile.base .
 
-    - name: Build dummy
-      working-directory: ./project/paperbench
-      run: |
-        docker buildx build \
-          --builder default \
-          --platform=linux/amd64 \
-          --load \
-          -t dummy \
-          -f paperbench/agents/dummy/Dockerfile paperbench/agents/dummy/
-
     - name: Run tests
       working-directory: ./project/paperbench
       run: |

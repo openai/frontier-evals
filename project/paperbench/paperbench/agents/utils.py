@@ -23,7 +23,6 @@ class AgentOutput(BaseModel):
     run_id: str
     time_start: float
     time_end: float
-    machine_info: str | None = None
     error_msg: str | None = None
     runtime_in_seconds: float
     status_exists: bool
@@ -35,7 +34,6 @@ class AgentOutput(BaseModel):
                 run_id=data["run_id"],
                 time_start=data["time_start"],
                 time_end=data["time_end"],
-                machine_info=data.get("machine_info"),
                 error_msg=data.get("error_msg"),
                 runtime_in_seconds=data["runtime_in_seconds"],
                 status_exists=data["status_exists"],
@@ -48,7 +46,6 @@ class AgentOutput(BaseModel):
             "run_id": self.run_id,
             "time_start": self.time_start,
             "time_end": self.time_end,
-            "machine_info": self.machine_info,
             "error_msg": self.error_msg,
             "runtime_in_seconds": self.runtime_in_seconds,
             "status_exists": self.status_exists,

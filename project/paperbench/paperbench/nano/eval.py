@@ -143,7 +143,9 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         # TODO: Move this to the `get_instances` method in `PaperBench`.
         alcatraz_config = prepare_computer(
             alcatraz_config=alcatraz_config,
-            agent=agent,
+            env_vars=agent.env_vars,
+            privileged=agent.privileged,
+            mount_docker_socket=self.mount_docker_socket,
             is_nvidia_gpu_env=self.is_nvidia_gpu_env,
         )
 

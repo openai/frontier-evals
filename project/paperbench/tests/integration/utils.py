@@ -7,15 +7,17 @@ from pathlib import Path
 
 import blobfile as bf
 from alcatraz.clusters.local import LocalConfig
+from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver
 from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
 
 from paperbench.nano.eval import ExternalPythonCodingSolver
 from paperbench.nano.structs import JudgeConfig, ReproductionConfig
+from paperbench.solvers.dummy.solver import PaperBenchDummySolver
 
 DEFAULT_AZURE_VM_SKU = "Standard_D2as_v4"
 
 AGENT_ID_TO_IMAGE = {
-    "dummy": "dummy",
+    "dummy": "pb-env:latest",
     "aisi-basic-agent-openai-dev": "aisi-basic-agent:latest",
 }
 
@@ -58,10 +60,6 @@ def assert_expected_files_exist(run_dir: str, agent_id: str) -> None:
 
 
 def assert_rollout_files_exist(paper_dir: str, agent_id: str) -> None:
-    assert bf.exists(bf.join(paper_dir, "metadata.json")), (
-        f"metadata.json not found in paper directory at {paper_dir}"
-    )
-
     pattern = paper_dir + "/**/submission.tar.gz"
     tar_files = list(bf.glob(pattern))
 
@@ -88,6 +86,10 @@ def assert_rollout_files_exist(paper_dir: str, agent_id: str) -> None:
             f"Expected exactly one checkpoint directory in {tmp_submission_dir}, found {len(checkpoint_dirs)}"
         )
         checkpoint_dir = bf.join(tmp_submission_dir, checkpoint_dirs[0])
+
+        assert bf.exists(bf.join(paper_dir, "metadata.json")), (
+            f"metadata.json not found in paper directory at {paper_dir}"
+        )
 
         assert_expected_files_exist(checkpoint_dir, agent_id)
 
@@ -125,10 +127,13 @@ def setup_cluster_config(image: str) -> LocalConfig:
     return cluster_config
 
 
-def setup_solver(agent_id: str) -> ExternalPythonCodingSolver:
+def setup_solver(agent_id: str) -> PythonCodingSolver:
     image = AGENT_ID_TO_IMAGE[agent_id]
     cluster_config = setup_cluster_config(image)
-    return ExternalPythonCodingSolver(agent_id=agent_id, cluster_config=cluster_config)
+    if agent_id == "dummy":
+        return PaperBenchDummySolver(cluster_config=cluster_config)
+    else:
+        return ExternalPythonCodingSolver(agent_id=agent_id, cluster_config=cluster_config)
 
 
 def setup_reproduction_config(skip_reproduction: bool = True) -> ReproductionConfig:

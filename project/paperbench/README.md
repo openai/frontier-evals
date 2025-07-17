@@ -103,7 +103,7 @@ PaperBench requires the following Docker images to be built before it can run:
 
 You will need to build the images for each agent that you want to run. We provide the following agents out-of-the-box:
 
-- [paperbench/agents/dummy/Dockerfile](paperbench/agents/dummy/Dockerfile): A agent for that creates a dummy submission, useful for testing the eval end-to-end.
+- [paperbench/solvers/dummy/solver.py](paperbench/solvers/dummy/solver.py): A agent for that creates a dummy submission, useful for testing the eval end-to-end.
 - [paperbench/agents/aisi-basic-agent/Dockerfile](paperbench/agents/aisi-basic-agent/Dockerfile): Simple ReAct style agents with tools available to them.
 
 For convenience, we've provided a [script](paperbench/scripts/build-docker-images.sh) that builds all the above images:
@@ -137,10 +137,9 @@ To test that things are set up correctly, run the dummy agent with the dummy jud
 ```bash
 uv run python -m paperbench.nano.entrypoint \
     paperbench.paper_split=debug \
-    paperbench.solver=paperbench.nano.eval:ExternalPythonCodingSolver \
-    paperbench.solver.agent_id=dummy \
+    paperbench.solver=paperbench.solvers.dummy.solver:PaperBenchDummySolver \
     paperbench.solver.cluster_config=alcatraz.clusters.local:LocalConfig \
-    paperbench.solver.cluster_config.image=dummy:latest \
+    paperbench.solver.cluster_config.image=pb-env:latest \
     paperbench.judge.scaffold=dummy \
     runner.recorder=nanoeval.json_recorder:json_recorder
 ```

@@ -1,30 +1,38 @@
 import asyncio
 import json
 import logging
-import os
-import random
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Sequence
+from typing import Any
 
 import openai
 import structlog.stdlib
 import tiktoken
 from dotenv import load_dotenv
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from openai import AsyncOpenAI
+from paperbench.judge.base import Judge
 from paperbench.judge.constants import (
     CRITERION_PROMPT,
     FILE_RANKING_PROMPT,
     GRADING_PROMPT,
     build_judge_task_prompt,
 )
-from paperbench.judge.utils import format_file, get_model_context_window_length, reduce_log
+from paperbench.judge.graded_task_node import GradedTaskNode
+from paperbench.judge.token_usage import TokenUsage
+from paperbench.judge.utils import (
+    file_exists,
+    format_file,
+    get_model_context_window_length,
+    is_symlink,
+    read_file_content,
+    read_file_mtime,
+    walk_dir,
+)
 from paperbench.rubric.tasks import TASK_CATEGORY_QUESTIONS, TaskNode
 from paperbench.utils import oai_completion_with_retry_async
 from pydantic import BaseModel
-from structlog import wrap_logger
 from structlog.stdlib import BoundLogger
 from typing_extensions import override
 
@@ -70,361 +78,6 @@ class FilesPreparationOutcome:
     files_content_data: FilesContentData
 
 
-@dataclass
-class TokenUsage:
-    """Tracks token usage across different OAI models."""
-
-    def __init__(self):
-        self.usage = {}
-
-    def add_usage(self, model: str, input_tokens: int, output_tokens: int):
-        """Add token usage for a model."""
-        if model not in self.usage:
-            self.usage[model] = {"in": 0, "out": 0}
-        self.usage[model]["in"] += input_tokens
-        self.usage[model]["out"] += output_tokens
-
-    def add_from_completion(self, model: str, usage: openai.types.CompletionUsage):
-        """Add token usage from an OpenAI completion response."""
-        self.add_usage(model, usage.prompt_tokens, usage.completion_tokens)
-
-    def to_dict(self) -> dict:
-        """Convert usage to a dictionary format."""
-        return self.usage
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "TokenUsage":
-        """Create a TokenUsage instance from a dictionary."""
-        token_usage = cls()
-        for model, usage in data.items():
-            token_usage.add_usage(model, usage["in"], usage["out"])
-        return token_usage
-
-
-@dataclass(frozen=True)
-class GradedTaskNode(TaskNode):
-    """
-    Same as a `TaskNode`, but each node also has a `score` and an `explanation`.
-
-    Attributes:
-        score: Score between 0 and 1 (and exclusively 0 or 1 for leaf nodes)
-        valid_score: Boolean indicating whether the grading is valid, i.e. in case of judge errors
-        explanation: Explanation of the grading
-        judge_metadata: Additional judge-specific metadata for this node
-        sub_tasks: List of sub GradedTaskNodes
-    """
-
-    score: float = 0.0
-    valid_score: bool = False
-    explanation: str = "not yet graded"
-    judge_metadata: dict | None = None
-    sub_tasks: Sequence["GradedTaskNode"] = field(default_factory=list)
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "GradedTaskNode":
-        try:
-            sub_tasks = [cls.from_dict(task) for task in data["sub_tasks"]]
-            task = cls(
-                id=data["id"],
-                requirements=data["requirements"],
-                weight=data["weight"],
-                sub_tasks=sub_tasks,
-                task_category=data["task_category"],
-                score=data["score"],
-                valid_score=data["valid_score"],
-                explanation=data["explanation"],
-                judge_metadata=(data["judge_metadata"] if "judge_metadata" in data else None),
-            )
-        except KeyError as e:
-            raise ValueError(f"Missing required field in task data: {e}")
-        return task
-
-    @override
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "id": self.id,
-            "requirements": self.requirements,
-            "weight": self.weight,
-            "score": self.score,
-            "valid_score": self.valid_score,
-            "task_category": self.task_category,
-            "explanation": self.explanation,
-            "judge_metadata": self.judge_metadata,
-            "sub_tasks": [task.to_dict() for task in self.sub_tasks],
-        }
-
-    def set_score(self, score: float) -> "GradedTaskNode":
-        return replace(self, score=score)
-
-    @classmethod
-    def from_task(
-        cls,
-        task: TaskNode,
-        score: float,
-        valid_score: bool,
-        explanation: str,
-        judge_metadata: dict | None = None,
-    ) -> "GradedTaskNode":
-        graded_sub_tasks = [
-            cls.from_task(
-                sub_task,
-                score,
-                valid_score,
-                explanation=explanation,
-                judge_metadata=judge_metadata,
-            )
-            for sub_task in task.sub_tasks
-        ]
-        return cls(
-            id=task.id,
-            requirements=task.requirements,
-            weight=task.weight,
-            sub_tasks=graded_sub_tasks,
-            task_category=task.task_category,
-            score=score,
-            valid_score=valid_score,
-            explanation=explanation,
-            judge_metadata=judge_metadata,
-        )
-
-    def to_task(self) -> TaskNode:
-        sub_tasks = [t.to_task() for t in self.sub_tasks]
-        return TaskNode(
-            id=self.id,
-            requirements=self.requirements,
-            weight=self.weight,
-            sub_tasks=sub_tasks,
-            task_category=self.task_category,
-        )
-
-
-def disqualify_leafs(node: GradedTaskNode) -> GradedTaskNode:
-    """
-    Sets all leaf scores to 0 and explanations to 'Disqualified'.
-    Should be separately followed by `update_all_grades` to propagate the changes.
-    """
-    if node.is_leaf():
-        disqualified_node = node.set_score(0.0)
-        disqualified_node = disqualified_node.set_explanation("Submission has been disqualified")
-        return disqualified_node
-
-    new_sub_tasks = [disqualify_leafs(child) for child in node.sub_tasks]
-    return node.set_sub_tasks(new_sub_tasks)
-
-
-def disqualify(node: GradedTaskNode) -> GradedTaskNode:
-    """
-    Sets all leaf scores to 0 and explanations to 'Disqualified'. Updates all scores.
-    """
-    disqualified_node = disqualify_leafs(node)
-    disqualified_node = update_all_grades(disqualified_node)
-    return disqualified_node
-
-
-def update_all_grades(node: GradedTaskNode) -> GradedTaskNode:
-    """Recursively updates the scores for all nodes in a graded task tree.
-    Leaf nodes retain their existing score, while internal nodes get a score
-    computed from their children using score_from_children."""
-    if node.is_leaf():
-        return node
-    new_sub_tasks = [update_all_grades(child) for child in node.sub_tasks]
-    computed_score = score_from_children(new_sub_tasks)
-    updated_node = node.set_sub_tasks(new_sub_tasks).set_score(computed_score)
-    return updated_node
-
-
-class Judge(ABC):
-    def __init__(
-        self,
-        paper_path: Path,
-        rubric: TaskNode,
-        addendum: str | None,
-        judge_addendum: str | None,
-        submission_dir: Path,
-        structured_output_model: str = "gpt-4o-2024-08-06",
-        log_path: Path | None = None,
-        max_depth: int = 999,
-        code_only: bool = False,
-        resources_provided: bool = False,
-        *args,
-        **kwargs,
-    ):
-        self.paper_path: Path = paper_path
-        self.rubric: TaskNode = rubric
-        self.addendum: str | None = addendum
-        self.judge_addendum: str | None = judge_addendum
-        self.submission_dir: Path = submission_dir
-        self.structured_output_model: str = structured_output_model
-        self.log_path: Path | None = log_path
-        self.max_depth: int = max_depth
-        self.code_only: bool = code_only
-        self.resources_provided: bool = resources_provided
-
-        # Reproduction script and log
-        self.reproduce_sh_path: Path = self.submission_dir / "reproduce.sh"
-        self.reproduce_log_path: Path = self.submission_dir / "reproduce.log"
-        reproduce_log_creation_file_path: Path = self.submission_dir / "reproduce.log.creation_time"
-        if self.reproduce_sh_path.exists():
-            self.reproduce_sh_content: str = self.reproduce_sh_path.read_text()
-        else:
-            self.reproduce_sh_content = "(Does not exist)"
-        if self.reproduce_log_path.exists():
-            self.reproduce_log_content: str = self.reproduce_log_path.read_text()
-            self.reproduce_log_content = reduce_log(self.reproduce_log_content)
-            self.reproduction_log_creation_time_utc = datetime.fromtimestamp(
-                (
-                    int(reproduce_log_creation_file_path.read_text())
-                    if reproduce_log_creation_file_path.exists()
-                    else self.reproduce_log_path.stat().st_mtime  # fallback to next best thing
-                ),
-                tz=timezone.utc,
-            )
-        else:
-            self.reproduce_log_content = "(Does not exist)"
-            self.reproduction_log_creation_time_utc = datetime.now(tz=timezone.utc)
-
-    @property
-    @abstractmethod
-    def judge_type(self) -> str:
-        """Abstract property for judge type, to be implemented by sub-classes."""
-        raise NotImplementedError()
-
-    async def grade(
-        self,
-        task: TaskNode | None = None,
-        grade_leaf_fn: Callable[[TaskNode], Awaitable[GradedTaskNode]] | None = None,
-        current_depth: int = 1,
-    ) -> GradedTaskNode:
-        """
-        Options:
-        - task: The (sub)task to grade. If None, the entire rubric is graded.
-        - grade_leaf_fn: The function to use to grade leaf nodes. If None, the default `grade_leaf` method is used.
-
-        Returns a `GradedTaskNode` for the given `TaskNode`.
-        If the task is a leaf, it calls `grade_leaf` to grade it.
-        Otherwise, the task is graded by recursively grading its descendants bottom-up.
-        """
-        if task is None:
-            task = self.rubric
-
-        grade_leaf_fn = grade_leaf_fn or self.grade_leaf
-
-        try:
-            if current_depth >= self.max_depth and not task.is_leaf():
-                logger.info(f"Max depth reached for task {task.id}. Approximating entire subtree.")
-                return await self.grade_subtree(task)
-            elif task.is_leaf():
-                return await grade_leaf_fn(task)
-        except openai.RateLimitError as e:
-            logger.exception(f"Rate limit error while grading leaf {task.id}: {e}")
-            raise
-        except Exception as e:
-            logger.exception(f"Grading leaf {task.id} failed!\n{e}")
-            return GradedTaskNode.from_task(
-                task,
-                score=0.0,
-                valid_score=False,
-                explanation=str(e),
-                judge_metadata=None,
-            )
-
-        graded_sub_tasks = await asyncio.gather(
-            *(self.grade(t, grade_leaf_fn, current_depth + 1) for t in task.sub_tasks)
-        )
-        weighted_score = score_from_children(graded_sub_tasks)
-
-        return GradedTaskNode(
-            id=task.id,
-            requirements=task.requirements,
-            weight=task.weight,
-            sub_tasks=graded_sub_tasks,
-            score=weighted_score,
-            valid_score=True,
-            explanation="Aggregated score from sub-tasks.",
-            judge_metadata=None,
-        )
-
-    @abstractmethod
-    async def grade_leaf(self, task: TaskNode) -> GradedTaskNode:
-        """Grades a leaf task (to be implemented by sub-classes)."""
-
-        raise NotImplementedError()
-
-    @abstractmethod
-    async def grade_subtree(self, task: TaskNode) -> GradedTaskNode:
-        """Approximates the grade for an entire subtree when the max depth is reached."""
-        raise NotImplementedError()
-
-    def get_logger(self, task: TaskNode) -> BoundLogger:
-        """Creates a logger for a specific task."""
-
-        if not self.log_path:
-            _logger = logging.getLogger("null_logger")
-            _logger.addHandler(logging.NullHandler())
-            return wrap_logger(_logger)
-
-        run_logger = logging.getLogger(task.id)
-        run_logger.setLevel(logging.DEBUG)
-        log_file_handler = logging.FileHandler(self.log_path / f"{task.id}.log")
-        run_logger.addHandler(log_file_handler)
-        run_logger.propagate = False
-
-        return wrap_logger(run_logger)
-
-
-class DummyJudge(Judge):
-    @property
-    def judge_type(self) -> str:
-        return "dummy"
-
-    @override
-    async def grade_leaf(self, task: TaskNode) -> GradedTaskNode:
-        return GradedTaskNode.from_task(
-            task,
-            score=1.0,
-            valid_score=True,
-            explanation="This is a dummy judge that always gives a score of 1.0.",
-            judge_metadata=None,
-        )
-
-    @override
-    async def grade_subtree(self, task: TaskNode) -> GradedTaskNode:
-        # For demonstration, we'll just assign a perfect score:
-        return GradedTaskNode.from_task(
-            task,
-            score=1.0,
-            valid_score=True,
-            explanation="Dummy approximate subtree grading with a perfect score.",
-            judge_metadata=None,
-        )
-
-
-class RandomJudge(Judge):
-    @property
-    def judge_type(self) -> str:
-        return "random"
-
-    @override
-    async def grade_leaf(self, task: TaskNode) -> GradedTaskNode:
-        return GradedTaskNode.from_task(
-            task,
-            score=random.randint(0, 1),
-            valid_score=True,
-            explanation="This is a random judge that gives a random score of 0 or 1.",
-            judge_metadata=None,
-        )
-
-    @override
-    async def grade_subtree(self, task: TaskNode) -> GradedTaskNode:
-        return GradedTaskNode.from_task(
-            task,
-            score=random.randint(0, 1),
-            valid_score=True,
-            explanation="This is a random judge that gives a random score of 0 or 1.",
-            judge_metadata=None,
-        )
-
-
 class SimpleJudge(Judge):
     def __init__(
         self,
@@ -442,6 +95,7 @@ class SimpleJudge(Judge):
         max_prior_nodes: int | None = None,
         completion_kwargs: dict | None = None,
         max_file_depth: int = 4,
+        computer: ComputerInterface | None = None,
     ):
         super().__init__(
             paper_path=paper_path,
@@ -452,6 +106,7 @@ class SimpleJudge(Judge):
             log_path=log_path,
             max_depth=max_depth,
             code_only=code_only,
+            computer=computer,
         )
 
         self.model = model
@@ -468,6 +123,13 @@ class SimpleJudge(Judge):
             self.joined_addendum = "(NO ADDENDUM GIVEN)"
         self.reproduce_touched_files = True  # by default assume reproduce was functional
         self.max_file_depth = max_file_depth
+        self.openai_client = AsyncOpenAI()
+
+    async def process_file_content(self):
+        """
+        Pre-emptively truncates reproduce.log, paper.md and the content of the files
+        in the codebase to avoid running into context length issues downstream
+        """
         # pre-emptively truncate the reproduce.log and paper.md (latter almost never happens)
         # to allow for space for additional context when prompting
         self.reproduce_log_tokens = self.token_encoder.encode(
@@ -475,7 +137,6 @@ class SimpleJudge(Judge):
         )
         self.paper_md_tokens = self.token_encoder.encode(self.paper_md, disallowed_special=())
         self._truncate_input()
-        self.openai_client = AsyncOpenAI()
 
         self.avail_context_lens = {
             "Code Development": self._get_available_context("Code Development"),
@@ -485,9 +146,13 @@ class SimpleJudge(Judge):
         }
 
         self.files_string_prep_outcome = {
-            k: self._prepare_relevant_files_strings(k)
+            k: await self._prepare_relevant_files_strings(k)
             for k in ["Code Development", "Code Execution", "Result Analysis", "Subtree"]
         }
+
+    async def before_grading(self):
+        await super().before_grading()
+        await self.process_file_content()
 
     def _get_available_context(self, task_category):
         reserved_context_lens = {
@@ -566,19 +231,7 @@ class SimpleJudge(Judge):
 
         return _build_tree(tree)
 
-    def _safe_read_file(self, file_path: Path) -> str:
-        """
-        Try to read a file, with robustness to different encodings.
-        (Without this, we sometimes get `'utf-8' codec can't decode byte 0xa4 in position 64: invalid start byte`)
-        """
-        try:
-            # Try utf-8 first
-            return file_path.read_text(encoding="utf-8")
-        except UnicodeDecodeError:
-            # Try latin1 if utf-8 fails
-            return file_path.read_text(encoding="latin1")
-
-    def _get_whitelisted_files(
+    async def _get_whitelisted_files(
         self, task_category: str, max_file_depth: int | None = None
     ) -> list[Path]:
         """
@@ -615,14 +268,20 @@ class SimpleJudge(Judge):
         }
         whitelisted_extensions = extension_sets.get(task_category, extension_sets["default"])
 
-        def should_include_file(path: Path) -> bool:
+        async def should_include_file(path: Path) -> bool:
             if path.suffix not in whitelisted_extensions:
                 return False
 
-            if not path.exists() or path.is_symlink() and not path.resolve().exists():
+            if (
+                not await file_exists(path, self.computer)
+                or await is_symlink(path, self.computer)
+                and not await file_exists(path.resolve(), self.computer)
+            ):
                 return False
 
-            file_last_modified_time = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+            file_last_modified_time = datetime.fromtimestamp(
+                await read_file_mtime(path, self.computer), tz=timezone.utc
+            )
 
             if task_category == "Result Analysis":
                 return (
@@ -639,7 +298,7 @@ class SimpleJudge(Judge):
                 return True
 
         whitelisted_files = []
-        for root, dirs, files in os.walk(self.submission_dir):
+        async for root, dirs, files in walk_dir(self.submission_dir, self.computer):
             # Limit directory traversal based on max_file_depth
             current_depth = len(Path(root).relative_to(self.submission_dir).parts)
             if max_file_depth is not None and current_depth >= max_file_depth:
@@ -653,33 +312,34 @@ class SimpleJudge(Judge):
             for file in files:
                 full_path = Path(root) / file
                 if full_path.suffix in whitelisted_extensions:
-                    if should_include_file(full_path):
+                    if await should_include_file(full_path):
                         whitelisted_files.append(full_path)
 
-        if task_category == "Result Analysis" and all(
-            datetime.fromtimestamp(file.stat().st_mtime, tz=timezone.utc)
-            < self.reproduction_log_creation_time_utc
-            for file in whitelisted_files
-        ):
-            self.reproduce_touched_files = False
+        if task_category == "Result Analysis":
+            tasks = [read_file_mtime(file, self.computer) for file in whitelisted_files]
+            mtimes = await asyncio.gather(*tasks)
+            mtimes_utc = [datetime.fromtimestamp(mtime, tz=timezone.utc) for mtime in mtimes]
+            if all(mtime < self.reproduction_log_creation_time_utc for mtime in mtimes_utc):
+                self.reproduce_touched_files = False
 
         return whitelisted_files
 
-    def _build_relevant_files_strings(
+    async def _build_relevant_files_strings(
         self, task_category: str, max_file_depth: int | None = None
     ) -> FilesContentData:
         """
         Builds the file strings for the given task category.
         i.e. all the content of the files, all the names of the files, and a tree structure of the files
         """
-        whitelisted_files: list[Path] = self._get_whitelisted_files(
+        whitelisted_files: list[Path] = await self._get_whitelisted_files(
             task_category, max_file_depth=max_file_depth
         )
         # can exit early if all the files in submission fit comfortably within context
         all_files_content = "\n\n".join(
             [
                 format_file(
-                    full_path.relative_to(self.submission_dir), self._safe_read_file(full_path)
+                    full_path.relative_to(self.submission_dir),
+                    await read_file_content(full_path, self.computer),
                 )
                 for full_path in whitelisted_files
             ]
@@ -698,7 +358,7 @@ class SimpleJudge(Judge):
             all_file_names=all_file_names,
         )
 
-    def _attempt_preparing_files_strings(
+    async def _attempt_preparing_files_strings(
         self, task_category: str, available_context: int, max_file_depth: int | None = None
     ) -> FilesPreparationOutcome:
         """
@@ -706,7 +366,7 @@ class SimpleJudge(Judge):
         Taking into account the available context window in its response
         Available context is in terms of tokens, not characters.
         """
-        files_content_data = self._build_relevant_files_strings(task_category, max_file_depth)
+        files_content_data = await self._build_relevant_files_strings(task_category, max_file_depth)
         all_files_content = files_content_data.all_files_content
         tree_structure = files_content_data.tree_structure
         all_file_names = files_content_data.all_file_names
@@ -771,7 +431,7 @@ class SimpleJudge(Judge):
 
         return truncated_file_names, truncated_tree
 
-    def _prepare_relevant_files_strings(self, task_category: str):
+    async def _prepare_relevant_files_strings(self, task_category: str):
         """
         Prepares the relevant file strings necessary for judging specific task categories.
         Automatically limits file depth if necessary.
@@ -780,13 +440,13 @@ class SimpleJudge(Judge):
         available_context = self.avail_context_lens[task_category]
 
         # 1st try without limiting depth
-        attempt_outcome = self._attempt_preparing_files_strings(
+        attempt_outcome = await self._attempt_preparing_files_strings(
             task_category, available_context, max_file_depth=None
         )
 
         # 2nd attempt: limit depth to 4
         if not attempt_outcome.success:
-            attempt_outcome = self._attempt_preparing_files_strings(
+            attempt_outcome = await self._attempt_preparing_files_strings(
                 task_category, available_context, max_file_depth=4
             )
 
@@ -829,7 +489,7 @@ class SimpleJudge(Judge):
             were touched (modified or created) during the reproduce.sh execution
             Context window is handled in the same way as above
         """
-        files_prep_outcome = self.files_string_prep_outcome[task.task_category]
+        files_prep_outcome = self.files_string_prep_outcome[task.task_category or "Subtree"]
 
         if files_prep_outcome.all_files_fit:
             leaf_logger.info("Codebase is within context window, returning entire codebase")
@@ -872,13 +532,16 @@ class SimpleJudge(Judge):
         selected_files_tokens = []
         num_files = 0
         total_tokens = 0
-        max_tokens = self.avail_context_lens[task.task_category] - 2000  # Buffer of 2k tokens
+        max_tokens = (
+            self.avail_context_lens[task.task_category or "Subtree"] - 2000
+        )  # Buffer of 2k tokens
 
         for rel_path in selected_files.split("\n"):
             full_path = self.submission_dir / rel_path.strip()
             try:
                 file_content = format_file(
-                    full_path.relative_to(self.submission_dir), self._safe_read_file(full_path)
+                    full_path.relative_to(self.submission_dir),
+                    await read_file_content(full_path, self.computer),
                 )
                 content_tokens = self.token_encoder.encode(
                     file_content + "\n\n", disallowed_special=()
@@ -901,13 +564,13 @@ class SimpleJudge(Judge):
                     break
 
             except FileNotFoundError:
-                leaf_logger.warning(f"File {full_path} not found!")
+                leaf_logger.info(f"File {full_path} not found!")
             except IsADirectoryError:
-                leaf_logger.warning(f"File {full_path} is a directory!")
+                leaf_logger.info(f"File {full_path} is a directory!")
             except UnicodeDecodeError:
-                leaf_logger.warning(f"File {full_path} is not a text file!")
+                leaf_logger.info(f"File {full_path} is not a text file!")
             except Exception as e:
-                leaf_logger.warning(f"File {full_path} is not readable! Error: {e}")
+                leaf_logger.info(f"File {full_path} is not readable! Error: {e}")
 
         # Decode once at the end, ensuring we end with complete lines
         return self.token_encoder.decode(selected_files_tokens).rsplit("\n", 1)[0]
@@ -1050,9 +713,10 @@ class SimpleJudge(Judge):
 
                 return graded_task_node
             finally:
-                for handler in leaf_std_logger.handlers:
-                    handler.close()
-                    leaf_std_logger.removeHandler(handler)
+                if leaf_std_logger is not None:
+                    for handler in leaf_std_logger.handlers:
+                        handler.close()
+                        leaf_std_logger.removeHandler(handler)
 
     @override
     async def grade_subtree(self, task: TaskNode) -> GradedTaskNode:
@@ -1114,47 +778,3 @@ class SimpleJudge(Judge):
             )
         except Exception as e:
             raise ParseError(e)
-
-
-def score_from_children(children: list[GradedTaskNode]) -> float:
-    """
-    Calculate the weighted score accumulated from a list of graded children.
-    """
-    total_weight = sum(child.weight for child in children)
-    if total_weight == 0:
-        return 0.0
-    weighted_score = sum(child.score * child.weight for child in children) / total_weight
-    return weighted_score
-
-
-def _get_leaf_node_token_usages(task: GradedTaskNode) -> list[TokenUsage]:
-    """Recursively extract token usage from leaf nodes of the task tree"""
-
-    if task.is_leaf():
-        # need this check because judge_metadata may be malformed in case of node errors
-        if task.judge_metadata is not None and "token_usage" in task.judge_metadata:
-            return [TokenUsage.from_dict(task.judge_metadata["token_usage"])]
-        else:
-            return []
-
-    token_usages = []
-
-    for t in task.sub_tasks:
-        t_usages = _get_leaf_node_token_usages(t)
-        token_usages.extend(t_usages)
-    return token_usages
-
-
-def get_total_token_usage(graded_task_tree: GradedTaskNode) -> TokenUsage:
-    """
-    Gets the total token usage summed across all leaf nodes of the task tree
-    Assumes the judge_metadata dict a `token_usage` key of type `TokenUsage`
-    """
-    token_usages = _get_leaf_node_token_usages(graded_task_tree)
-
-    total_token_usage = TokenUsage()
-    for token_usage in token_usages:
-        for model, usage in token_usage.usage.items():
-            total_token_usage.add_usage(model, usage["in"], usage["out"])
-
-    return total_token_usage

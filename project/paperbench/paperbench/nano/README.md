@@ -17,7 +17,7 @@ paperbench.resume_run_group_id="2024-12-13T01-49-15-UTC_run-group_aisi-basic-age
 The `nanoeval` script checks for existing outputs in:
 
 ```
-{local_runs_dir}/{run_group_id}/{task_id}/
+{runs_dir}/{run_group_id}/{task_id}/
 ```
 
 ## Logs
@@ -26,7 +26,7 @@ The nanoeval script produces three types of logs:
 1. **Standard Output & Error**: All outputs from tasks and Alcatraz (very noisy).
 2. **Task Logs**: 
    ```
-   {local_runs_dir}/{run_group_id}/{task_id}/eval.log
+   {runs_dir}/{run_group_id}/{task_id}/eval.log
    ```
    These provide task-specific logs that are easier to read and are helpful to understand how each task is progressing.
 3. **Record Logs**: 

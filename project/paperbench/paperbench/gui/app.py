@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from flask import Flask, jsonify, render_template, request
-from paperbench.judge.judge import GradedTaskNode, update_all_grades
+from paperbench.judge.graded_task_node import GradedTaskNode, update_all_grades
 from paperbench.rubric.tasks import VALID_TASK_CATEGORIES, TaskNode, generate_task_category
 from paperbench.rubric.utils import get_openai_client, random_id
 

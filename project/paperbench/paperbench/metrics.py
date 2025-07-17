@@ -6,7 +6,7 @@ from typing import Callable, Hashable, Literal
 import dateutil.parser
 import numpy as np
 import structlog.stdlib
-from paperbench.judge.judge import GradedTaskNode, disqualify
+from paperbench.judge.graded_task_node import GradedTaskNode, disqualify
 from tqdm import tqdm
 
 logger = structlog.stdlib.get_logger(component=__name__)

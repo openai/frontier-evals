@@ -9,9 +9,10 @@ from typing import Optional
 import numpy as np
 import structlog.stdlib
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
-from paperbench.judge.judge import GradedTaskNode, TokenUsage, get_total_token_usage
+from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.judge.judge_eval.evaluate import calculate_judge_scores, compute_metrics
 from paperbench.judge.judge_eval.registry import example_registry
+from paperbench.judge.token_usage import TokenUsage, get_total_token_usage
 from paperbench.paper_registry import paper_registry
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -68,7 +69,7 @@ async def evaluate_single_example(
     )
 
     # Grade submission
-    graded_task_tree = await judge.grade()
+    graded_task_tree = await judge.judge()
 
     # Evaluate judge's grading
     evaluation_results, scores = calculate_judge_scores(graded_task_tree, expected_result)

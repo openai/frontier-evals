@@ -16,7 +16,7 @@ RUN mkdir -p ${LOGS_DIR} ${AGENT_DIR} ${CODE_DIR} ${SUBMISSION_DIR}
 RUN mkdir -p ${WORKSPACE_BASE}/paper
 
 RUN mkdir ${WORKSPACE_BASE}/.vscode
-COPY launch.json ${WORKSPACE_BASE}/.vscode/launch.json
+COPY paperbench/agents/launch.json ${WORKSPACE_BASE}/.vscode/launch.json
 
 # Avoid interactive dialog from apt-get and other packages requiring configuration
 ENV DEBIAN_FRONTEND=noninteractive
@@ -74,7 +74,7 @@ RUN cd ${SUBMISSION_DIR} && \
     git init && \
     mkdir -p .git/hooks
 
-COPY pre-commit ${SUBMISSION_DIR}/.git/hooks/
+COPY paperbench/agents/pre-commit ${SUBMISSION_DIR}/.git/hooks/
 RUN chmod +x ${SUBMISSION_DIR}/.git/hooks/pre-commit
 
 # Set up git config
@@ -82,6 +82,12 @@ RUN git config --global user.email "agent@example.com" && \
     git config --global user.name "agent"
 
 # Set up apply_patch
-COPY apply_patch.py ${AGENT_DIR}/apply_patch.py
+COPY paperbench/agents/apply_patch.py ${AGENT_DIR}/apply_patch.py
 RUN echo "#!/bin/bash\npython ${AGENT_DIR}/apply_patch.py '$@'" > /bin/apply_patch
 RUN chmod +x /bin/apply_patch
+
+# for grading on the computer:
+RUN mkdir -p /submission /output
+
+# --- Internal only
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash

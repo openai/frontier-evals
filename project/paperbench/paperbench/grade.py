@@ -1,0 +1,216 @@
+import json
+import logging
+import tarfile
+import tempfile
+import time
+from contextlib import nullcontext
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
+
+import blobfile as bf
+import structlog.stdlib
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from paperbench.infra.alcatraz import extract_file_from_computer
+from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
+from paperbench.judge.graded_task_node import GradedTaskNode
+from paperbench.judge.token_usage import TokenUsage, get_total_token_usage
+from paperbench.paper_registry import paper_registry
+from paperbench.rubric.tasks import TaskNode
+from paperbench.scripts.alcatraz_services import put_submission_in_computer
+from paperbench.utils import get_timestamp
+from structlog.stdlib import BoundLogger
+
+logger = structlog.stdlib.get_logger(component=__name__)
+
+
+@dataclass(frozen=True)
+class JudgeOutput:
+    judge_type: str
+    model_name: str
+    score: float
+    num_leaf_nodes: int
+    num_invalid_leaf_nodes: int
+    graded_at: str
+    graded_task_tree: GradedTaskNode
+    token_usage: Optional[TokenUsage] = None
+
+    def to_dict(self) -> dict:
+        return {
+            "judge_type": self.judge_type,
+            "model_name": self.model_name,
+            "score": self.score,
+            "num_leaf_nodes": self.num_leaf_nodes,
+            "num_invalid_leaf_nodes": self.num_invalid_leaf_nodes,
+            "graded_at": self.graded_at,
+            "graded_task_tree": self.graded_task_tree.to_dict(),
+            "token_usage": self.token_usage.to_dict() if self.token_usage else None,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "JudgeOutput":
+        token_usage = None
+
+        try:
+            if data.get("token_usage"):
+                token_usage = TokenUsage.from_dict(data["token_usage"])
+
+            return cls(
+                judge_type=data["judge_type"],
+                model_name=data["model_name"],
+                score=data["score"],
+                num_leaf_nodes=data["num_leaf_nodes"],
+                num_invalid_leaf_nodes=data["num_invalid_leaf_nodes"],
+                graded_at=data["graded_at"],
+                graded_task_tree=GradedTaskNode.from_dict(data["graded_task_tree"]),
+                token_usage=token_usage,
+            )
+        except KeyError as e:
+            raise ValueError(f"Missing key {e} in judge output data!") from e
+
+    @property
+    def success(self) -> bool:
+        return self.num_invalid_leaf_nodes < self.num_leaf_nodes
+
+
+async def run_judge(
+    submission_path: Path,
+    paper_id: str,
+    judge_type: str,
+    model_name: str,
+    code_only: bool,
+    max_depth: int = 999,
+    out_dir: Path | None = None,
+    reasoning_effort: str | None = None,
+    resources_provided: bool = False,
+    computer: ComputerInterface | None = None,
+) -> GradedTaskNode:
+    """
+    Judge a single submission (a directory of files) using the specified judge.
+    Returns the graded task tree.
+    """
+    if out_dir:
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+    paper = paper_registry.get_paper(paper_id)
+    rubric_path = paper.rubric
+    paper_pdf_path = paper.paper_pdf
+    paper_md_path = paper.paper_md
+
+    logger.info(f"Judging submission for paper {rubric_path}")
+    with open(rubric_path, "r") as f:
+        task_tree = TaskNode.from_dict(json.load(f))
+    if code_only:
+        task_tree = task_tree.code_only() or task_tree.set_task_category(
+            "Code Development"
+        ).set_sub_tasks([])
+    if resources_provided:
+        task_tree = task_tree.resources_provided()
+
+    judge_kwargs = handle_judge_kwargs(judge_type, code_only, paper, model_name, reasoning_effort)
+    judge = create_judge(
+        judge_type=judge_type,
+        judge_kwargs=judge_kwargs,
+        paper_path=paper_pdf_path,
+        rubric=task_tree,
+        addendum=paper.addendum.read_text() if paper.addendum else None,
+        judge_addendum=paper.judge_addendum.read_text() if paper.judge_addendum.exists() else None,
+        submission_dir=submission_path,
+        paper_md=paper_md_path,
+        log_path=out_dir,
+        max_depth=max_depth,
+        computer=computer,
+    )
+
+    return await judge.judge()
+
+
+async def grade_submission(
+    submission_path: str,
+    grader_upload_path: str,
+    paper_id: str,
+    judge_type: str,
+    model_name: str,
+    logger: BoundLogger,
+    code_only: bool = False,
+    reasoning_effort: str | None = None,
+    resources_provided: bool = False,
+    computer: ComputerInterface | None = None,
+) -> Optional[JudgeOutput]:
+    """
+    Grade a single submission. If a computer is provided, the submission will be graded on the computer.
+    This script will:
+    - Extract the submission to a temporary directory
+    - Run the Judge on the submission
+    - Upload the judge results
+    """
+
+    time_start = time.time()
+    logger.info(f"Grading {submission_path} for paper {paper_id}")
+
+    judge_output = None
+    error_msg = None
+    token_usage = None
+    try:
+        submission_dir_ctx = (
+            tempfile.TemporaryDirectory() if not computer else nullcontext(Path("/submission/"))
+        )
+        with submission_dir_ctx as submission_dir:
+            submission_dir = Path(submission_dir)
+
+            # Step 1: Unzip submission from submission_path to tmp dir
+            if computer:
+                await put_submission_in_computer(
+                    computer, submission_path, logger
+                )
+            else:
+                with bf.BlobFile(submission_path, "rb") as f:
+                    with tarfile.open(fileobj=f, mode="r") as tar:
+                        tar.extractall(path=submission_dir)
+            logger.info(f"Unzipped submission for judge to {submission_dir}")
+
+            # Step 2: Run the judge
+            graded_task_tree = await run_judge(
+                submission_path=submission_dir,
+                paper_id=paper_id,
+                judge_type=judge_type,
+                model_name=model_name,
+                code_only=code_only,
+                reasoning_effort=reasoning_effort,
+                resources_provided=resources_provided,
+                computer=computer,
+            )
+            if judge_type == "simple":
+                token_usage = get_total_token_usage(graded_task_tree)
+
+            logger.info(f"Graded {paper_id} at {submission_path}")
+
+            judge_output = JudgeOutput(
+                judge_type=judge_type,
+                model_name=model_name,
+                score=graded_task_tree.score,
+                num_leaf_nodes=len(graded_task_tree.get_leaf_nodes()),
+                num_invalid_leaf_nodes=(
+                    len(
+                        [node for node in graded_task_tree.get_leaf_nodes() if not node.valid_score]
+                    )
+                ),
+                graded_at=get_timestamp(),
+                graded_task_tree=graded_task_tree,
+                token_usage=token_usage,
+            )
+
+            # Step 3: serialize the JudgeOutput
+            bf.write_bytes(
+                grader_upload_path,
+                json.dumps(judge_output.to_dict(), indent=4).encode("utf-8"),
+            )
+            logger.info(f"Grading results have been written to file: {grader_upload_path}")
+    except Exception as e:
+        error_msg = str(e)
+        logger.exception(f"Grading failed with error:\n{error_msg}")
+    finally:
+        time_end = time.time()
+        logger.info(f"Grading completed in {time_end - time_start:.2f} seconds.")
+
+        return judge_output

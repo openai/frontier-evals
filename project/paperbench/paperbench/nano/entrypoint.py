@@ -5,7 +5,6 @@ from nanoeval.library_config import LibraryConfig
 from nanoeval.setup import nanoeval_entrypoint
 from paperbench.nano.eval import PaperBench
 from paperbench.nano.logging import PaperBenchLibraryConfig, setup_logging
-from paperbench.nano.utils import run_sanity_checks
 
 
 @chz.chz
@@ -19,7 +18,6 @@ async def main(
     library_config: LibraryConfig = PaperBenchLibraryConfig(),
 ) -> None:
     setup_logging(library_config)
-    run_sanity_checks(paperbench)
     await run(EvalSpec(eval=paperbench, runner=runner))
 
 

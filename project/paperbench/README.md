@@ -109,9 +109,8 @@ Running agents with nanoeval and alcatraz requires Docker, which you can install
 
 PaperBench requires the following Docker images to be built before it can run:
 
+- [paperbench/Dockerfile.base](paperbench/Dockerfile.base): The base environment for agents which contains basic packages like `curl`, `git`, `python`, etc. and a Conda environment that can be used to run the agents. We re-use this docker image if users request grading to occur on a computer with `paperbench.judge.grade_locally=false`
 - [paperbench/reproducer.Dockerfile](paperbench/reproducer.Dockerfile): The environment in which the submission is reproduced.
-- [paperbench/grader.Dockerfile](paperbench/grader.Dockerfile): The environment in which the judge is run to grade the agent's submission.
-- [paperbench/agents/Dockerfile.base](paperbench/agents/Dockerfile.base): The base environment for agents, which contains basic packages like `curl`, `git`, `python`, etc. and a Conda environment that can be used to run the agents.
 
 You will need to build the images for each agent that you want to run. We provide the following agents out-of-the-box:
 

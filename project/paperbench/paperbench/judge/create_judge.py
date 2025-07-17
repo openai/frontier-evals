@@ -1,6 +1,8 @@
 # separate file to avoid circular imports when other files import base Judge class
 import structlog.stdlib
-from paperbench.judge.judge import DummyJudge, Judge, RandomJudge, SimpleJudge
+from paperbench.judge.base import Judge
+from paperbench.judge.dummyrandom import DummyJudge, RandomJudge
+from paperbench.judge.simple import SimpleJudge
 from paperbench.paper_registry import Paper
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -37,7 +39,6 @@ def handle_reasoning_effort(judge_kwargs: dict, reasoning_effort: str | None) ->
 def handle_judge_kwargs(
     judge_type: str,
     code_only: bool = False,
-    resources_provided: bool = False,
     paper: Paper | None = None,
     model_name: str | None = None,
     reasoning_effort: str | None = None,
@@ -46,7 +47,7 @@ def handle_judge_kwargs(
     Prepares the right judge kwargs based on the judge type, model name and paper
     To be fed into `create_judge` typically.
     """
-    judge_kwargs = {"code_only": code_only, "resources_provided": resources_provided}
+    judge_kwargs = {"code_only": code_only}
     if judge_type == "dummy":
         return judge_kwargs
     judge_kwargs["model"] = model_name

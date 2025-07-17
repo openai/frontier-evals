@@ -1,15 +1,63 @@
 import time
 from pathlib import Path
-from typing import Optional
+from typing import AsyncGenerator, Optional
 
 import blobfile as bf
-import requests
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
-    ExecutionResult,
 )
 from paperbench.constants import LOGS_DIR
 from structlog.stdlib import BoundLogger
+
+
+async def extract_file_from_computer(
+    computer: ComputerInterface,
+    path_on_computer: Path,
+    extract_to: str,
+    logger: BoundLogger,
+):
+    """
+    Extracts a file from the computer.
+
+    Args:
+        computer: the computer to upload the file from
+        path_on_computer: the path to the file (on the computer) to upload
+        extract_to: the path to upload the file to
+    """
+
+    result = await computer.send_shell_command(f"ls -l {path_on_computer}")
+    if result.exit_code != 0:
+        logger.warning(f"File {path_on_computer} does not exist on the computer.")
+        return
+
+    files_tar = await computer.download(path_on_computer.as_posix())
+    bf.write_bytes(str(extract_to), files_tar)
+    logger.info(f"Extracted {path_on_computer} to {extract_to} with exit code {result.exit_code}")
+
+
+async def put_file_in_computer(
+    computer: ComputerInterface,
+    blobfile_path: str,
+    dest_path: str | Path,
+    logger: BoundLogger,
+):
+    """
+    Puts a file on a computer
+
+    Args:
+        computer: the computer to download the file to
+        blobfile_path: the path to the file, compatible with blobfile
+        dest_path: the path in the cluster to download the file to
+    """
+    result = await computer.send_shell_command(f"mkdir -p {Path(dest_path).parent}")
+    if result.exit_code != 0:
+        logger.warning(f"Failed to create directory {Path(dest_path).parent} on the cluster.")
+        return
+
+    # Place the file in the computer
+    logger.info(f"Placing file in computer: {blobfile_path}")
+    submission_tar = bf.read_bytes(str(blobfile_path))
+    await computer.upload(submission_tar, str(dest_path))
 
 
 async def populate_exclude_list(
@@ -72,9 +120,12 @@ async def upload_sources(
 
     await computer.check_shell_command(" && ".join(cmds))
 
-    tar_stream = await computer.download(container_tar_path.as_posix())
-    with open(file_path, "wb") as f:
-        f.write(tar_stream)
+    await extract_file_from_computer(
+        computer=computer,
+        path_on_computer=container_tar_path,
+        extract_to=file_path,
+        logger=logger,
+    )
 
     # cleanup tmp dirs
     await computer.check_shell_command(f"rm -rf {container_tmp_dir}")
@@ -134,9 +185,129 @@ async def tar_and_extract_from_computer(
         await computer.check_shell_command(f"touch {exclude_list_path}")
 
     cmd = f"tar -czf {tar_path_on_computer} -X {exclude_list_path} {dir_path_on_computer}"
-    result = await computer.send_shell_command(cmd)
-    assert result.exit_code == 0, f"Tar submission failed: {result}"
+    await computer.check_shell_command(cmd)
 
-    file = await computer.download(str(tar_path_on_computer))
-    with open(tar_path_on_target, "wb") as f:
-        f.write(file)
+    await extract_file_from_computer(
+        computer=computer,
+        path_on_computer=tar_path_on_computer,
+        extract_to=tar_path_on_target,
+        logger=logger,
+    )
+
+
+async def file_exists_on_computer(
+    computer: ComputerInterface,
+    file_path: Path,
+) -> bool:
+    result = await computer.send_shell_command(f"ls {file_path}")
+    return result.exit_code == 0
+
+
+async def file_is_symlink_on_computer(
+    computer: ComputerInterface,
+    file_path: Path,
+) -> bool:
+    result = await computer.send_shell_command(f"ls -l {file_path}")
+    return result.exit_code == 0 and "->" in result.output.decode("utf-8")
+
+
+async def read_text_on_computer(computer: ComputerInterface, file_path: Path) -> str:
+    """
+    Try to read a file, with robustness to different encodings.
+    (Without this, we sometimes get `'utf-8' codec can't decode byte 0xa4 in position 64: invalid start byte`)
+    """
+    result = await computer.check_shell_command(f"cat {file_path}")
+    try:
+        return result.output.decode("utf-8")
+    except UnicodeDecodeError:
+        return result.output.decode("latin1")
+
+
+async def get_mtime_on_computer(computer: ComputerInterface, file_path: Path) -> float:
+    """
+    Get the last modified time of a file on the computer.
+    i.e. equivalent of doing file_path.stat().st_mtime locally.
+    """
+    result = await computer.check_shell_command(f"stat -c %Y {file_path}")
+    return float(result.output.decode("utf-8").strip())
+
+
+async def walk_dir_on_computer(
+    computer: ComputerInterface, dir_path: Path
+) -> AsyncGenerator[tuple[str, list[str], list[str]], None]:
+    """
+    Asynchronously walks a directory on the remote computer, yielding a tuple of
+    (current_directory, list_of_directory_names, list_of_file_names) similarly to os.walk.
+
+    This function uses the remote computer's `find` command with a maximum depth of 1.
+    It then parses the output, distinguishing directories (identified with type 'd')
+    from other file types. Note that symbolic links (type 'l') and other types are treated as files,
+    consistent with the default behavior of os.walk when not following symlinks.
+    """
+
+    async def _walk(current_path: str) -> AsyncGenerator[tuple[str, list[str], list[str]], None]:
+        # Use find to list items in the current directory with their type.
+        # -mindepth 1 and -maxdepth 1 constrain the search to the current directory only.
+        # The printf format prints the type (e.g., d for directory, f for file, l for symlink)
+        # and the basename of the file, separated by a pipe.
+        cmd = f"find '{current_path}' -mindepth 1 -maxdepth 1 -printf '%y|%f\\n'"
+        result = await computer.send_shell_command(cmd)
+        if result.exit_code != 0:
+            # If the command fails, simply return and do not yield further.
+            return
+
+        dirs = []
+        files = []
+        output = result.output.decode("utf-8").strip()
+        if output:
+            for line in output.splitlines():
+                # Split each line into its type and filename parts.
+                try:
+                    typ, name = line.split("|", 1)
+                except ValueError:
+                    # If the line is not well formatted, skip it.
+                    continue
+                # Only treat entries of type 'd' as directories.
+                if typ == "d":
+                    dirs.append(name)
+                else:
+                    files.append(name)
+        # Yield the tuple consistent with os.walk: (root, dirs, files)
+        yield (current_path, dirs, files)
+        # Recurse into each discovered directory.
+        for d in dirs:
+            next_path = os.path.join(current_path, d)
+            async for entry in _walk(next_path):
+                yield entry
+
+    # Start the walk from the provided directory path.
+    async for entry in _walk(str(dir_path)):
+        yield entry
+
+
+async def copy_dir_to_computer(
+    computer: ComputerInterface, local_dir: Path, remote_dir: str
+) -> None:
+    """
+    Copies the contents of a local directory to the remote computer.
+
+    Args:
+        computer: An instance of ComputerInterface.
+        local_dir: The local directory to copy.
+        remote_dir: An absolute path on the remote computer where the directory should be copied.
+    """
+    await computer.check_shell_command(f"mkdir -p {remote_dir}")
+
+    # Create a gzipped tar archive of the local directory.
+    # Using arcname="." causes the archive to include files relative to the directory's root.
+    tar_bytes_io = io.BytesIO()
+    with tarfile.open(fileobj=tar_bytes_io, mode="w:gz") as tar:
+        tar.add(str(local_dir), arcname=".")
+    tar_bytes = tar_bytes_io.getvalue()
+
+    remote_tmp_tar = os.path.join(remote_dir, "temp_upload.tar.gz")
+    await computer.upload(tar_bytes, remote_tmp_tar)
+
+    await computer.check_shell_command(f"tar -xzf {remote_tmp_tar} -C {remote_dir}")
+
+    await computer.check_shell_command(f"rm {remote_tmp_tar}")  # clean up

@@ -2,7 +2,7 @@ import json
 import tarfile
 import tempfile
 import uuid
-from contextlib import contextmanager, nullcontext
+from contextlib import contextmanager
 
 import blobfile as bf
 import pytest
@@ -10,7 +10,7 @@ import structlog.stdlib
 from nanoeval.eval import EvalSpec
 from nanoeval.evaluation import run
 from nanoeval.setup import global_exit_stack
-from paperbench.judge.judge import GradedTaskNode
+from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.nano.entrypoint import DefaultRunnerArgs
 from paperbench.nano.eval import PaperBench
 from paperbench.nano.logging import PaperBenchLibraryConfig, setup_logging
@@ -69,7 +69,7 @@ async def test_rollout(agent_id: str):
                 paper_split="debug",
                 solver=solver,
                 judge=judge_config,
-                local_runs_dir=runs_dir,
+                runs_dir=runs_dir,
                 reproduction=reproduction_config,
             )
 
@@ -121,7 +121,7 @@ async def test_resuming():
                 paper_split="debug",
                 solver=solver,
                 judge=judge_config,
-                local_runs_dir=runs_dir,
+                runs_dir=runs_dir,
                 reproduction=reproduction_config,
                 resume_run_group_id=run_group_id,
                 n_tries=3,
@@ -181,7 +181,7 @@ async def test_reproduction():
                 paper_split="debug",
                 solver=solver,
                 judge=judge_config,
-                local_runs_dir=runs_dir,
+                runs_dir=runs_dir,
                 reproduction=reproduction_config,
                 resume_run_group_id=run_group_id,
             )
@@ -293,7 +293,7 @@ async def test_grading(
                 paper_split="debug",
                 solver=solver,
                 judge=judge_config,
-                local_runs_dir=runs_dir,
+                runs_dir=runs_dir,
                 reproduction=reproduction_config,
                 resume_run_group_id=run_group_id,
             )
@@ -330,7 +330,7 @@ async def test_grading(
                 grader_output["score"] == 1.0
             ), f"score expected to be 1.0 in {grader_output_file} when using dummy judge scaffold"
 
-        graded_task_tree = GradedTaskNode.from_dict(
+        _ = GradedTaskNode.from_dict(
             grader_output["graded_task_tree"]
         )  # Check graded task tree can be loaded
 

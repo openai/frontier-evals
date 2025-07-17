@@ -137,7 +137,7 @@ def setup_reproduction_config(skip_reproduction: bool = True) -> ReproductionCon
 
 
 def setup_judge_config(skip_grading: bool = True, scaffold: str = "dummy") -> JudgeConfig:
-    image = "pb-grader:latest"
+    image = "pb-env:latest"
     cluster_config = setup_cluster_config(image)
     return JudgeConfig(
         scaffold=scaffold,

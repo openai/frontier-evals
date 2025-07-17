@@ -121,33 +121,6 @@ def build_reproduce_command(task: "PaperBenchTask") -> str:  # type: ignore
     return " ".join(map(str, cmd))
 
 
-def build_judge_command(judge: "JudgeConfig", task: "PaperBenchTask") -> str:  # type: ignore
-    """Builds the command to run the judge."""
-
-    cmd = [
-        "/opt/conda/envs/grader/bin/python",  # Use the conda env installed in `pb-grader`
-        f"{WORKSPACE_BASE}/run_judge.py",  # Assumes judge script exists here
-        f"--submission-path {SUBMISSION_DIR}",
-        f"--paper-id {task.paper_id}",
-        f"--judge {judge.scaffold}",
-        "--out-dir /output",
-    ]
-
-    if judge.model not in ("dummy", "random"):
-        cmd.extend(["--model", judge.model])
-
-    if judge.reasoning_effort:
-        cmd.extend(["--reasoning-effort", judge.reasoning_effort])
-
-    if judge.code_only:
-        cmd.append("--code-only")
-
-    if judge.max_depth:
-        cmd.extend(["--max-depth", str(judge.max_depth)])
-
-    return " ".join(map(str, cmd))
-
-
 def get_file_at_duration(
     files: list[str], duration_hr: int, logger: BoundLogger
 ) -> Tuple[str, timedelta]:
@@ -197,12 +170,20 @@ def get_file_at_duration(
 
 
 def run_sanity_checks(paperbench: "PaperBench"):
+    check_for_docker(paperbench)
+    check_for_lfs()
+    check_for_computer_grading(paperbench)
+
+
+def check_for_docker(paperbench: "PaperBench"):
     if uses_local_config(paperbench):
         assert is_docker_running(), (
             "Docker is not running, but a local config requested."
             " Please ensure Docker is running if you wish to use `LocalConfig` for any of the `cluster_config`s."
         )
 
+
+def check_for_lfs():
     # Check dataset has been pulled from git lfs
     papers_dir = get_paperbench_data_dir() / "papers"
     papers = [i for i in papers_dir.glob("**/paper.md")]
@@ -210,3 +191,8 @@ def run_sanity_checks(paperbench: "PaperBench"):
     for paper in papers:
         with open(paper, "r") as f:
             assert len(f.readlines()) > 5, f"Paper at {paper} should be pulled from git lfs"
+
+
+def check_for_computer_grading(paperbench: "PaperBench"):
+    if not paperbench.judge.grade_locally:
+        raise NotImplementedError("Grading on computer is not fully supported yet.")

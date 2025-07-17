@@ -3,7 +3,7 @@ import json
 import os
 import tempfile
 import time
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, nullcontext
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
@@ -33,15 +33,16 @@ from paperbench.agents.run import (
 )
 from paperbench.agents.utils import AgentDirConfig, prepare_agent_dir_config
 from paperbench.constants import AGENT_DIR, CODE_DIR, LOGS_DIR, SUBMISSION_DIR, WORKSPACE_BASE
+from paperbench.grade import JudgeOutput, grade_submission
 from paperbench.metrics import compute_agg_stats, per_paper_results
-from paperbench.nano.utils import SPLIT_TO_EXPECTED_PAPERS, gather_eval_runs, get_file_at_duration
-from paperbench.paper_registry import paper_registry
-from paperbench.scripts.alcatraz_services import (
-    grade_locally,
-    grade_on_computer,
-    reproduce_on_computer,
+from paperbench.nano.utils import (
+    SPLIT_TO_EXPECTED_PAPERS,
+    gather_eval_runs,
+    get_file_at_duration,
+    run_sanity_checks,
 )
-from paperbench.scripts.run_judge import JudgeOutput
+from paperbench.paper_registry import paper_registry
+from paperbench.scripts.alcatraz_services import reproduce_on_computer
 from paperbench.scripts.run_reproduce import ReproductionMetadata
 from paperbench.utils import (
     create_run_dir,
@@ -93,7 +94,7 @@ class ReproductionConfig(BaseModel):
 
 class JudgeConfig(BaseModel):
     grade: bool = True
-    grade_locally: bool = False
+    grade_locally: bool = True
     grade_id: int = 0
     overwrite_existing_output: bool = False
     scaffold: str = "simple"
@@ -102,7 +103,7 @@ class JudgeConfig(BaseModel):
     resources_provided: bool = False
     reasoning_effort: Optional[str] = "high"
     cluster_config: LocalConfig = LocalConfig(
-        image="pb-grader:latest",
+        image="pb-env:latest",
         pull_from_registry=False,
         environment={"OPENAI_API_KEY": GRADER_OPENAI_API_KEY},
     )
@@ -192,7 +193,7 @@ class PBTask(ComputerTask):
     run_id: str  # Unique identifier for task
     run_group_id: str  # The group of runs this task belongs to
     run_dir: str  # Directory where logs will be saved for this task
-    local_runs_dir: str
+    runs_dir: str
     target_duration_hr: Optional[int]
     reproduction: ReproductionConfig
     judge: JudgeConfig
@@ -232,7 +233,7 @@ class PBTask(ComputerTask):
     @override
     async def _setup(self, computer: ComputerInterface) -> None:
         ctx_logger = logger.bind(
-            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.local_runs_dir
+            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir
         )
 
         paper = paper_registry.get_paper(self.paper_id)
@@ -283,7 +284,7 @@ class PBTask(ComputerTask):
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id,
             run_id=self.run_id,
-            runs_dir=self.local_runs_dir,
+            runs_dir=self.runs_dir,
         )
 
         # We need one final upload before grading, for solvers which do not take care of this step.
@@ -386,11 +387,7 @@ class PBTask(ComputerTask):
                 f"Grading submission {submission_to_grade_path}...", destinations=["run"]
             )
 
-            judge_output = await self.grade_submission(
-                submission_to_grade_path,
-                self.paper_id,
-                self.run_dir,
-            )
+            judge_output = await self.grade_submission(submission_to_grade_path, self.paper_id)
 
             ctx_logger.info(
                 f"Grading for {self.question_id}.{self.attempt_id} finished!",
@@ -444,7 +441,7 @@ class PBTask(ComputerTask):
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id,
             run_id=self.run_id,
-            runs_dir=self.local_runs_dir,
+            runs_dir=self.runs_dir,
         )
 
         checkpoint = await self._select_checkpoint()
@@ -530,7 +527,7 @@ class PBTask(ComputerTask):
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id,
             run_id=self.run_id,
-            runs_dir=self.local_runs_dir,
+            runs_dir=self.runs_dir,
         )
 
         # First, identify the submission that we want to grade
@@ -560,12 +557,11 @@ class PBTask(ComputerTask):
         self,
         submission_path: str,
         paper_id: str,
-        run_dir: str,
     ) -> Optional[JudgeOutput]:
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id,
             run_id=self.run_id,
-            runs_dir=self.local_runs_dir,
+            runs_dir=self.runs_dir,
         )
 
         grader_upload_path = submission_path.replace(
@@ -599,8 +595,13 @@ class PBTask(ComputerTask):
             )
             return None
 
-        if self.judge.grade_locally:
-            judge_output = await grade_locally(
+        computer_ctx = (
+            nullcontext()
+            if self.judge.grade_locally
+            else self._start_computer(self.judge.cluster_config)
+        )
+        async with computer_ctx as computer:
+            judge_output = await grade_submission(
                 submission_path=submission_path,
                 grader_upload_path=grader_upload_path,
                 paper_id=paper_id,
@@ -608,24 +609,10 @@ class PBTask(ComputerTask):
                 model_name=self.judge.model,
                 logger=ctx_logger.bind(destinations=["run"]),
                 code_only=self.judge.code_only,
+                computer=computer,
                 resources_provided=self.judge.resources_provided,
                 reasoning_effort=self.judge.reasoning_effort,
             )
-        else:
-            async with self._start_computer(self.judge.cluster_config) as computer:
-                judge_output = await grade_on_computer(
-                    computer=computer,
-                    submission_path=submission_path,
-                    grader_upload_path=grader_upload_path,
-                    paper_id=paper_id,
-                    judge_type=self.judge.scaffold,
-                    model_name=self.judge.model,
-                    logger=ctx_logger.bind(destinations=["run"]),
-                    run_dir=self.run_dir,
-                    code_only=self.judge.code_only,
-                    resources_provided=self.judge.resources_provided,
-                    reasoning_effort=self.judge.reasoning_effort,
-                )
 
         return judge_output
 
@@ -673,7 +660,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         ctx_logger = logger.bind(
             run_group_id=task.run_group_id,
             run_id=task.run_id,
-            runs_dir=task.local_runs_dir,
+            runs_dir=task.runs_dir,
         )
 
         if task.reproduction.timeout < self.timeout:
@@ -749,7 +736,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         ctx_logger = logger.bind(
             run_group_id=task.run_group_id,
             run_id=task.run_id,
-            runs_dir=task.local_runs_dir,
+            runs_dir=task.runs_dir,
         )
 
         ctx_logger.info(
@@ -760,7 +747,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
 
         ctx_logger.info(
             purple(
-                f"Writing logs for run to {bf.join(task.local_runs_dir, task.run_group_id, task.run_id, 'run.log')}"
+                f"Writing logs for run to {bf.join(task.runs_dir, task.run_group_id, task.run_id, 'run.log')}"
             ),
             destinations=["group"],
             _print=True,
@@ -966,7 +953,7 @@ class PaperBench(PythonCodingEval):
     )
 
     # other args
-    local_runs_dir: str = chz.field(default=get_default_runs_dir())
+    runs_dir: str = chz.field(default=get_default_runs_dir())
     allow_internet: bool = chz.field(default=True)
 
     @chz.init_property
@@ -982,7 +969,7 @@ class PaperBench(PythonCodingEval):
 
     @chz.validate
     def _validate_args(self):
-        ctx_logger = logger.bind(run_group_id=self.run_group_id, runs_dir=self.local_runs_dir)
+        ctx_logger = logger.bind(run_group_id=self.run_group_id, runs_dir=self.runs_dir)
 
         if self.resume_run_group_id is not None:
             assert (
@@ -995,11 +982,11 @@ class PaperBench(PythonCodingEval):
 
         assert GRADER_OPENAI_API_KEY, "Environment variable `GRADER_OPENAI_API_KEY` is not set."
 
-        ctx_logger = logger.bind(run_group_id=self.run_group_id, runs_dir=self.local_runs_dir)
+        ctx_logger = logger.bind(run_group_id=self.run_group_id, runs_dir=self.runs_dir)
 
         ctx_logger.info(
             purple(
-                f"Writing run group logs to {bf.join(self.local_runs_dir, self.run_group_id, 'group.log')}"
+                f"Writing run group logs to {bf.join(self.runs_dir, self.run_group_id, 'group.log')}"
             ),
             _print=True,
         )
@@ -1037,13 +1024,13 @@ class PaperBench(PythonCodingEval):
                 if run_id is not None:
                     # if we're using an existing run_id, pop it from the set
                     existing_run_ids.remove(run_id)
-                    run_dir = create_run_dir(self.run_group_id, run_id, self.local_runs_dir)
+                    run_dir = create_run_dir(self.run_group_id, run_id, self.runs_dir)
                 elif self.resume_no_extend:
                     continue  # Purely resuming existing runs, don't add new ones!
                 else:
                     # if none found, create a new run_id
                     run_id = create_run_id(paper_id)
-                    run_dir = create_run_dir(self.run_group_id, run_id, self.local_runs_dir)
+                    run_dir = create_run_dir(self.run_group_id, run_id, self.runs_dir)
 
                 tasks.append(
                     PBTask(
@@ -1054,7 +1041,7 @@ class PaperBench(PythonCodingEval):
                         run_id=run_id,
                         run_group_id=self.run_group_id,
                         run_dir=run_dir,
-                        local_runs_dir=self.local_runs_dir,
+                        runs_dir=self.runs_dir,
                         target_duration_hr=self.target_duration_hr,
                         judge=self.judge,
                         reproduction=self.reproduction,
@@ -1074,6 +1061,7 @@ class PaperBench(PythonCodingEval):
     async def get_tasks(self) -> Sequence[PBTask]:
         # we handle the n_tries in get_instances, since we're creating run_ids and run_dirs there
         # so we can simply return the result of get_instances here
+        run_sanity_checks(self)
         return await self.get_instances()
 
     @override
@@ -1179,10 +1167,10 @@ class PaperBench(PythonCodingEval):
         """
         Existing run_ids will be resumed (we'll skip any steps that have already been done).
         """
-        ctx_logger = logger.bind(run_group_id=run_group_id, runs_dir=self.local_runs_dir)
+        ctx_logger = logger.bind(run_group_id=run_group_id, runs_dir=self.runs_dir)
 
-        run_ids = bf.listdir(bf.join(self.local_runs_dir, run_group_id))
-        run_ids = [i for i in run_ids if bf.isdir(bf.join(self.local_runs_dir, run_group_id, i))]
+        run_ids = bf.listdir(bf.join(self.runs_dir, run_group_id))
+        run_ids = [i for i in run_ids if bf.isdir(bf.join(self.runs_dir, run_group_id, i))]
 
         ctx_logger.info(
             f"Found {len(run_ids)} existing run_ids in {run_group_id}",

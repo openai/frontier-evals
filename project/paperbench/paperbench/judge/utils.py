@@ -1,10 +1,73 @@
+import os
 import re
 from pathlib import Path
+from typing import AsyncGenerator
 
 import structlog.stdlib
 from drain3 import TemplateMiner
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from paperbench.infra.alcatraz import (
+    file_exists_on_computer,
+    file_is_symlink_on_computer,
+    get_mtime_on_computer,
+    read_text_on_computer,
+    walk_dir_on_computer,
+)
 
 logger = structlog.stdlib.get_logger(component=__name__)
+
+
+def safe_read_file(file_path: Path) -> str:
+    """
+    Try to read a file, with robustness to different encodings.
+    (Without this, we sometimes get `'utf-8' codec can't decode byte 0xa4 in position 64: invalid start byte`)
+    """
+    try:
+        # Try utf-8 first
+        return file_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        # Try latin1 if utf-8 fails
+        return file_path.read_text(encoding="latin1")
+
+
+async def file_exists(file_path: Path, computer: ComputerInterface | None) -> bool:
+    """Generic function to check if a file exists; on the computer or locally."""
+    return await file_exists_on_computer(computer, file_path) if computer else file_path.exists()
+
+
+async def read_file_content(file_path: Path, computer: ComputerInterface | None) -> str:
+    """Generic function to read the content of a file; on the computer or locally."""
+    return (
+        await read_text_on_computer(computer, file_path) if computer else safe_read_file(file_path)
+    )
+
+
+async def read_file_mtime(file_path: Path, computer: ComputerInterface | None) -> float:
+    """Generic function to read the modification time of a file; on the computer or locally."""
+    return (
+        await get_mtime_on_computer(computer, file_path) if computer else file_path.stat().st_mtime
+    )
+
+
+async def is_symlink(file_path: Path, computer: ComputerInterface | None) -> bool:
+    """Generic function to check if a file is a symlink; on the computer or locally."""
+    return (
+        await file_is_symlink_on_computer(computer, file_path)
+        if computer
+        else file_path.is_symlink()
+    )
+
+
+async def walk_dir(
+    dir_path: Path, computer: ComputerInterface | None
+) -> AsyncGenerator[tuple[str, list[str], list[str]], None]:
+    """Generic function for running equivalent of os.walk; on the computer or locally."""
+    if computer:
+        async for entry in walk_dir_on_computer(computer, dir_path):
+            yield entry
+    else:
+        for entry in os.walk(dir_path):
+            yield entry
 
 
 def get_model_context_window_length(model: str) -> int:

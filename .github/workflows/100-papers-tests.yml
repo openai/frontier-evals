@@ -58,7 +58,7 @@ jobs:
           --platform=linux/amd64 \
           --load \
           -t pb-env \
-          -f paperbench/agents/Dockerfile.base paperbench/agents/
+          -f paperbench/Dockerfile.base .
 
     - name: Build dummy
       working-directory: ./project/paperbench

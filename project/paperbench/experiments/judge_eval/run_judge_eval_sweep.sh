@@ -19,6 +19,7 @@ done
 for model in gpt-4o-mini-2024-07-18 gpt-4o-2024-08-06; do
   echo "Running judge eval for $model"
   python paperbench/scripts/run_judge_eval.py -j simple -m $model \
+    --reasoning-effort none \
     --output-dir experiments/judge_eval/judge_eval_results/ \
     --example-ids pinn/0 rice/0 stay-on-topic-with-classifier-free-guidance/0 all-in-one/0 semantic-self-consistency/0
   echo "-----------------------------"

@@ -19,26 +19,67 @@ dependencies = [
     "pytest-asyncio>=0.24.0",
     "pytest-html>=4.1.1",
     "drain3>=0.9.11",
-    "chz@git+https://github.com/openai/chz.git#egg=97cc0dfb5934a4b99c3a96bdcadcfdbe14812fe8",
     "pre-commit>=4.1.0",
     "blobfile>=3.0.0",
     "tiktoken>=0.9.0",
     "python-dateutil>=2.9.0",
     "unidecode>=1.3.8",
     "structlog>=25.1.0",
+    "chz",
+    "nanoeval",
+    "nanoeval-alcatraz",
+    "alcatraz",
+    "preparedness-turn-completer",
 ]
 
 [tool.setuptools]
 packages = { find = { include = ["paperbench", "paperbench.*"] } }
 
-[project.optional-dependencies]
-formatters = ["black>=23.3", "isort>=5.13"]
+[tool.pyright]
+extraPaths = ["../alcatraz", "../preparedness_turn_completer"]
+typeCheckingMode = "off"                                   # we use mypy
+
+[dependency-groups]
 dev = [
-    "pytest>=8.3",
-    "pytest-asyncio>=0.23.0",
-    "pre-commit>=4.0.0",
-    "pytest-xdist>=3.6.1"
+    "mypy>=1.15.0",
+    "poethepoet>=0.34.0",
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-xdist>=3.6.1",
+    "ruff>=0.11.7",
 ]
 
-[tool.black]
-line-length = 100  # match the .pre-commit-config.yaml
+[tool.uv.sources]
+chz = { git = "https://github.com/openai/chz.git" }
+nanoeval = { git = "https://github.com/openai/preparedness.git", subdirectory = "project/nanoeval" }
+nanoeval-alcatraz = { git = "https://github.com/openai/preparedness.git", subdirectory = "project/nanoeval_alcatraz" }
+alcatraz = { path = "../alcatraz", editable = true }
+preparedness-turn-completer = { path = "../preparedness_turn_completer", editable = true }
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+extend-exclude = ["paperbench/agents/aisi-basic-agent/"]
+
+[tool.mypy]
+strict = true
+local_partial_types = true
+# These two make life easier if you use a lot of untyped libraries:
+warn_return_any = false
+allow_untyped_calls = true
+# Do not use `ignore_missing_imports`, instead use:
+disable_error_code = ["import-untyped"]
+# If you don't want to force use of type annotations:
+# allow_incomplete_defs = true
+# allow_untyped_defs = true
+# allow_any_generics = true
+exclude = "^(paperbench/agents/aisi-basic-agent)(/|$)"
+mypy_path = ["../alcatraz", "../preparedness_turn_completer"]
+[[tool.mypy.overrides]]
+module = ["alcatraz.*", "preparedness_turn_completer.*"]
+ignore_errors = true
+warn_unused_ignores = false
+
+[tool.poe.tasks]
+lint = "ruff check --fix"
+typecheck = "mypy paperbench tests"

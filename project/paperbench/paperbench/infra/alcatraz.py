@@ -6,12 +6,12 @@ from pathlib import Path
 from typing import AsyncGenerator
 
 import blobfile as bf
-from structlog.stdlib import BoundLogger
-
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
     ExecutionResult,
 )
+from structlog.stdlib import BoundLogger
+
 from paperbench.constants import LOGS_DIR
 
 
@@ -20,7 +20,7 @@ async def extract_file_from_computer(
     path_on_computer: Path,
     extract_to: str,
     logger: BoundLogger,
-):
+) -> None:
     """
     Extracts a file from the computer.
 
@@ -45,7 +45,7 @@ async def put_file_in_computer(
     blobfile_path: str,
     dest_path: str | Path,
     logger: BoundLogger,
-):
+) -> None:
     """
     Puts a file on a computer
 
@@ -94,7 +94,7 @@ async def upload_sources(
     run_dir: Path | str,
     logger: BoundLogger,
     timestamp: str | None = None,
-):
+) -> None:
     """
     Tars all source directories and files into a single tarball and uploads it
     """
@@ -144,7 +144,8 @@ async def upload_sources(
 
 
 async def count_aisi_basic_agent_messages(
-    computer: ComputerInterface, agent_log_path: str = "/home/logs/agent.log"  # TODO use .env
+    computer: ComputerInterface,
+    agent_log_path: str = "/home/logs/agent.log",  # TODO use .env
 ) -> int:
     """
     Counts the number of occurences of "╭─ Assistant" in the agent log.
@@ -181,7 +182,7 @@ async def tar_and_extract_from_computer(
     tar_path_on_target: str,
     logger: BoundLogger,
     max_file_size: str | None = None,
-):
+) -> None:
     """
     1) Tars the dir at dir_path_on_computer to tar_path_on_computer
     2) Uploads to tar_path_on_target

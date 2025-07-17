@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import structlog.stdlib
 import yaml
+
 from paperbench.agents.utils import parse_env_var_values
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -15,20 +19,20 @@ class Agent:
     agents_dir: Path
     start: Path
     dockerfile: Path
-    kwargs: dict
-    env_vars: dict
+    kwargs: dict[str, Any]
+    env_vars: dict[str, str]
     privileged: bool = False
     mount_docker_socket: bool = False
     kwargs_type: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert isinstance(self.start, Path), "Agent start script must be a pathlib.Path object."
         assert isinstance(self.dockerfile, Path), "Agent dockerfile must be a pathlib.Path object."
         assert isinstance(self.kwargs, dict), "Agent kwargs must be a dictionary."
         assert isinstance(self.privileged, bool), "Agent privileged must be a boolean."
-        assert isinstance(
-            self.mount_docker_socket, bool
-        ), "Agent mount_docker_socket must be a boolean."
+        assert isinstance(self.mount_docker_socket, bool), (
+            "Agent mount_docker_socket must be a boolean."
+        )
 
         if self.kwargs_type is not None:
             assert isinstance(self.kwargs_type, str), "Agent kwargs_type must be a string."
@@ -41,7 +45,7 @@ class Agent:
         assert self.dockerfile.exists(), f"dockerfile {self.dockerfile} does not exist."
 
     @staticmethod
-    def from_dict(data: dict) -> "Agent":
+    def from_dict(data: dict[str, Any]) -> Agent:
         agents_dir = Path(data["agents_dir"])
         try:
             return Agent(
@@ -57,7 +61,7 @@ class Agent:
                 mount_docker_socket=data.get("mount_docker_socket", False),
             )
         except KeyError as e:
-            raise ValueError(f"Missing key {e} in agent config!")
+            raise ValueError(f"Missing key {e} in agent config!") from e
 
 
 class AgentRegistry:

@@ -6,11 +6,13 @@ import shutil
 import tarfile
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import structlog.stdlib
+from tqdm.asyncio import tqdm_asyncio
+
 from paperbench.monitor.create_monitor import create_monitor
 from paperbench.paper_registry import paper_registry
-from tqdm.asyncio import tqdm_asyncio
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -23,7 +25,7 @@ def get_paper_id_from_run_id(run_id: str) -> str:
 async def monitor_single_log(
     run_dir: Path,
     monitor_type: str,
-) -> dict:
+) -> dict[str, Any] | None:
     """
     Monitor a single run's log with the specified monitor.
     """
@@ -102,7 +104,7 @@ async def monitor_single_log(
 async def monitor_run_group(
     group_dir: Path,
     monitor_type: str,
-) -> list:
+) -> list[dict[str, Any] | None]:
     """Monitor all runs in a run group directory."""
     run_group_id = group_dir.name
 
@@ -125,8 +127,8 @@ async def monitor_run_group(
 async def monitor_multiple_run_groups(
     logs_dir: Path,
     monitor_type: str,
-    run_groups: list = None,
-) -> dict:
+    run_groups: list[str] | None = None,
+) -> dict[str, Any] | None:
     """Run monitor on multiple run groups that are in a directory of run groups."""
     if not logs_dir.exists():
         logger.exception(f"Logs directory {logs_dir} does not exist")
@@ -182,11 +184,11 @@ async def monitor_multiple_run_groups(
 
 
 async def main(
-    monitor_type: str = "basic",
-    logs_dir: Path = None,
-    run_groups: list = None,
-    out_dir: Path = None,
-):
+    monitor_type: str,
+    logs_dir: Path,
+    run_groups: list[str] | None = None,
+    out_dir: Path | None = None,
+) -> None:
     """
     Main function to run the monitor on a directory of logs.
     """

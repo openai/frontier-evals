@@ -3,16 +3,17 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Awaitable, Callable
+from typing import Any, Awaitable, Callable
 
 import openai
 import structlog.stdlib
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from structlog import wrap_logger
+from structlog.stdlib import BoundLogger
+
 from paperbench.judge.graded_task_node import GradedTaskNode, score_from_children
 from paperbench.judge.utils import file_exists, read_file_content, read_file_mtime, reduce_log
 from paperbench.rubric.tasks import TaskNode
-from structlog import wrap_logger
-from structlog.stdlib import BoundLogger
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -29,9 +30,9 @@ class Judge(ABC):
         max_depth: int = 999,
         code_only: bool = False,
         computer: ComputerInterface | None = None,
-        *args,
-        **kwargs,
-    ):
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         self.paper_path: Path = paper_path
         self.rubric: TaskNode = rubric
         self.addendum: str | None = addendum
@@ -59,14 +60,14 @@ class Judge(ABC):
         """Abstract property for judge type, to be implemented by sub-classes."""
         raise NotImplementedError()
 
-    async def before_grading(self):
+    async def before_grading(self) -> None:
         """
         Hook for any setup before grading starts.
         Separated from __init__ to allow for async operations.
         """
         await self.read_repro_files_content()
 
-    async def read_repro_files_content(self):
+    async def read_repro_files_content(self) -> None:
         """
         Asynchronously reads reproduce.sh, reproduce.log, and reproduce.log.creation_time
         """
@@ -87,8 +88,8 @@ class Judge(ABC):
             )
             self.reproduce_log_content = reduce_log(self.reproduce_log_content)
             # improve the creation time utc fallback
-            self.reproduction_log_creation_time_utc = await read_file_mtime(
-                self.reproduce_log_path, self.computer
+            self.reproduction_log_creation_time_utc = datetime.fromtimestamp(
+                await read_file_mtime(self.reproduce_log_path, self.computer), tz=timezone.utc
             )
 
         if reproduce_log_creation_file_exists:
@@ -132,8 +133,6 @@ class Judge(ABC):
         If the task is a leaf, it calls `grade_leaf` to grade it.
         Otherwise, the task is graded by recursively grading its descendants bottom-up.
         """
-        grade_leaf_fn = grade_leaf_fn or self.grade_leaf
-
         try:
             if current_depth >= self.max_depth and not task.is_leaf():
                 logger.info(f"Max depth reached for task {task.id}. Approximating entire subtree.")

@@ -2,7 +2,7 @@ import asyncio
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Any
 
 import structlog.stdlib
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
@@ -22,10 +22,10 @@ class ReproductionMetadata:
     git_status_after_reproduce: str
     timedout: bool
     repro_log: str
-    retried_results: list[dict] = field(default_factory=list)
+    retried_results: list[dict[str, Any]] = field(default_factory=list)
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ReproductionMetadata":
+    def from_dict(cls, data: dict[str, Any]) -> "ReproductionMetadata":
         try:
             return cls(
                 is_valid_git_repo=data["is_valid_git_repo"],
@@ -40,9 +40,9 @@ class ReproductionMetadata:
                 retried_results=data["retried_results"],
             )
         except KeyError as e:
-            raise ValueError(f"Missing required field in reproduction metadata: {e}")
+            raise ValueError("Missing required field in reproduction metadata") from e
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -104,9 +104,9 @@ async def reproduce(
     computer: ComputerInterface,
     submission_path: Path,
     logger: BoundLogger,
-    timeout: Optional[float] = None,
+    timeout: float | None = None,
     retry_threshold: float = 0,
-) -> dict:
+) -> dict[str, Any]:
     """
     args:
         computer: ComputerInterface on which the reproduce.sh script will be run
@@ -153,13 +153,13 @@ async def reproduce(
     cmd_str = f"bash -c 'git config --global --add safe.directory {submission_path}'"
     await computer.send_shell_command(cmd_str)
 
-    results = []
-    result = await run_reproduce_script(computer, logger, submission_path, timeout)
-    results.append(result)
+    repro_outcomes: list[ReproScriptRunOutcome] = []
+    repro_outcome = await run_reproduce_script(computer, logger, submission_path, timeout)
+    repro_outcomes.append(repro_outcome)
 
     valid_threshold = True if timeout is None else retry_threshold < timeout
     retries_enabled = retry_threshold > 0 and valid_threshold
-    script_ran_quickly = result.repro_execution_time <= retry_threshold
+    script_ran_quickly = repro_outcome.repro_execution_time <= retry_threshold
 
     # only ran shortly, something trivial might be broken: maybe trivial fixes help, so retry
     if retries_enabled and script_ran_quickly:
@@ -170,16 +170,16 @@ async def reproduce(
             {"use_py3_11": True, "make_venv": True},
         ]
         for retry_opts in retry_options:
-            result = await run_reproduce_script(
+            repro_outcome = await run_reproduce_script(
                 computer, logger, submission_path, timeout, **retry_opts
             )
-            results.append(result)
-            if result.repro_execution_time > retry_threshold:
+            repro_outcomes.append(repro_outcome)
+            if repro_outcome.repro_execution_time > retry_threshold:
                 logger.info("Reproduce.sh ran for more than 10 minutes, breaking out of retry loop")
                 break
-        if result.repro_execution_time <= retry_threshold:
+        if repro_outcome.repro_execution_time <= retry_threshold:
             logger.info("Reproduce.sh still ran for <= 10 minutes, giving up")
-    final_result = results[-1]
+    final_outcome = repro_outcomes[-1]
 
     result = await computer.check_shell_command(f"ls -la {submission_path}")
     files_after_reproduce = result.output.decode("utf-8")
@@ -192,12 +192,12 @@ async def reproduce(
             is_valid_git_repo=is_valid_git_repo,
             git_log=git_log,
             repro_script_exists=repro_script_exists,
-            repro_execution_time=final_result.repro_execution_time,
-            repro_log=final_result.repro_log,
+            repro_execution_time=final_outcome.repro_execution_time,
+            repro_log=final_outcome.repro_log,
             files_before_reproduce=files_before_reproduce,
             files_after_reproduce=files_after_reproduce,
             git_status_after_reproduce=git_status,
-            timedout=final_result.timedout,
-            retried_results=[asdict(r) for r in results[:-1]],
+            timedout=final_outcome.timedout,
+            retried_results=[asdict(r) for r in repro_outcomes[:-1]],
         )
     )

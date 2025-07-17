@@ -1,13 +1,14 @@
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Callable, Hashable, Literal
+from typing import Any, Callable, Hashable, Literal
 
 import dateutil.parser
 import numpy as np
 import structlog.stdlib
-from paperbench.judge.graded_task_node import GradedTaskNode, disqualify
 from tqdm import tqdm
+
+from paperbench.judge.graded_task_node import GradedTaskNode, disqualify
 
 logger = structlog.stdlib.get_logger(component=__name__)
 EXPECTED_PAPERS = 20
@@ -78,7 +79,7 @@ def compute_ars(
 
 def compute_agg_stats(
     evaluation_runs: list[EvaluationRun],
-    compute_ars_kwargs: dict = {},
+    compute_ars_kwargs: dict[str, Any] | None = None,
     expected_papers: int = EXPECTED_PAPERS,
 ) -> MetricResult:
     """
@@ -86,6 +87,8 @@ def compute_agg_stats(
     Returns the mean score, standard error, and number of valid seeds.
     """
     # Filter for complete evaluations (i.e. all papers have been evaluated)
+    if compute_ars_kwargs is None:
+        compute_ars_kwargs = {}
     complete_evaluations = [eval for eval in evaluation_runs if eval.is_complete(expected_papers)]
 
     scores = [compute_ars(eval_run, **compute_ars_kwargs) for eval_run in complete_evaluations]
@@ -97,7 +100,9 @@ def compute_agg_stats(
     )
 
 
-def per_paper_results(eval_runs: list[EvaluationRun], n_runs: int) -> dict[str, dict]:
+def per_paper_results(
+    eval_runs: list[EvaluationRun], n_runs: int
+) -> dict[str, dict[str, float | None]]:
     """
     Computes the mean and standard error of the replication score for each paper
     over the expected number of runs.
@@ -106,8 +111,8 @@ def per_paper_results(eval_runs: list[EvaluationRun], n_runs: int) -> dict[str, 
         pe.paper_id for eval_run in eval_runs for pe in eval_run.paper_evaluations.values()
     }
 
-    def _init_result(num_runs) -> dict:
-        seeds = {f"run_{i}": None for i in range(1, num_runs + 1)}
+    def _init_result(num_runs: int) -> dict[str, float | None]:
+        seeds: dict[str, float | None] = {f"run_{i}": None for i in range(1, num_runs + 1)}
         results = {
             "mean": None,
             "std_err": None,
@@ -177,10 +182,10 @@ def parse_run_data(
         Dictionary mapping agent IDs to lists of EvaluationRun objects
         where each EvaluationRun contains 1 seed of paper evaluations
     """
-    agent_runs = {}
+    agent_runs: dict[str, dict[str, list[dict[str, Any]]]] = {}
 
     # Helper function since we accidentally changed the format of nanoeval records
-    def detect_format(entry: dict) -> Literal["old", "new"] | None:
+    def detect_format(entry: dict[str, Any]) -> Literal["old", "new"] | None:
         old_format = all(
             [
                 entry.get("record_type") == "extra",
@@ -208,7 +213,9 @@ def parse_run_data(
             return None
 
     # Helper function to validate and extract required data
-    def parse_entry_by_format(entry: dict, format: Literal["old", "new"]) -> ParsedEntry | None:
+    def parse_entry_by_format(
+        entry: dict[str, Any], format: Literal["old", "new"]
+    ) -> ParsedEntry | None:
         if format == "old":
             pb_result = entry["data"]["pb_result"]
             if not pb_result.get("grader_success"):
@@ -241,7 +248,7 @@ def parse_run_data(
     else:
         disqualified_paper_runs = set()
 
-    for file in tqdm(sorted((run_data_path.glob("*.jsonl"))), desc="Parsing run data"):
+    for file in tqdm(sorted(run_data_path.glob("*.jsonl")), desc="Parsing run data"):
         with open(file, "r") as f:
             for line in f:
                 entry = json.loads(line)
@@ -271,10 +278,9 @@ def parse_run_data(
                 )
 
     # Convert to final format, keeping only the N most recent seeds
-    agent_to_eval_runs = {agent: [] for agent in agent_runs.keys()}
+    agent_to_eval_runs: dict[str, list[EvaluationRun]] = {agent: [] for agent in agent_runs.keys()}
 
     for agent, paper_data in agent_runs.items():
-
         # keep only N most recent seeds
         filtered_paper_data = {}
         for paper_id, data in paper_data.items():
@@ -285,7 +291,7 @@ def parse_run_data(
         max_num_seeds = max([len(data) for data in filtered_paper_data.values()])
         for seed in range(max_num_seeds):
             eval_run = EvaluationRun(seed=seed, paper_evaluations={})
-            for paper_id, data in filtered_paper_data.items():
+            for data in filtered_paper_data.values():
                 # some evaluation runs may not have all papers evaluated
                 if seed == len(data):
                     continue
@@ -316,11 +322,11 @@ if __name__ == "__main__":
         args.run_data_path, args.disqualified_runs_path, seeds_to_keep=3
     )
 
-    results = {}
+    metric_results = {}
     for agent in agent_to_eval_runs.keys():
-        results[agent] = compute_agg_stats(agent_to_eval_runs[agent])
+        metric_results[agent] = compute_agg_stats(agent_to_eval_runs[agent])
 
-    results = {agent: asdict(metric) for agent, metric in results.items()}
+    results = {agent: asdict(metric) for agent, metric in metric_results.items()}
 
     import pandas as pd
 

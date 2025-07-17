@@ -1,12 +1,13 @@
 import os
 import tempfile
 from pathlib import Path
-from typing import AsyncGenerator, List, Tuple
+from typing import AsyncGenerator
 
 import pytest
 from alcatraz.clusters.local import LocalConfig
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
+
 from paperbench.infra.alcatraz import copy_dir_to_computer
 from paperbench.judge.utils import walk_dir
 
@@ -27,8 +28,8 @@ async def computer() -> AsyncGenerator[ComputerInterface, None]:
 
 
 def normalize_relative_walk(
-    walk_results: List[Tuple[str, List[str], List[str]]], base: str
-) -> List[Tuple[str, List[str], List[str]]]:
+    walk_results: list[tuple[str, list[str], list[str]]], base: str
+) -> list[tuple[str, list[str], list[str]]]:
     """
     Normalize the output of os.walk or walk_dir by converting paths to be relative
     to the provided base, sorting subdirectories and files, and sorting by the relative path.
@@ -42,7 +43,7 @@ def normalize_relative_walk(
 
 # --- Test Cases --- #
 @pytest.mark.asyncio
-async def test_walk_dir_equivalence_with_copy(computer: ComputerInterface):
+async def test_walk_dir_equivalence_with_copy(computer: ComputerInterface) -> None:
     """
     Test that the asynchronous remote walk (using computer) returns an equivalent
     directory structure as the local os.walk. Creates a basic directory tree,
@@ -73,13 +74,13 @@ async def test_walk_dir_equivalence_with_copy(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Mismatch between local and remote walk outputs:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Mismatch between local and remote walk outputs:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_empty_directory(computer: ComputerInterface):
+async def test_empty_directory(computer: ComputerInterface) -> None:
     """
     Test that an empty directory is correctly handled.
     """
@@ -99,13 +100,13 @@ async def test_empty_directory(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Empty directory mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Empty directory mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_hidden_files(computer: ComputerInterface):
+async def test_hidden_files(computer: ComputerInterface) -> None:
     """
     Test that hidden files and directories (those starting with a dot) are correctly included.
     """
@@ -130,13 +131,13 @@ async def test_hidden_files(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Hidden files mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Hidden files mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_symlink(computer: ComputerInterface):
+async def test_symlink(computer: ComputerInterface) -> None:
     """
     Test that symbolic links are preserved and reported similarly to os.walk.
     """
@@ -162,13 +163,13 @@ async def test_symlink(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Symlink structure mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Symlink structure mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_deep_nested_structure(computer: ComputerInterface):
+async def test_deep_nested_structure(computer: ComputerInterface) -> None:
     """
     Test a deeply nested directory structure.
     """
@@ -196,13 +197,13 @@ async def test_deep_nested_structure(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Deep nested structure mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Deep nested structure mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_special_characters_in_names(computer: ComputerInterface):
+async def test_special_characters_in_names(computer: ComputerInterface) -> None:
     """
     Test that directories and files with spaces and special characters are correctly handled.
     """
@@ -231,13 +232,13 @@ async def test_special_characters_in_names(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Special characters test mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Special characters test mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_unicode_filenames(computer: ComputerInterface):
+async def test_unicode_filenames(computer: ComputerInterface) -> None:
     """
     Test that files and directories with Unicode names are correctly handled.
     """
@@ -262,13 +263,13 @@ async def test_unicode_filenames(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Unicode filenames mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Unicode filenames mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_broken_symlink(computer: ComputerInterface):
+async def test_broken_symlink(computer: ComputerInterface) -> None:
     """
     Test that a broken symbolic link (one whose target is missing) is correctly reported.
     """
@@ -296,13 +297,13 @@ async def test_broken_symlink(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Broken symlink test mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Broken symlink test mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
 
 
 @pytest.mark.asyncio
-async def test_mixed_content(computer: ComputerInterface):
+async def test_mixed_content(computer: ComputerInterface) -> None:
     """
     Test a directory that contains a mixture of normal files, hidden files,
     directories (with special characters and Unicode), as well as valid and broken symlinks.
@@ -345,6 +346,6 @@ async def test_mixed_content(computer: ComputerInterface):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
-        assert (
-            normalized_local == normalized_remote
-        ), f"Mixed content test mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        assert normalized_local == normalized_remote, (
+            f"Mixed content test mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )

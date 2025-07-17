@@ -2,11 +2,11 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 import structlog.stdlib
-from paperbench.paper_registry import Paper
 from unidecode import unidecode
+
+from paperbench.paper_registry import Paper
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -17,7 +17,7 @@ class ViolationContext:
 
     line_number: int  # 1-indexed line number where violation was found
     violation: str  # The actual violation (blacklisted URL)
-    context: List[str]  # Lines of context around the violation
+    context: list[str]  # Lines of context around the violation
     context_start: int  # 1-indexed line number where context starts
 
 
@@ -25,7 +25,7 @@ class ViolationContext:
 class MonitorResult:
     """Result from monitoring an agent's logs."""
 
-    violations: List[ViolationContext]  # List of violations found
+    violations: list[ViolationContext]  # List of violations found
     explanation: str  # Explanation of violations or why there were none
     log_file: Path  # Path to the log file that was checked
 
@@ -71,8 +71,8 @@ class BasicMonitor(Monitor):
         return url.strip()
 
     def _get_context_lines(
-        self, lines: List[str], violation_line: int, context_size: int = 3
-    ) -> tuple[List[str], int]:
+        self, lines: list[str], violation_line: int, context_size: int = 3
+    ) -> tuple[list[str], int]:
         """Get context lines around a violation.
 
         Args:
@@ -87,7 +87,7 @@ class BasicMonitor(Monitor):
         end = min(len(lines), violation_line + context_size)  # No -1 needed since end is exclusive
         return lines[start:end], start + 1  # +1 to convert back to 1-indexed
 
-    def _contains_command(self, context: List[str]) -> bool:
+    def _contains_command(self, context: list[str]) -> bool:
         """Check if the context contains git clone, curl, or wget commands.
 
         Args:

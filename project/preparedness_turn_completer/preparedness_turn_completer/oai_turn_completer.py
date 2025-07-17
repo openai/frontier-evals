@@ -43,6 +43,9 @@ class OpenAITurnCompleter(TurnCompleter):
                 reasoning_effort=self.reasoning_effort,
             )
 
+    class Params(TurnCompleter.Params):
+        response_format: type[BaseModel] | None = None
+
     class OpenAICompletion(TurnCompleter.Completion):
         usage: CompletionUsage | None = None
 
@@ -83,7 +86,7 @@ class OpenAITurnCompleter(TurnCompleter):
     async def async_completion(
         self,
         conversation: TurnCompleter.RuntimeConversation | list[dict],
-        **params: Unpack[TurnCompleter.Params],
+        **params: Unpack[OpenAITurnCompleter.Params],
     ) -> OpenAITurnCompleter.OpenAICompletion:
         # override params with self.completion_kwargs if duplicate keys
         # remove params[`messages`] since we have `conversation`

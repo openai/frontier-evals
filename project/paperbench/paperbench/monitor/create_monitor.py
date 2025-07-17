@@ -1,3 +1,5 @@
+from typing import Any
+
 from paperbench.monitor.monitor import BasicMonitor, Monitor
 from paperbench.paper_registry import Paper
 
@@ -5,7 +7,7 @@ from paperbench.paper_registry import Paper
 def create_monitor(
     monitor_type: str,
     paper: Paper,
-    monitor_kwargs: dict,
+    monitor_kwargs: dict[str, Any],
 ) -> Monitor:
     """Create and return appropriate monitor instance based on type.
 

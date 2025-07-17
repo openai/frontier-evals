@@ -1,8 +1,12 @@
 import colorsys
+import os
 import random
 import uuid
 
-_client = None
+import openai
+from dotenv import load_dotenv
+
+_client: openai.OpenAI | None = None
 
 
 def random_color() -> str:
@@ -17,16 +21,11 @@ def random_id() -> str:
     return str(uuid.uuid4())
 
 
-def get_openai_client():
+def get_openai_client() -> openai.OpenAI:
     global _client
 
     if _client is not None:
         return _client
-
-    import os
-
-    import openai
-    from dotenv import load_dotenv
 
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
@@ -34,7 +33,5 @@ def get_openai_client():
     if not api_key:
         raise ValueError("API key not found. Please set the OPENAI_API_KEY environment variable.")
 
-    openai.api_key = api_key
-    _client = openai
-
+    _client = openai.OpenAI(api_key=api_key)
     return _client

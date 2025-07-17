@@ -3,14 +3,14 @@ import subprocess
 import pytest
 
 scripts = [
-    "paperbench/scripts/run_judge.py",
     "paperbench/scripts/run_judge_eval.py",
     "paperbench/scripts/run_reproduce.py",
+    "paperbench/scripts/run_judge.py",
 ]
 
 
 @pytest.mark.parametrize("script", scripts)
-def test_script_help(script):
+def test_script_help(script: str) -> None:
     """Test that each script runs with -h without errors."""
     try:
         # Run the script with -h and check it doesn't throw an error

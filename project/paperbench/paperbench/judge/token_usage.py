@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 import openai
+
 from paperbench.judge.graded_task_node import GradedTaskNode
 
 
@@ -8,28 +11,28 @@ from paperbench.judge.graded_task_node import GradedTaskNode
 class TokenUsage:
     """Tracks token usage across different OAI models."""
 
-    def __init__(self):
-        self.usage = {}
+    def __init__(self) -> None:
+        self.usage: dict[str, dict[str, int]] = {}
 
-    def add_usage(self, model: str, input_tokens: int, output_tokens: int):
+    def add_usage(self, model: str, input_tokens: int, output_tokens: int) -> None:
         """Add token usage for a model."""
         if model not in self.usage:
             self.usage[model] = {"in": 0, "out": 0}
         self.usage[model]["in"] += input_tokens
         self.usage[model]["out"] += output_tokens
 
-    def add_from_completion(self, model: str, usage: openai.types.CompletionUsage | None):
+    def add_from_completion(self, model: str, usage: openai.types.CompletionUsage | None) -> None:
         """Add token usage from an OpenAI completion response."""
         if usage is None:
             return
         self.add_usage(model, usage.prompt_tokens, usage.completion_tokens)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, dict[str, int]]:
         """Convert usage to a dictionary format."""
         return self.usage
 
     @classmethod
-    def from_dict(cls, data: dict) -> "TokenUsage":
+    def from_dict(cls, data: dict[str, dict[str, int]]) -> TokenUsage:
         """Create a TokenUsage instance from a dictionary."""
         token_usage = cls()
         for model, usage in data.items():

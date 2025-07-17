@@ -3,18 +3,17 @@ import tarfile
 import tempfile
 import uuid
 from contextlib import contextmanager
+from typing import Generator
 
 import blobfile as bf
 import pytest
 import structlog.stdlib
+from dotenv import load_dotenv
+
+load_dotenv()
 from nanoeval.eval import EvalSpec
 from nanoeval.evaluation import run
 from nanoeval.setup import global_exit_stack
-from paperbench.judge.graded_task_node import GradedTaskNode
-from paperbench.nano.entrypoint import DefaultRunnerArgs
-from paperbench.nano.eval import PaperBench
-from paperbench.nano.logging import PaperBenchLibraryConfig, setup_logging
-from paperbench.utils import create_run_dir, create_run_id, in_ci, is_docker_running
 from utils import (
     assert_rollout_files_exist,
     check_group_log_for_errors,
@@ -24,12 +23,17 @@ from utils import (
     setup_solver,
 )
 
+from paperbench.judge.graded_task_node import GradedTaskNode
+from paperbench.nano.entrypoint import DefaultRunnerArgs
+from paperbench.nano.eval import PaperBench
+from paperbench.nano.logging import PaperBenchLibraryConfig, setup_logging
+from paperbench.utils import create_run_dir, create_run_id, in_ci, is_docker_running
+
 logger = structlog.stdlib.get_logger(component=__name__)
 
 
 @contextmanager
-def run_dir_ctx_manager():
-    runs_dir = None
+def run_dir_ctx_manager() -> Generator[str, None, None]:
     with tempfile.TemporaryDirectory() as runs_dir:
         yield runs_dir
 
@@ -51,7 +55,9 @@ def run_dir_ctx_manager():
         for agent_id in ("dummy", "aisi-basic-agent-openai-dev")
     ],
 )
-async def test_rollout(agent_id: str):
+async def test_rollout(
+    agent_id: str,
+) -> None:
     """
     Test that executing an agent rollout runs without errors and produces expected output. We do not
     perform reproduction or grading in this test.
@@ -75,17 +81,17 @@ async def test_rollout(agent_id: str):
             await run(EvalSpec(eval=paperbench, runner=runner_args))
 
         run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert (
-            len(run_dirs) == 1
-        ), f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        assert len(run_dirs) == 1, (
+            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        )
         run_group_dir = bf.join(runs_dir, run_dirs[0])
 
         check_group_log_for_errors(run_group_dir)
 
         paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert (
-            len(paper_dirs) == 1
-        ), f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
+        assert len(paper_dirs) == 1, (
+            f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
+        )
         paper_dir = bf.join(run_group_dir, paper_dirs[0])
 
         assert_rollout_files_exist(paper_dir, agent_id)
@@ -94,7 +100,7 @@ async def test_rollout(agent_id: str):
 @pytest.mark.asyncio
 @pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
 @pytest.mark.skipif(in_ci(), reason="Not running resume tests in CI")
-async def test_resuming():
+async def test_resuming() -> None:
     """
     Test that we can resume a partially-completed run group using the dummy agent. We construct a run group that has one
     fake "rice" run, and resume it, using n_tries=3, i.e., we expect 2 additional runs to be executed. We
@@ -128,17 +134,17 @@ async def test_resuming():
             await run(EvalSpec(eval=paperbench, runner=runner_args))
 
         run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert (
-            len(run_dirs) == 1
-        ), f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        assert len(run_dirs) == 1, (
+            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        )
         run_group_dir = bf.join(runs_dir, run_dirs[0])
 
         check_group_log_for_errors(run_group_dir)
 
         paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert (
-            len(paper_dirs) == 3
-        ), f"Expected exactly 3 paper directories in {run_group_dir}, found {len(paper_dirs)}"
+        assert len(paper_dirs) == 3, (
+            f"Expected exactly 3 paper directories in {run_group_dir}, found {len(paper_dirs)}"
+        )
 
         # Check the existing run was skipped
         paper_dir = bf.join(run_group_dir, run_id)
@@ -155,7 +161,7 @@ async def test_resuming():
 
 @pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
 @pytest.mark.skipif(in_ci(), reason="Not running reproduction tests in CI")
-async def test_reproduction():
+async def test_reproduction() -> None:
     """
     Test reproduction produces the expected output when using the dummy agent. We create a fake result of a rollout.
     Grading is not performed in this test.
@@ -186,50 +192,50 @@ async def test_reproduction():
             await run(EvalSpec(eval=paperbench, runner=runner_args))
 
         run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert (
-            len(run_dirs) == 1
-        ), f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        assert len(run_dirs) == 1, (
+            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        )
         run_group_dir = bf.join(runs_dir, run_dirs[0])
 
         check_group_log_for_errors(run_group_dir)
 
         paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert (
-            len(paper_dirs) == 1
-        ), f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
+        assert len(paper_dirs) == 1, (
+            f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
+        )
         paper_dir = bf.join(run_group_dir, paper_dirs[0])
 
-        # Check repro metadata
-        repro_metadata_files = [
-            i for i in bf.listdir(paper_dir) if i.endswith("_repro_metadata.json")
-        ]
-        assert (
-            len(repro_metadata_files) == 1
-        ), f"Expected one repro metadata file in {paper_dir}, found {len(repro_metadata_files)}"
-        repro_metadata_file = bf.join(paper_dir, repro_metadata_files[0])
-        repro_metadata = json.load(bf.BlobFile(repro_metadata_file, "r"))
-        assert repro_metadata[
-            "repro_script_exists"
-        ], f"repro_script_exists is False in {repro_metadata_file}"
-        assert (
-            repro_metadata["repro_execution_time"] > 0
-        ), f"repro_execution_time expected to be greater than 0 in {repro_metadata_file}"
-        assert (
-            "hello_world" not in repro_metadata["files_before_reproduce"]
-        ), f"hello_world not expected to exist before reproduce.sh in {repro_metadata_file}"
-        assert (
-            "hello_world" in repro_metadata["files_after_reproduce"]
-        ), f"hello_world expected to be created by reproduce.sh in {repro_metadata_file}"
+        # Check execution metadata
+        pattern = bf.join(paper_dir, "**/*_executed_metadata.json")
+        executed_metadata_files = list(bf.glob(pattern))
+        assert len(executed_metadata_files) == 1, (
+            f"Expected one execution metadata file in {paper_dir}, found {len(executed_metadata_files)}"
+        )
+        executed_metadata_file = executed_metadata_files[0]
+        execution_metadata = json.load(bf.BlobFile(executed_metadata_file, "r"))
+        assert execution_metadata["repro_script_exists"], (
+            f"repro_script_exists is False in {executed_metadata_file}"
+        )
+        assert execution_metadata["repro_execution_time"] > 0, (
+            f"repro_execution_time expected to be greater than 0 in {executed_metadata_file}"
+        )
+        assert "hello_world" not in execution_metadata["files_before_reproduce"], (
+            f"hello_world not expected to exist before reproduce.sh in {executed_metadata_file}"
+        )
+        assert "hello_world" in execution_metadata["files_after_reproduce"], (
+            f"hello_world expected to be created by reproduce.sh in {executed_metadata_file}"
+        )
 
         # Check reproduced submission
-        repro_tar_files = [i for i in bf.listdir(paper_dir) if i.endswith("_repro.tar.gz")]
-        assert (
-            len(repro_tar_files) == 1
-        ), f"Expected one repro tar.gz file in {paper_dir}, found {len(repro_tar_files)}"
-        repro_tar_file = bf.join(paper_dir, repro_tar_files[0])
+        pattern = bf.join(paper_dir, "**/*_executed.tar.gz")
+        executed_tar_files = list(bf.glob(pattern))
+        assert len(executed_tar_files) == 1, (
+            f"Expected one executed tar.gz file in {paper_dir}, found {len(executed_tar_files)}"
+        )
+        executed_tar_file = executed_tar_files[0]
 
         with tempfile.TemporaryDirectory() as tmp_submission_dir:
-            with bf.BlobFile(repro_tar_file, "rb") as f:
+            with bf.BlobFile(executed_tar_file, "rb") as f:
                 with tarfile.open(fileobj=f) as tar:
                     tar.extractall(path=tmp_submission_dir)
 
@@ -238,17 +244,17 @@ async def test_reproduction():
                 for i in bf.listdir(tmp_submission_dir)
                 if bf.isdir(bf.join(tmp_submission_dir, i))
             ]
-            assert (
-                len(checkpoint_dirs) == 1
-            ), f"Expected exactly one checkpoint directory in {tmp_submission_dir}, found {len(checkpoint_dirs)}"
+            assert len(checkpoint_dirs) == 1, (
+                f"Expected exactly one checkpoint directory in {tmp_submission_dir}, found {len(checkpoint_dirs)}"
+            )
             checkpoint_dir = bf.join(tmp_submission_dir, checkpoint_dirs[0])
 
-            assert bf.exists(
-                bf.join(checkpoint_dir, "reproduce.sh")
-            ), f"reproduce.sh not found in {checkpoint_dir}"
-            assert bf.exists(
-                bf.join(checkpoint_dir, "hello_world")
-            ), f"hello_world not found in {checkpoint_dir}"
+            assert bf.exists(bf.join(checkpoint_dir, "reproduce.sh")), (
+                f"reproduce.sh not found in {checkpoint_dir}"
+            )
+            assert bf.exists(bf.join(checkpoint_dir, "hello_world")), (
+                f"hello_world not found in {checkpoint_dir}"
+            )
 
 
 @pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
@@ -264,7 +270,7 @@ async def test_reproduction():
 )
 async def test_grading(
     judge_scaffold: str,
-):
+) -> None:
     """
     Test grading produces the expected output when using the dummy agent. We create a fake result of a rollout,
     skip reproduction, and then grade the submission.
@@ -297,36 +303,36 @@ async def test_grading(
             await run(EvalSpec(eval=paperbench, runner=runner_args))
 
         run_dirs = [i for i in bf.listdir(runs_dir) if bf.isdir(bf.join(runs_dir, i))]
-        assert (
-            len(run_dirs) == 1
-        ), f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        assert len(run_dirs) == 1, (
+            f"Expected exactly one run group directory in {runs_dir}, found {len(run_dirs)}"
+        )
         run_group_dir = bf.join(runs_dir, run_dirs[0])
 
         check_group_log_for_errors(run_group_dir)
 
         paper_dirs = [i for i in bf.listdir(run_group_dir) if bf.isdir(bf.join(run_group_dir, i))]
-        assert (
-            len(paper_dirs) == 1
-        ), f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
+        assert len(paper_dirs) == 1, (
+            f"Expected exactly one paper directory in {run_group_dir}, found {len(paper_dirs)}"
+        )
         paper_dir = bf.join(run_group_dir, paper_dirs[0])
 
         # Check grader output
         pattern = bf.join(paper_dir, "**/*.json")
         grader_output_files = [i for i in bf.glob(pattern) if i.endswith("_grader_output_0.json")]
-        assert (
-            len(grader_output_files) == 1
-        ), f"Expected one grader output file in {paper_dir}, found {len(grader_output_files)}"
-        grader_output_file = bf.join(paper_dir, grader_output_files[0])
+        assert len(grader_output_files) == 1, (
+            f"Expected one grader output file in {paper_dir}, found {len(grader_output_files)}"
+        )
+        grader_output_file = grader_output_files[0]
         grader_output = json.load(bf.BlobFile(grader_output_file, "r"))  # check we can load
 
         if judge_scaffold == "dummy":
-            assert (
-                grader_output["score"] == 1.0
-            ), f"score expected to be 1.0 in {grader_output_file} when using dummy judge scaffold"
+            assert grader_output["score"] == 1.0, (
+                f"score expected to be 1.0 in {grader_output_file} when using dummy judge scaffold"
+            )
 
         _ = GradedTaskNode.from_dict(
             grader_output["graded_task_tree"]
         )  # Check graded task tree can be loaded
 
-        # Check pb_result
+        # Check grade.json
         assert bf.exists(bf.join(paper_dir, "grade.json")), f"grade.json not found in {paper_dir}"

@@ -4,6 +4,9 @@ import json
 from pathlib import Path
 
 import structlog.stdlib
+from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.turn_completer import TurnCompleter
+
 from paperbench.grade import JudgeOutput, run_judge
 from paperbench.judge.token_usage import get_total_token_usage
 from paperbench.utils import get_timestamp
@@ -15,24 +18,22 @@ async def main(
     submission_path: Path,
     paper_id: str,
     judge_type: str,
-    model_name: str,
     max_depth: int,
     out_dir: Path,
     code_only: bool,
+    completer_config: TurnCompleter.Config | None = None,
     resources_provided: bool = False,
-    reasoning_effort: str | None = None,
-):
+) -> None:
     # Judge the submission
     graded_task_tree = await run_judge(
         submission_path=submission_path,
         paper_id=paper_id,
         judge_type=judge_type,
-        model_name=model_name,
+        completer_config=completer_config,
         out_dir=out_dir,
         max_depth=max_depth,
         code_only=code_only,
         resources_provided=resources_provided,
-        reasoning_effort=reasoning_effort,
     )
 
     token_usage = None
@@ -44,7 +45,7 @@ async def main(
     path_to_judge_output = out_dir / "grader_output.json"
     judge_output = JudgeOutput(
         judge_type=judge_type,
-        model_name=model_name,
+        completer_config=completer_config,
         score=graded_task_tree.score,
         num_leaf_nodes=len(graded_task_tree.get_leaf_nodes()),
         num_invalid_leaf_nodes=len(
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--reasoning-effort",
-        choices=["low", "medium", "high"],
+        choices=["low", "medium", "high", "none"],
         required=False,
         default="high",
         help="Reasoning effort to use for the completion, if using a model/judge that supports it.",
@@ -120,16 +121,24 @@ if __name__ == "__main__":
     if args.judge == "simple" and not args.model:
         parser.error("--model is required when using simple judge.")
 
+    completer_config = (
+        # TODO: allow user to specify TurnCompleter.Config class
+        OpenAITurnCompleter.Config(
+            model=args.model,
+            reasoning_effort=None if args.reasoning_effort == "none" else args.reasoning_effort,
+        )
+        if args.judge == "simple"
+        else None
+    )
     asyncio.run(
         main(
             submission_path=args.submission_path,
             paper_id=args.paper_id,
             judge_type=args.judge,
-            model_name=args.model,
             max_depth=args.max_depth,
             out_dir=args.out_dir,
             code_only=args.code_only,
+            completer_config=completer_config,
             resources_provided=args.resources_provided,
-            reasoning_effort=args.reasoning_effort,
         )
     )

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import shutil
 import subprocess
@@ -108,7 +107,7 @@ def process_benchmark(repo_url: str, commit_hash: str, output_dir: str) -> bool:
         return False
 
 
-def main():
+def main() -> None:
     data_dir = get_paperbench_data_dir()
 
     for benchmark, config in REPOS.items():

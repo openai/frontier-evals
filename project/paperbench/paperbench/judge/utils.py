@@ -6,6 +6,7 @@ from typing import AsyncGenerator
 import structlog.stdlib
 from drain3 import TemplateMiner
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+
 from paperbench.infra.alcatraz import (
     file_exists_on_computer,
     file_is_symlink_on_computer,
@@ -159,7 +160,7 @@ if __name__ == "__main__":
     print(reduce_log(input_text))
 
 
-def format_file(file_path: Path, file_content: str):
+def format_file(file_path: Path, file_content: str) -> str:
     return f"""<FILE:{file_path}>
 {file_content if file_content.strip() else "(FILE IS EMPTY)"}
 </FILE:{file_path}>"""

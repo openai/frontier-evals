@@ -2,12 +2,13 @@ import blobfile as bf
 import structlog
 from nanoeval.library_config import LibraryConfig, set_library_config
 from nanoeval.setup import nanoeval_logging
-from paperbench.utils import get_default_runs_dir
 from structlog.typing import EventDict
 from typing_extensions import override
 
+from paperbench.utils import get_default_runs_dir
 
-def setup_logging(library_config: LibraryConfig):
+
+def setup_logging(library_config: LibraryConfig) -> None:
     """
     Helper function for setting up logging for nanoeval
     to be called inside the entrypoint function
@@ -66,3 +67,6 @@ class PaperBenchLibraryConfig(LibraryConfig):
             ],
             logger_factory=structlog.stdlib.LoggerFactory(),
         )
+
+
+paperbench_library_config = PaperBenchLibraryConfig()

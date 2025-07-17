@@ -1,9 +1,10 @@
 import random
 
+from typing_extensions import override
+
 from paperbench.judge.base import Judge
 from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.rubric.tasks import TaskNode
-from typing_extensions import override
 
 
 class DummyJudge(Judge):

@@ -6,19 +6,21 @@ import blobfile as bf
 import structlog
 from dotenv import load_dotenv
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
-from paperbench.infra.alcatraz import put_file_in_computer, tar_and_extract_from_computer
-from paperbench.scripts.run_reproduce import reproduce
 from structlog.stdlib import BoundLogger
 
+from paperbench.infra.alcatraz import put_file_in_computer, tar_and_extract_from_computer
+from paperbench.scripts.run_reproduce import reproduce
+from paperbench.utils import get_dotenv
+
 logger = structlog.stdlib.get_logger(component=__name__)
-load_dotenv()
+load_dotenv(get_dotenv())
 
 
 async def put_submission_in_computer(
     computer: ComputerInterface,
     submission_path: str,
     logger: BoundLogger,
-):
+) -> None:
     logger.info(f"Placing submission in computer from: {submission_path}")
     # Put the tar.gz to the container
     await put_file_in_computer(
@@ -57,7 +59,7 @@ async def reproduce_on_computer(
     output_cluster_path: Path = Path("/output"),
     timeout: float | None = None,
     retry_threshold: float = 0,
-):
+) -> None:
     """
     Reproduce a single submission on a computer.
 
@@ -99,8 +101,8 @@ async def reproduce_on_computer(
 
         # extract tar of the submission
         timestamp = Path(submission_path).parts[-2]
-        upload_from = output_cluster_path / f"submission_executed.tar.gz"
-        upload_to = bf.join(run_dir, "submissions", timestamp, f"submission_executed.tar.gz")
+        upload_from = output_cluster_path / "submission_executed.tar.gz"
+        upload_to = bf.join(run_dir, "submissions", timestamp, "submission_executed.tar.gz")
 
         await tar_and_extract_from_computer(
             computer=computer,

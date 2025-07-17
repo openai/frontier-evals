@@ -6,7 +6,8 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request
+
 from paperbench.judge.graded_task_node import GradedTaskNode, update_all_grades
 from paperbench.rubric.tasks import VALID_TASK_CATEGORIES, TaskNode, generate_task_category
 from paperbench.rubric.utils import get_openai_client, random_id
@@ -20,7 +21,7 @@ def validate_openai_key() -> bool:
         get_openai_client()
         return True
 
-    except Exception as e:
+    except Exception:
         return False
 
 
@@ -53,7 +54,7 @@ def sanitize_request_data(data: Any) -> Any:
 
 
 @app.route("/")
-def index():
+def index() -> str | Response:
     with lock:  # Use lock to support concurrent requests
         try:
             with open(app.config["PATH_TO_PAPER"] / app.config["RUBRIC_FILE_NAME"], "r") as f:
@@ -83,7 +84,7 @@ def index():
 
 
 @app.route("/delete_node", methods=["GET"])
-def delete_node():
+def delete_node() -> Response:
     """Deletes the node with the given `node_id`."""
 
     with lock:  # Use lock to support concurrent requests
@@ -132,10 +133,10 @@ def delete_node():
 
 
 @app.route("/update_requirements", methods=["POST"])
-def update_requirements():
+def update_requirements() -> Response:
     """Updates the requirements for the given `node_id`."""
     with lock:  # Use lock to support concurrent requests
-        data: dict = sanitize_request_data(request.json)
+        data = sanitize_request_data(request.json)
         node_id = data.get("node_id")
         new_requirements = data.get("requirements")
 
@@ -162,7 +163,7 @@ def update_requirements():
 
 
 @app.route("/add_sub_task", methods=["POST"])
-def add_sub_task():
+def add_sub_task() -> Response:
     """Adds a new sub-task to the given parent node."""
 
     with lock:  # Use lock to support concurrent requests
@@ -219,7 +220,7 @@ def add_sub_task():
 
 
 @app.route("/update_weight", methods=["POST"])
-def update_weight():
+def update_weight() -> Response:
     """Updates the weight for the given `node_id`."""
     with lock:  # Use lock to support concurrent requests
         data = sanitize_request_data(request.json)
@@ -251,7 +252,7 @@ def update_weight():
 
 
 @app.route("/update_task_category", methods=["POST"])
-def update_task_category():
+def update_task_category() -> Response:
     """Updates the task category for the given node_id."""
     with lock:
         data = sanitize_request_data(request.json)
@@ -281,7 +282,7 @@ def update_task_category():
 
 
 @app.route("/move_node", methods=["POST"])
-def move_node():
+def move_node() -> Response:
     """Moves a node up or down relative to its siblings."""
     with lock:
         data = sanitize_request_data(request.json)
@@ -296,7 +297,7 @@ def move_node():
 
             try:
                 parent = root.get_parent(node_id)
-            except ValueError as e:
+            except ValueError:
                 return jsonify({"status": "error", "message": "Cannot move the root node."})
 
             current_idx = next(i for i, task in enumerate(parent.sub_tasks) if task.id == node_id)
@@ -330,7 +331,7 @@ def move_node():
 
 
 @app.route("/duplicate_node", methods=["POST"])
-def duplicate_node():
+def duplicate_node() -> Response:
     """Duplicates the node with the given `node_id` and adds it as a sibling."""
     with lock:
         data = sanitize_request_data(request.json)
@@ -362,7 +363,7 @@ def duplicate_node():
 
 
 @app.route("/move_node_to_parent", methods=["POST"])
-def move_node_to_parent():
+def move_node_to_parent() -> Response:
     """Moves a node to become a child of another node."""
     with lock:
         data = sanitize_request_data(request.json)
@@ -411,7 +412,7 @@ def move_node_to_parent():
 
 
 @app.route("/update_score", methods=["POST"])
-def update_score():
+def update_score() -> Response:
     with lock:
         try:
             data = sanitize_request_data(request.get_json())
@@ -440,7 +441,7 @@ def update_score():
 
 
 @app.route("/update_explanation", methods=["POST"])
-def update_explanation():
+def update_explanation() -> Response:
     """Updates the explanation for the given node_id."""
     with lock:
         data = sanitize_request_data(request.json)

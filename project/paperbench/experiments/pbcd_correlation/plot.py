@@ -113,7 +113,7 @@ def main():
     model, r_squared, slope, intercept = perform_regression(code_only_scores, normal_scores)
 
     # Print results
-    print(f"Regression Results:")
+    print("Regression Results:")
     print(f"R-squared: {r_squared:.4f}")
     print(f"Slope: {slope:.4f}")
     print(f"Intercept: {intercept:.4f}")

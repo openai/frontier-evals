@@ -5,7 +5,7 @@ import tarfile
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Awaitable, Callable, ParamSpec, TypeVar
 
 import blobfile as bf
 import openai
@@ -16,6 +16,9 @@ from docker import DockerClient
 from docker.errors import DockerException
 
 logger = structlog.stdlib.get_logger(component=__name__)
+
+P = ParamSpec("P")
+R = TypeVar("R")
 
 
 def in_ci() -> bool:
@@ -37,7 +40,7 @@ def is_docker_running(timeout: float = 10.0) -> bool:
         return False
 
 
-def load_yaml(fpath: Path) -> dict:
+def load_yaml_dict(fpath: Path) -> dict[str, Any]:
     """Loads a YAML file and returns its contents as a dictionary."""
 
     assert isinstance(fpath, Path), f"Expected a `Path`, but got `{type(fpath)}`."
@@ -48,6 +51,10 @@ def load_yaml(fpath: Path) -> dict:
     with open(fpath, "r") as file:
         contents = yaml.safe_load(file)
 
+    assert isinstance(contents, dict), (
+        f"Expected to load a dictionary from YAML file, but got `{type(contents)}`."
+    )
+
     return contents
 
 
@@ -56,9 +63,9 @@ def get_root() -> Path:
 
     path = Path(__file__).parent.resolve()
 
-    assert (
-        path.name == "paperbench"
-    ), f"Expected the module directory to be `paperbench`, but got `{path.name}`."
+    assert path.name == "paperbench", (
+        f"Expected the module directory to be `paperbench`, but got `{path.name}`."
+    )
 
     return path
 
@@ -139,7 +146,9 @@ OPENAI_TIMEOUT_EXCEPTIONS = (
     ),
     reraise=True,
 )
-async def oai_completion_with_retry_async(method: Callable, *args, **kwargs) -> Any:
+async def oai_completion_with_retry_async(
+    method: Callable[P, Awaitable[R]], *args: P.args, **kwargs: P.kwargs
+) -> R:
     return await method(*args, **kwargs)
 
 
@@ -152,5 +161,5 @@ async def oai_completion_with_retry_async(method: Callable, *args, **kwargs) -> 
     ),
     reraise=True,
 )
-def oai_completion_with_retry(method: Callable, *args, **kwargs) -> Any:
+def oai_completion_with_retry(method: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> R:
     return method(*args, **kwargs)

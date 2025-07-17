@@ -1,19 +1,28 @@
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TypeAlias
 
 import openai
 import structlog.stdlib
 import tiktoken
 from dotenv import load_dotenv
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
-from preparedness_turn_completer.turn_completer import TurnCompleter
+
+load_dotenv()
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from openai.types.chat import ParsedChatCompletionMessage
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.turn_completer import TurnCompleter
+from pydantic import BaseModel
+from structlog.stdlib import BoundLogger
+from typing_extensions import override
+
 from paperbench.judge.base import Judge
 from paperbench.judge.constants import (
     CRITERION_PROMPT,
@@ -32,12 +41,10 @@ from paperbench.judge.utils import (
     walk_dir,
 )
 from paperbench.rubric.tasks import TASK_CATEGORY_QUESTIONS, TaskNode
-from pydantic import BaseModel
-from structlog.stdlib import BoundLogger
-from typing_extensions import override
 
 logger = structlog.stdlib.get_logger(component=__name__)
-load_dotenv()
+
+FileTree: TypeAlias = dict[str, "FileTree"]
 
 
 class ParsedJudgeResponseFloat(BaseModel):
@@ -80,9 +87,7 @@ class SimpleJudge(Judge):
         submission_dir: Path,
         paper_md: Path,
         completer_config: TurnCompleter.Config,
-        structured_completer_config: OpenAITurnCompleter.Config = OpenAITurnCompleter.Config(
-            model="gpt-4o-2024-08-06",
-        ),
+        structured_completer_config: OpenAITurnCompleter.Config | None = None,
         log_path: Path | None = None,
         buffer_tokens: int = 10000,  # 10k tokens of buffer
         max_depth: int = 999,
@@ -107,8 +112,13 @@ class SimpleJudge(Judge):
         self.completer = completer_config.build()
         self.token_encoder = tiktoken.get_encoding(self.completer.encoding_name)
 
-        self.structured_completer_config = structured_completer_config
-        self.structured_completer: OpenAITurnCompleter = structured_completer_config.build()
+        self.structured_completer_config = (
+            structured_completer_config
+            or OpenAITurnCompleter.Config(
+                model="gpt-4o-2024-08-06",
+            )
+        )
+        self.structured_completer: OpenAITurnCompleter = self.structured_completer_config.build()
 
         self.paper_md = paper_md.read_text()
         self.rubric = rubric
@@ -122,7 +132,7 @@ class SimpleJudge(Judge):
         self.reproduce_touched_files = True  # by default assume reproduce was functional
         self.max_file_depth = max_file_depth
 
-    async def process_file_content(self):
+    async def process_file_content(self) -> None:
         """
         Pre-emptively truncates reproduce.log, paper.md and the content of the files
         in the codebase to avoid running into context length issues downstream
@@ -147,11 +157,11 @@ class SimpleJudge(Judge):
             for k in ["Code Development", "Code Execution", "Result Analysis", "Subtree"]
         }
 
-    async def before_grading(self):
+    async def before_grading(self) -> None:
         await super().before_grading()
         await self.process_file_content()
 
-    def _get_available_context(self, task_category):
+    def _get_available_context(self, task_category: str) -> int:
         reserved_context_lens = {
             "Code Development": len(self.paper_md_tokens),
             "Code Execution": len(self.paper_md_tokens) + len(self.reproduce_log_tokens),
@@ -162,7 +172,7 @@ class SimpleJudge(Judge):
 
         return model_context_length - (reserved_context_lens[task_category] + self.buffer_tokens)
 
-    def _truncate_input(self):
+    def _truncate_input(self) -> None:
         """
         Truncates reproduce.log and paper.md until there is leeway for prompting.
         Truncates log files to be half of the context window length.
@@ -203,7 +213,7 @@ class SimpleJudge(Judge):
 
     def _create_tree_structure(self, files: list[Path]) -> str:
         """Creates a tree-like structure visualization of files."""
-        tree = {}
+        tree: FileTree = {}
         for file in files:
             current = tree
             for part in file.parts:
@@ -211,7 +221,7 @@ class SimpleJudge(Judge):
                     current[part] = {}
                 current = current[part]
 
-        def _build_tree(node: dict, prefix: str = "") -> str:
+        def _build_tree(node: FileTree, prefix: str = "") -> str:
             lines = []
             items = list(node.items())
 
@@ -397,7 +407,9 @@ class SimpleJudge(Judge):
                 files_content_data=files_content_data,
             )
 
-    def _truncate_files(self, tree_structure, all_file_names, available_context) -> tuple[str, str]:
+    def _truncate_files(
+        self, tree_structure: str, all_file_names: str, available_context: int
+    ) -> tuple[str, str]:
         """
         Truncates both tree structure and file names to fit within available context.
         Distributes the available context roughly equally between the two strings.
@@ -419,16 +431,18 @@ class SimpleJudge(Judge):
         target_file_names_len = int(available_context * proportion)
         target_tree_len = available_context - target_file_names_len
 
-        truncated_file_names = all_file_names_toks[:target_file_names_len]
-        truncated_tree = tree_structure_toks[:target_tree_len]
+        truncated_file_names_toks = all_file_names_toks[:target_file_names_len]
+        truncated_tree_toks = tree_structure_toks[:target_tree_len]
 
         # preserve complete lines when decoding where possible by dropping the last line
-        truncated_file_names = self.token_encoder.decode(truncated_file_names).rsplit("\n", 1)[0]
-        truncated_tree = self.token_encoder.decode(truncated_tree).rsplit("\n", 1)[0]
+        truncated_file_names = self.token_encoder.decode(truncated_file_names_toks).rsplit("\n", 1)[
+            0
+        ]
+        truncated_tree = self.token_encoder.decode(truncated_tree_toks).rsplit("\n", 1)[0]
 
         return truncated_file_names, truncated_tree
 
-    async def _prepare_relevant_files_strings(self, task_category: str):
+    async def _prepare_relevant_files_strings(self, task_category: str) -> FilesPreparationOutcome:
         """
         Prepares the relevant file strings necessary for judging specific task categories.
         Automatically limits file depth if necessary.
@@ -764,7 +778,7 @@ class SimpleJudge(Judge):
         try:
             response_format = ParsedJudgeResponseInt if not continuous else ParsedJudgeResponseFloat
             completion = await self.structured_completer.async_completion(
-                conversation=messages, **{"response_format": response_format}
+                conversation=messages, response_format=response_format
             )
             usage = completion.usage
             score_response = completion.output_messages[0]
@@ -777,4 +791,4 @@ class SimpleJudge(Judge):
                 f"Unexpected error - Response neither parsed nor refused: {score_response}"
             )
         except Exception as e:
-            raise ParseError(e)
+            raise ParseError(e) from e

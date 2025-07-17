@@ -37,30 +37,20 @@ PaperBench runs in 3 stages:
 2. **Reproduction**: The agent's submitted codebase is executed in a fresh second container with GPU access so that results from executing the codebase are obtained. This creates the _executed submission_.
 3. **Grading**: The _executed submission_ is graded using paper's rubric. A third container is created where the judge is run.
 
-## Nanoeval and Alcatraz pre-requisites
-
-PaperBench uses [nanoeval](../nanoeval) (a high performance evaluation module) and [alcatraz](../alcatraz) (a containerization module) to orchestrate runs.
-
-First, install nanoeval and alcatraz by following the [instructions](../../README.md) at the root of this monorepo.
-
 ## PaperBench Setup
 
 All commands in this README should be run from the [root](./) of the PaperBench project.
 
 ### Installation
 
-Install PaperBench by running:
+Install PaperBench with [uv](https://docs.astral.sh/uv/)[^1]
 
 ```console
-pip install -e .
+UV_GIT_LFS=1 uv sync
 ```
 
-**(Optional)** If you're committing code, you can install the pre-commit hooks by running:
-
-```console
-pip install pre-commit
-pre-commit install
-```
+[^1]: If you get an LFS error here, try cleaning your uv cache: `uv cache clean` and then re-running the command. See
+    [this issue comment](https://github.com/astral-sh/uv/issues/12938#issuecomment-2816186433)
 
 ### Get the data
 
@@ -70,7 +60,6 @@ The dataset is stored using [Git-LFS](https://git-lfs.com/). Download and instal
 git lfs fetch --all
 git lfs pull
 ```
-
 
 ### Environment variables
 
@@ -132,7 +121,7 @@ Configurations for each agent are stored in the [paperbench/agents/](paperbench/
 To see all configurable options for PaperBench, run:
 
 ```bash
-python -m paperbench.nano.entrypoint --help
+uv run python -m paperbench.nano.entrypoint --help
 ```
 
 To use our default solver (`ExternalPythonCodingSolver`), you must set:
@@ -146,7 +135,7 @@ To use our default solver (`ExternalPythonCodingSolver`), you must set:
 To test that things are set up correctly, run the dummy agent with the dummy judge (`paperbench.judge.scaffold=dummy`) on the debug split. Note this dummy agent is different to the [default nanoeval "dummy" agent](../nanoeval/nanoeval/solvers/computer_tasks/solver.py); our dummy agent tests several aspects of the infrastructure and makes a toy submission.
 
 ```bash
-python -m paperbench.nano.entrypoint \
+uv run python -m paperbench.nano.entrypoint \
     paperbench.paper_split=debug \
     paperbench.solver=paperbench.nano.eval:ExternalPythonCodingSolver \
     paperbench.solver.agent_id=dummy \
@@ -159,7 +148,7 @@ python -m paperbench.nano.entrypoint \
 To run a development configuration of BasicAgent that uses `gpt-4o-mini` and runs for 5 minutes, use `paperbench.solver.agent_id=aisi-basic-agent-openai-dev`. To run that agent on the full PaperBench dataset, execute:
 
 ```bash
-python -m paperbench.nano.entrypoint \
+uv run python -m paperbench.nano.entrypoint \
     paperbench.solver=paperbench.nano.eval:ExternalPythonCodingSolver \
     paperbench.solver.agent_id=aisi-basic-agent-openai-dev \
     paperbench.solver.cluster_config=alcatraz.clusters.local:LocalConfig \
@@ -249,13 +238,13 @@ The PaperBench dataset is stored in the [papers](data/papers) directory. Each pa
 We include a web app to view and edit rubrics. To view a paper's rubric that is in `PAPER_DIR` with filename `RUBRIC_FILE_NAME`:
 
 ```bash
-python paperbench/gui/app.py --path-to-paper <PAPER_DIR> --rubric-file-name <RUBRIC_FILE_NAME>
+uv run python paperbench/gui/app.py --path-to-paper <PAPER_DIR> --rubric-file-name <RUBRIC_FILE_NAME>
 ```
 
 To view a rubric that has been graded (see below), pass the `--graded` flag:
 
 ```bash
-python paperbench/gui/app.py --path-to-paper <PAPER_DIR> --rubric-file-name <RUBRIC_FILE_NAME> --graded
+uv run python paperbench/gui/app.py --path-to-paper <PAPER_DIR> --rubric-file-name <RUBRIC_FILE_NAME> --graded
 ```
 
 ## JudgeEval

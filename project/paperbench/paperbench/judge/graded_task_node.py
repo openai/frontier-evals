@@ -1,8 +1,11 @@
-from dataclasses import dataclass, field, replace
-from typing import Any, Sequence
+from __future__ import annotations
+
+from dataclasses import dataclass, replace
+from typing import Any
+
+from typing_extensions import override
 
 from paperbench.rubric.tasks import TaskNode
-from typing_extensions import override
 
 
 @dataclass(frozen=True)
@@ -21,11 +24,10 @@ class GradedTaskNode(TaskNode):
     score: float = 0.0
     valid_score: bool = False
     explanation: str = "not yet graded"
-    judge_metadata: dict | None = None
-    sub_tasks: Sequence["GradedTaskNode"] = field(default_factory=list)
+    judge_metadata: dict[str, Any] | None = None
 
     @classmethod
-    def from_dict(cls, data: dict) -> "GradedTaskNode":
+    def from_dict(cls, data: dict[str, Any]) -> GradedTaskNode:
         try:
             sub_tasks = [cls.from_dict(task) for task in data["sub_tasks"]]
             task = cls(
@@ -40,7 +42,7 @@ class GradedTaskNode(TaskNode):
                 judge_metadata=(data["judge_metadata"] if "judge_metadata" in data else None),
             )
         except KeyError as e:
-            raise ValueError(f"Missing required field in task data: {e}")
+            raise ValueError("Missing required field in task data") from e
         return task
 
     @override
@@ -57,8 +59,11 @@ class GradedTaskNode(TaskNode):
             "sub_tasks": [task.to_dict() for task in self.sub_tasks],
         }
 
-    def set_score(self, score: float) -> "GradedTaskNode":
+    def set_score(self, score: float) -> GradedTaskNode:
         return replace(self, score=score)
+
+    def set_explanation(self, new_explanation: str) -> GradedTaskNode:
+        return replace(self, explanation=new_explanation)
 
     @classmethod
     def from_task(
@@ -67,8 +72,8 @@ class GradedTaskNode(TaskNode):
         score: float,
         valid_score: bool,
         explanation: str,
-        judge_metadata: dict | None = None,
-    ) -> "GradedTaskNode":
+        judge_metadata: dict[str, Any] | None = None,
+    ) -> GradedTaskNode:
         graded_sub_tasks = [
             cls.from_task(
                 sub_task,

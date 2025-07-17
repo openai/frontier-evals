@@ -7,12 +7,14 @@ import time
 from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Type
+from typing import Any
 
 import blobfile as bf
 import structlog.stdlib
-from preparedness_turn_completer.turn_completer import TurnCompleter
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from preparedness_turn_completer.turn_completer import TurnCompleter
+from structlog.stdlib import BoundLogger
+
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
 from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.judge.token_usage import TokenUsage, get_total_token_usage
@@ -20,7 +22,6 @@ from paperbench.paper_registry import paper_registry
 from paperbench.rubric.tasks import TaskNode
 from paperbench.scripts.alcatraz_services import put_submission_in_computer
 from paperbench.utils import get_timestamp
-from structlog.stdlib import BoundLogger
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -28,28 +29,32 @@ logger = structlog.stdlib.get_logger(component=__name__)
 @dataclass(frozen=True)
 class JudgeOutput:
     judge_type: str
-    completer_config: TurnCompleter.Config
     score: float
     num_leaf_nodes: int
     num_invalid_leaf_nodes: int
     graded_at: str
     graded_task_tree: GradedTaskNode
-    token_usage: Optional[TokenUsage] = None
+    completer_config: TurnCompleter.Config | None = None
+    token_usage: TokenUsage | None = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "judge_type": self.judge_type,
-            "completer_config": self.completer_config.model_dump(),
             "score": self.score,
             "num_leaf_nodes": self.num_leaf_nodes,
             "num_invalid_leaf_nodes": self.num_invalid_leaf_nodes,
             "graded_at": self.graded_at,
             "graded_task_tree": self.graded_task_tree.to_dict(),
+            "completer_config": self.completer_config.model_dump()
+            if self.completer_config
+            else None,
             "token_usage": self.token_usage.to_dict() if self.token_usage else None,
         }
 
     @classmethod
-    def from_dict(cls, data: dict, CompleterConfig: Type[TurnCompleter.Config]) -> JudgeOutput:
+    def from_dict(
+        cls, data: dict[str, Any], CompleterConfig: type[TurnCompleter.Config]
+    ) -> JudgeOutput:
         token_usage = None
 
         try:
@@ -58,12 +63,14 @@ class JudgeOutput:
 
             return cls(
                 judge_type=data["judge_type"],
-                completer_config=CompleterConfig(**data["completer_config"]),
                 score=data["score"],
                 num_leaf_nodes=data["num_leaf_nodes"],
                 num_invalid_leaf_nodes=data["num_invalid_leaf_nodes"],
                 graded_at=data["graded_at"],
                 graded_task_tree=GradedTaskNode.from_dict(data["graded_task_tree"]),
+                completer_config=CompleterConfig(**data["completer_config"])
+                if data.get("completer_config")
+                else None,
                 token_usage=token_usage,
             )
         except KeyError as e:
@@ -78,8 +85,8 @@ async def run_judge(
     submission_path: Path,
     paper_id: str,
     judge_type: str,
-    completer_config: TurnCompleter.Config,
     code_only: bool,
+    completer_config: TurnCompleter.Config | None = None,
     max_depth: int = 999,
     out_dir: Path | None = None,
     resources_provided: bool = False,
@@ -135,7 +142,7 @@ async def grade_submission(
     code_only: bool = False,
     resources_provided: bool = False,
     computer: ComputerInterface | None = None,
-) -> Optional[JudgeOutput]:
+) -> JudgeOutput | None:
     """
     Grade a single submission. If a computer is provided, the submission will be graded on the computer.
     This script will:
@@ -159,9 +166,7 @@ async def grade_submission(
 
             # Step 1: Unzip submission from submission_path to tmp dir
             if computer:
-                await put_submission_in_computer(
-                    computer, submission_path, logger
-                )
+                await put_submission_in_computer(computer, submission_path, logger)
             else:
                 with bf.BlobFile(submission_path, "rb") as f:
                     with tarfile.open(fileobj=f, mode="r") as tar:
@@ -211,4 +216,4 @@ async def grade_submission(
         time_end = time.time()
         logger.info(f"Grading completed in {time_end - time_start:.2f} seconds.")
 
-        return judge_output
+    return judge_output

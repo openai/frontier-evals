@@ -1,607 +1,59 @@
 import asyncio
 import json
 import os
-import tempfile
 import time
-from contextlib import asynccontextmanager, nullcontext
-from dataclasses import dataclass
-from datetime import timedelta
-from pathlib import Path
-from typing import Any, AsyncGenerator, Literal, Optional, Sequence
+from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator, Literal, Sequence
 
 import blobfile as bf
-import chz
-import dotenv
 import numpy as np
 import structlog.stdlib
-from alcatraz.clusters.local import ClusterConfig, LocalConfig
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
-from preparedness_turn_completer.turn_completer import TurnCompleter
 from dotenv import load_dotenv
+
+load_dotenv()
+import chz
+from alcatraz.clusters.local import ClusterConfig, LocalConfig
 from nanoeval.eval import RetryableSystemError
 from nanoeval.recorder import get_recorder
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from nanoeval.solvers.computer_tasks.solver import PythonCodingEval, PythonCodingSolver
 from nanoeval.solvers.computer_tasks.steps import FinalResult, FinalResultSuccessful, Step
-from nanoeval.solvers.computer_tasks.task import ComputerTask, Grade
+from nanoeval.solvers.computer_tasks.task import ComputerTask
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
+from typing_extensions import override
+
 from paperbench.agents.registry import registry as agent_registry
 from paperbench.agents.run import (
-    AgentOutput,
     prepare_computer,
     run_agent_in_computer,
-    upload_heavy_logs,
-    upload_status,
 )
-from paperbench.agents.utils import AgentDirConfig, prepare_agent_dir_config
-from paperbench.constants import AGENT_DIR, CODE_DIR, LOGS_DIR, SUBMISSION_DIR, WORKSPACE_BASE
-from paperbench.grade import JudgeOutput, grade_submission
+from paperbench.agents.utils import AgentDirConfig, AgentOutput, prepare_agent_dir_config
 from paperbench.metrics import compute_agg_stats, per_paper_results
-from paperbench.nano.utils import (
-    SPLIT_TO_EXPECTED_PAPERS,
-    gather_eval_runs,
-    get_file_at_duration,
-    run_sanity_checks,
+from paperbench.nano.structs import (
+    JudgeConfig,
+    PaperBenchGrade,
+    PaperBenchResult,
+    ReproductionConfig,
 )
+from paperbench.nano.task import PBTask
+from paperbench.nano.utils import SPLIT_TO_EXPECTED_PAPERS, gather_eval_runs
 from paperbench.paper_registry import paper_registry
-from paperbench.scripts.alcatraz_services import reproduce_on_computer
-from paperbench.scripts.run_reproduce import ReproductionMetadata
 from paperbench.utils import (
     create_run_dir,
     create_run_id,
     get_default_runs_dir,
-    get_dotenv,
     get_experiments_dir,
+    get_paperbench_data_dir,
     get_timestamp,
+    is_docker_running,
     purple,
 )
-from pydantic import BaseModel
-from structlog.stdlib import BoundLogger
-from typing_extensions import override
-
-load_dotenv(get_dotenv())
-
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
 
 logger = structlog.stdlib.get_logger(component=__name__)
-
-
-class ReproductionConfig(BaseModel):
-    timeout: int = 100 * 3600
-    retry_threshold: float = 600
-    overwrite_existing_output: bool = False
-    skip_reproduction: bool = False
-    cluster_config: LocalConfig = LocalConfig(
-        image="pb-reproducer:latest",
-        pull_from_registry=False,
-    )
-
-
-class JudgeConfig(BaseModel):
-    grade: bool = True
-    grade_locally: bool = True
-    grade_id: int = 0
-    overwrite_existing_output: bool = False
-    scaffold: str = "simple"
-    completer_config: TurnCompleter.Config = OpenAITurnCompleter.Config(
-        model="o3-mini-2025-01-31",
-        reasoning_effort="high",
-    )
-    code_only: bool = False
-    resources_provided: bool = False
-    cluster_config: LocalConfig = LocalConfig(
-        image="pb-env:latest",
-        pull_from_registry=False,
-        environment={"OPENAI_API_KEY": GRADER_OPENAI_API_KEY},
-    )
-
-
-class ReproductionOutput(BaseModel):
-    executed_submission: Path | str | None = None
-    metadata: ReproductionMetadata | None = None
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "ReproductionOutput":
-        metadata_exists = data.get("metadata") is not None
-
-        if metadata_exists:
-            metadata = ReproductionMetadata.from_dict(data["metadata"])
-        else:
-            metadata = None
-
-        try:
-            return cls(
-                executed_submission=data.get("executed_submission"),
-                metadata=metadata,
-            )
-        except KeyError as e:
-            raise ValueError(f"Missing required field in reproduction output: {e}")
-
-    def to_dict(self) -> dict:
-        return {
-            "executed_submission": self.executed_submission,
-            "metadata": self.metadata.to_dict() if self.metadata else None,
-        }
-
-    @property
-    def success(self) -> bool:
-        return self.metadata is not None
-
-
-@dataclass(frozen=False)
-class PaperBenchResult:
-    paper_id: str
-    run_id: str
-    submission_exists: bool
-    skipped_reproduction: bool
-    code_only: bool
-    resources_provided: bool
-    agent_output: Optional[AgentOutput] = None
-    judge_output: Optional[JudgeOutput] = None
-    reproduction_output: Optional[ReproductionOutput] = None
-
-    def to_dict(self) -> dict:
-        data = {
-            "paper_id": self.paper_id,
-            "skipped_reproduction": self.skipped_reproduction,
-            "code_only": self.code_only,
-            "resources_provided": self.resources_provided,
-            "agent_output": None,
-            "judge_output": None,
-            "reproduction_output": None,
-        }
-
-        if self.agent_output:
-            data["agent_output"] = self.agent_output.to_dict()
-
-        if self.judge_output:
-            data["judge_output"] = self.judge_output.to_dict()
-
-        if self.reproduction_output:
-            data["reproduction_output"] = self.reproduction_output.to_dict()
-
-        return data
-
-
-class PaperBenchGrade(Grade):
-    paperbench_result: PaperBenchResult
-    is_continuous: bool = True
-
-    def to_dict(self) -> dict:
-        return {
-            "paperbench_result": self.paperbench_result.to_dict(),
-            "score": self.score,
-            "grader_log": self.grader_log,
-        }
-
-
-class PBTask(ComputerTask):
-    paper_id: str
-    run_id: str  # Unique identifier for task
-    run_group_id: str  # The group of runs this task belongs to
-    run_dir: str  # Directory where logs will be saved for this task
-    runs_dir: str
-    target_duration_hr: Optional[int]
-    reproduction: ReproductionConfig
-    judge: JudgeConfig
-
-    save_cluster_output_to_host: bool
-
-    @asynccontextmanager
-    async def _start_computer(
-        self,
-        cluster_config: LocalConfig,
-    ) -> AsyncGenerator[ComputerInterface, None]:
-        # This is a total hack to get around the fact that `ComputerTask` only supports a single
-        # Docker image. Should we run the agent and judge in separate `ComputerTask`s? Should we
-        # refactor `ComputerTask` to support multiple computer configurations? Or something
-        # else?
-        task = self.model_copy(
-            update={
-                "docker_image": cluster_config.image,
-                "environment": {
-                    "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", None),
-                    "ANTHROPIC_API_KEY": os.getenv("ANTHROPIC_API_KEY", None),
-                    "GOOGLE_API_KEY": os.getenv("GOOGLE_API_KEY", None),
-                    "OPENROUTER_API_KEY": os.getenv("OPENROUTER_API_KEY", None),
-                    "SUBMISSION_DIR": SUBMISSION_DIR,
-                    "LOGS_DIR": LOGS_DIR,
-                    "CODE_DIR": CODE_DIR,
-                    "AGENT_DIR": AGENT_DIR,
-                },
-            }
-        )
-
-        alcatraz_env = task_to_alcatraz_config(task, cluster_config)
-
-        async with alcatraz_env.build() as cluster:
-            yield AlcatrazComputerInterface(cluster_value=cluster)
-
-    @override
-    async def _setup(self, computer: ComputerInterface) -> None:
-        ctx_logger = logger.bind(
-            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir
-        )
-
-        paper = paper_registry.get_paper(self.paper_id)
-
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            instructions = Path(tmp_dir) / "instructions.txt"
-            instructions.write_text(self.prompt[0]["content"])
-
-            await computer.check_shell_command(f"mkdir -p {WORKSPACE_BASE}/paper/assets")
-
-            for src, dst in [
-                (instructions, f"{WORKSPACE_BASE}/instructions.txt"),
-                (paper.paper_pdf, f"{WORKSPACE_BASE}/paper/paper.pdf"),
-                (paper.paper_md, f"{WORKSPACE_BASE}/paper/paper.md"),
-                (paper.addendum, f"{WORKSPACE_BASE}/paper/addendum.md"),
-                (paper.blacklist, f"{WORKSPACE_BASE}/paper/blacklist.txt"),
-            ]:
-                with open(src, "rb") as f:
-                    await computer.upload(f.read(), dst)
-
-            agent_env_path = agent_registry.get_agents_dir() / "agent.env"
-            if agent_env_path.exists():
-                with open(agent_env_path, "rb") as f:
-                    await computer.upload(f.read(), f"{WORKSPACE_BASE}/agent.env")
-            else:
-                ctx_logger.warning(
-                    f"agent.env not found at: {agent_env_path} agent.env should be created by copying agent.env.example"
-                    f"to agent.env and populating the necessary keys. agent.env is necessary for replicating some papers when using a non-dummy agent",
-                    destinations=["run"],
-                    _print=True,
-                )
-
-        for asset in paper.assets.glob("*"):
-            with open(asset, "rb") as f:
-                await computer.upload(f.read(), f"{WORKSPACE_BASE}/paper/assets/{asset.name}")
-
-        for dir in [SUBMISSION_DIR, CODE_DIR]:
-            await computer.check_shell_command(f"mkdir -p {dir}")
-
-    @override
-    async def grade(
-        self, computer: ComputerInterface, agent_output: AgentOutput
-    ) -> PaperBenchGrade:
-        """
-        Runs the grading process for a single submission.
-        """
-
-        ctx_logger = logger.bind(
-            run_group_id=self.run_group_id,
-            run_id=self.run_id,
-            runs_dir=self.runs_dir,
-        )
-
-        # We need one final upload before grading, for solvers which do not take care of this step.
-        if not agent_output.skipped_rollout:
-            ctx_logger.info("Attempting to upload logs before grading...", destinations=["run"])
-
-            try:
-                await upload_heavy_logs(
-                    computer=computer,
-                    agent_start_time=int(time.time()),
-                    agent_dir_config=prepare_agent_dir_config(),
-                    run_dir=self.run_dir,
-                    logger=ctx_logger.bind(destinations=["run"]),
-                )
-                await upload_status(
-                    start_time=int(time.time()),
-                    run_dir=self.run_dir,
-                    status="done",
-                )
-            except Exception as e:
-                ctx_logger.exception(
-                    f"Exception uploading final logs before grading: {e}", destinations=["run"]
-                )
-
-        checkpoint = await self._select_checkpoint()
-        if not checkpoint:
-            ctx_logger.exception("No checkpoint exists, skipping grading!", destinations=["run"])
-
-            return PaperBenchGrade(
-                paperbench_result=PaperBenchResult(
-                    paper_id=self.paper_id,
-                    run_id=self.run_id,
-                    submission_exists=False,
-                    skipped_reproduction=self.reproduction.skip_reproduction,
-                    code_only=self.judge.code_only,
-                    resources_provided=self.judge.resources_provided,
-                    agent_output=agent_output,
-                    judge_output=None,
-                    reproduction_output=None,
-                ),
-                score=0.0,
-                grader_log="No checkpoint exists, skipping grading!",
-            )
-
-        ctx_logger.info("Successfully uploaded logs before grading!", destinations=["run"])
-
-        path_to_submission, _ = checkpoint
-        path_to_executed_submission = path_to_submission.replace(".tar.gz", "_executed.tar.gz")
-        reproduction_output = None
-
-        if self.reproduction.skip_reproduction or self.judge.code_only:
-            submission_to_grade_path = path_to_submission
-        else:
-            submission_to_grade_path = path_to_executed_submission
-
-            ctx_logger.info(
-                f"Starting the reproduction process for `{self.question_id}.{self.attempt_id}`...",
-                destinations=["group", "run"],
-                _print=True,
-            )
-
-            async with self._start_computer(
-                self.reproduction.cluster_config
-            ) as reproduction_computer:
-                reproduction_output = await self._reproduce(reproduction_computer)
-
-            ctx_logger.info(
-                f"The reproduction process for {self.question_id}.{self.attempt_id} has finished!",
-                destinations=["group", "run"],
-                _print=True,
-            )
-
-            get_recorder().record_extra(
-                {
-                    "run_group_id": self.run_group_id,
-                    "run_id": self.run_id,
-                    "repro_metadata": (
-                        reproduction_output.metadata.to_dict()
-                        if reproduction_output.metadata
-                        else {}
-                    ),
-                }
-            )
-
-        # Grade reproduction
-        judge_output = None
-
-        if (
-            reproduction_output
-            and reproduction_output.success
-            or self.reproduction.skip_reproduction
-            or self.judge.code_only
-        ):
-            ctx_logger.info(
-                f"Grading the submission for {self.question_id}.{self.attempt_id}...",
-                destinations=["group", "run"],
-                _print=True,
-            )
-
-            ctx_logger.info(
-                f"Grading submission {submission_to_grade_path}...", destinations=["run"]
-            )
-
-            judge_output = await self.grade_submission(submission_to_grade_path, self.paper_id)
-
-            ctx_logger.info(
-                f"Grading for {self.question_id}.{self.attempt_id} finished!",
-                destinations=["group", "run"],
-                _print=True,
-            )
-
-            get_recorder().record_extra(
-                {
-                    "run_group_id": self.run_group_id,
-                    "run_id": self.run_id,
-                    "judge_output": judge_output.to_dict() if judge_output else None,
-                }
-            )
-
-        grade = PaperBenchGrade(
-            paperbench_result=PaperBenchResult(
-                paper_id=self.paper_id,
-                run_id=self.run_id,
-                submission_exists=True,
-                skipped_reproduction=self.reproduction.skip_reproduction,
-                code_only=self.judge.code_only,
-                resources_provided=self.judge.resources_provided,
-                agent_output=agent_output,
-                judge_output=judge_output,
-                reproduction_output=reproduction_output,
-            ),
-            score=judge_output.score if judge_output else 0.0,
-            grader_log="Grading completed successfully" if judge_output else "Log file not found!",
-        )
-
-        get_recorder().record_extra(
-            {
-                "run_group_id": self.run_group_id,
-                "run_id": self.run_id,
-                "pb_result": grade.to_dict(),
-            }
-        )
-
-        path_to_grade = bf.join(self.run_dir, "grade.json")
-        bf.write_bytes(path_to_grade, json.dumps(grade.to_dict(), indent=2).encode("utf-8"))
-        ctx_logger.info(
-            purple(f"Grades saved to {path_to_grade}"), destinations=["group", "run"], _print=True
-        )
-
-        return grade
-
-    async def _reproduce(self, computer: ComputerInterface) -> ReproductionOutput:
-        ctx_logger = logger.bind(
-            run_group_id=self.run_group_id,
-            run_id=self.run_id,
-            runs_dir=self.runs_dir,
-        )
-
-        checkpoint = await self._select_checkpoint()
-
-        if not checkpoint:
-            ctx_logger.exception(
-                "No checkpoint exists, skipping reproduction!", destinations=["run"]
-            )
-
-            return ReproductionOutput(
-                executed_submission=None,
-                metadata=None,
-            )
-
-        submission, _ = checkpoint
-        reproduce_output_path = submission.replace(".tar.gz", "_executed.tar.gz")
-        repro_metadata_path = submission.replace(".tar.gz", "_executed_metadata.json")
-
-        ctx_logger.info(f"Reproducing submission {reproduce_output_path}...", destinations=["run"])
-
-        # If the reproduction output already exists, we can skip reproduction
-        if not self.reproduction.overwrite_existing_output:
-            repro_output_exists = bf.exists(reproduce_output_path)
-            repro_metadata_exists = bf.exists(repro_metadata_path)
-            if repro_output_exists and repro_metadata_exists:
-                ctx_logger.info(
-                    f"Reproduction output already exists, skipping reproduction: {reproduce_output_path}, {repro_metadata_path}",
-                    destinations=["run"],
-                )
-                with bf.BlobFile(repro_metadata_path, "r") as f:
-                    data = json.loads(f.read())
-                metadata = ReproductionMetadata.from_dict(data)
-                return ReproductionOutput(
-                    executed_submission=reproduce_output_path,
-                    metadata=metadata,
-                )
-
-        # Reproduce on alcatraz
-        await reproduce_on_computer(
-            computer=computer,
-            submission_path=submission,
-            logger=ctx_logger.bind(destinations=["run"]),
-            run_dir=self.run_dir,
-            timeout=self.reproduction.timeout,
-            retry_threshold=self.reproduction.retry_threshold,
-        )
-
-        # Now the result should exist
-        repro_output_exists = bf.exists(reproduce_output_path)
-        repro_metadata_exists = bf.exists(repro_metadata_path)
-        if not repro_output_exists:
-            ctx_logger.exception(
-                f"Reproduction failed to produce output: {reproduce_output_path}",
-                destinations=["group", "run"],
-                _print=True,
-            )
-            return ReproductionOutput(
-                executed_submission=reproduce_output_path,
-                metadata=None,
-            )
-        if not repro_metadata_exists:
-            ctx_logger.exception(
-                f"Reproduction failed to produce metadata: {repro_metadata_path}",
-                destinations=["group", "run"],
-                _print=True,
-            )
-            return ReproductionOutput(
-                executed_submission=reproduce_output_path,
-                metadata=None,
-            )
-
-        with bf.BlobFile(repro_metadata_path, "r") as f:
-            data = json.loads(f.read())
-        metadata = ReproductionMetadata.from_dict(data)
-
-        return ReproductionOutput(
-            executed_submission=reproduce_output_path,
-            metadata=metadata,
-        )
-
-    async def _select_checkpoint(self) -> Optional[tuple[str, timedelta]]:
-        """Identify the submission tarball to use for reproduction/grading."""
-        ctx_logger = logger.bind(
-            run_group_id=self.run_group_id,
-            run_id=self.run_id,
-            runs_dir=self.runs_dir,
-        )
-
-        # First, identify the submission that we want to grade
-        # (each run_id can have multiple timestamped submissions, we need to select one)
-        # Runs are organized as {run_group_id}/{run_id}/submissions/{timestamp}/submission.tar.gz
-        pattern = bf.join(self.run_dir, "**/*.tar.gz")
-        submission_checkpoints = [
-            i
-            for i in bf.glob(pattern)
-            if i.endswith(".tar.gz") and not i.endswith("_executed.tar.gz")
-        ]
-
-        if not submission_checkpoints:
-            return None
-        # Get the submission at the target duration if it is set, otherwise get the latest submission
-        target_duration_hr = self.target_duration_hr if self.target_duration_hr else 10000
-        submission_path, submission_duration = get_file_at_duration(
-            submission_checkpoints,
-            target_duration_hr,
-            ctx_logger.bind(destinations=["run"]),
-        )
-
-        return submission_path, submission_duration
-
-    async def grade_submission(
-        self,
-        submission_path: str,
-        paper_id: str,
-    ) -> Optional[JudgeOutput]:
-        ctx_logger = logger.bind(
-            run_group_id=self.run_group_id,
-            run_id=self.run_id,
-            runs_dir=self.runs_dir,
-        )
-
-        grader_upload_path = submission_path.replace(
-            ".tar.gz", f"_grader_output_{self.judge.grade_id}.json"
-        )
-
-        # If grader output already exists, we can skip grading
-        if not self.judge.overwrite_existing_output:
-            grader_output_exists = bf.exists(grader_upload_path)
-            if grader_output_exists:
-                with bf.BlobFile(grader_upload_path, "r") as f:
-                    grader_output = json.loads(f.read())
-                ctx_logger.info(
-                    f"Skipping grading for {self.question_id}.{self.attempt_id} because an existing grader output was found.",
-                    destinations=["group", "run"],
-                    _print=True,
-                )
-
-                ctx_logger.info(
-                    f"Found existing grader output {grader_upload_path}, skipping grading",
-                    destinations=["run"],
-                )
-
-                return JudgeOutput.from_dict(grader_output, self.judge.completer_config.__class__)
-
-        if not self.judge.grade:
-            ctx_logger.info(
-                f"Skipping grading for {self.question_id}.{self.attempt_id} because grade is set to `False`",
-                destinations=["group", "run"],
-                _print=True,
-            )
-            return None
-
-        computer_ctx = (
-            nullcontext()
-            if self.judge.grade_locally
-            else self._start_computer(self.judge.cluster_config)
-        )
-        async with computer_ctx as computer:
-            judge_output = await grade_submission(
-                submission_path=submission_path,
-                grader_upload_path=grader_upload_path,
-                paper_id=paper_id,
-                judge_type=self.judge.scaffold,
-                completer_config=self.judge.completer_config,
-                logger=ctx_logger.bind(destinations=["run"]),
-                code_only=self.judge.code_only,
-                computer=computer,
-                resources_provided=self.judge.resources_provided,
-            )
-
-        return judge_output
 
 
 @chz.chz
@@ -658,16 +110,16 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             )
 
         if isinstance(self.cluster_config, LocalConfig):
-            assert isinstance(
-                task.reproduction.cluster_config, LocalConfig
-            ), "Reproduction cluster config must be a LocalConfig if the agent's cluster config is a LocalConfig"
+            assert isinstance(task.reproduction.cluster_config, LocalConfig), (
+                "Reproduction cluster config must be a LocalConfig if the agent's cluster config is a LocalConfig"
+            )
 
         ctx_logger.info(
             f"cluster_config: {json.dumps(self.cluster_config, indent=4, sort_keys=True, default=str)}",
             destinations=["run"],
         )
         ctx_logger.info(
-            f"Attempting to start a cluster instance. This may take a while...",
+            "Attempting to start a cluster instance. This may take a while...",
             destinations=["run"],
         )
 
@@ -711,7 +163,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                 agent_output = await self._run_agent(computer, task)
 
                 # 3. Grade the submission
-                grade = await task.grade(computer, agent_output)
+                grade: PaperBenchGrade = await task.grade(computer)
                 if grade.paperbench_result.judge_output is None:
                     grade = PaperBenchGrade(
                         paperbench_result=PaperBenchResult(
@@ -721,13 +173,13 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                             skipped_reproduction=task.reproduction.skip_reproduction,
                             code_only=task.judge.code_only,
                             resources_provided=task.judge.resources_provided,
-                            agent_output=agent_output,
                             judge_output=None,
                             reproduction_output=None,
                         ),
                         score=0.0,
                         grader_log="",
                     )
+                grade.paperbench_result.agent_output = agent_output
 
             yield FinalResultSuccessful(grade=grade)
         except Exception as e:
@@ -785,7 +237,8 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         )
 
         # If agent logs already exist, we can skip running the agent
-        num_tars = len([i for i in bf.listdir(task.run_dir) if i.endswith(".tar.gz")])
+        pattern = bf.join(task.run_dir, "**/*.tar.gz")
+        num_tars = len(list(bf.glob(pattern)))
 
         status_path = bf.join(task.run_dir, "status.json")
         status_exists = bf.exists(status_path)
@@ -817,8 +270,8 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                 runtime_in_seconds=runtime,
                 error_msg=None,  # No error if we have status.json and tars
                 status_exists=True,  # We already checked status_exists
-                skipped_rollout=True,
             )
+            task.skipped_rollout = True
 
             get_recorder().record_extra(
                 {
@@ -941,7 +394,7 @@ class PaperBench(PythonCodingEval):
         doc="Paper split to use. One of 'debug' (rice only), 'dev' (two papers), 'human' (papers used in human baseline), 'all' (full set)",
         # should match what is in experiments/splits/
     )
-    resume_run_group_id: Optional[str] = chz.field(default=None)
+    resume_run_group_id: str | None = chz.field(default=None)
     resume_no_extend: bool = chz.field(
         default=False,
         doc="If true, resume only existing run_ids without creating new ones.",
@@ -971,13 +424,11 @@ class PaperBench(PythonCodingEval):
         return f"PaperBench-{self.solver.shortname()}"
 
     @chz.validate
-    def _validate_args(self):
-        ctx_logger = logger.bind(run_group_id=self.run_group_id, runs_dir=self.runs_dir)
-
+    def _validate_args(self) -> None:
         if self.resume_run_group_id is not None:
-            assert (
-                self.resume_run_group_id.strip() != ""
-            ), "resume_run_group_id is empty, did you set it correctly?"
+            assert self.resume_run_group_id.strip() != "", (
+                "resume_run_group_id is empty, did you set it correctly?"
+            )
 
     @override
     async def get_instances(self) -> list[PBTask]:
@@ -994,12 +445,11 @@ class PaperBench(PythonCodingEval):
             _print=True,
         )
 
-        tasks = []
         paper_split_path = get_experiments_dir() / "splits" / f"{self.paper_split}.txt"
         with open(paper_split_path, "r") as f:
             paper_ids = [line.strip() for line in f.read().splitlines() if line.strip()]
 
-        existing_run_ids = []
+        existing_run_ids = set()
         if self.resume_run_group_id is not None:
             existing_run_ids = await self.get_existing_run_ids(self.run_group_id)
 
@@ -1062,19 +512,19 @@ class PaperBench(PythonCodingEval):
 
     @override
     async def get_tasks(self) -> Sequence[PBTask]:
+        self.run_sanity_checks()
         # we handle the n_tries in get_instances, since we're creating run_ids and run_dirs there
         # so we can simply return the result of get_instances here
-        run_sanity_checks(self)
         return await self.get_instances()
 
     @override
     async def get_full_summary(
-        self, tasks_and_results: list[tuple[PBTask, FinalResult | RetryableSystemError]]
+        self, results: list[tuple[ComputerTask, FinalResult | RetryableSystemError]]
     ) -> dict[str, Any]:
-        tasks = [t for t, _ in tasks_and_results]
-        results = [
+        tasks = [t for t, _ in results]
+        final_results = [
             r.grade.paperbench_result
-            for _, r in tasks_and_results
+            for _, r in results
             if isinstance(r, FinalResult) and isinstance(r.grade, PaperBenchGrade)
         ]
 
@@ -1082,7 +532,7 @@ class PaperBench(PythonCodingEval):
         params = {
             "paper_split": self.paper_split,
             "n_tries": self.n_tries,
-            "n_samples": len(tasks_and_results),
+            "n_samples": len(results),
             "skip_reproduction": self.reproduction.skip_reproduction,
             "code_only": self.judge.code_only,
             "resources_provided": self.judge.resources_provided,
@@ -1090,7 +540,7 @@ class PaperBench(PythonCodingEval):
         }
 
         # health
-        results_clean = [r for r in results if not isinstance(r, RetryableSystemError)]
+        results_clean = [r for r in final_results if not isinstance(r, RetryableSystemError)]
         run_health = {
             "n_rollouts_failed": len(
                 [r for r in results_clean if not r.agent_output or not r.submission_exists]
@@ -1161,7 +611,7 @@ class PaperBench(PythonCodingEval):
             "run_health": run_health,
             "metrics": metrics,
             "other_stats": other_stats,
-            "run_group_id": tasks[0].run_group_id,
+            "run_group_id": getattr(tasks[0], "run_group_id", "undefined"),
         }
 
         return final_report
@@ -1172,13 +622,65 @@ class PaperBench(PythonCodingEval):
         """
         ctx_logger = logger.bind(run_group_id=run_group_id, runs_dir=self.runs_dir)
 
-        run_ids = bf.listdir(bf.join(self.runs_dir, run_group_id))
-        run_ids = [i for i in run_ids if bf.isdir(bf.join(self.runs_dir, run_group_id, i))]
+        run_id_dirs = bf.listdir(bf.join(self.runs_dir, run_group_id))
+        run_ids = {i for i in run_id_dirs if bf.isdir(bf.join(self.runs_dir, run_group_id, i))}
 
         ctx_logger.info(
-            f"Found {len(run_ids)} existing run_ids in {run_group_id}",
+            f"Found {len(run_ids)} existing unique run_ids in {run_group_id}",
             destinations=["group"],
             _print=True,
         )
 
         return run_ids
+
+    def uses_local_config(self) -> bool:
+        """
+        Check if any of paperbench.solver.cluster_config, paperbench.reproduction.cluster_config,
+        or paperbench.judge.cluster_config is an instance of LocalConfig.
+
+        Args:
+            paperbench: A PaperBench PythonCodingEval instance
+
+        Returns:
+            bool: True if any of the cluster configs is a LocalConfig, False otherwise
+        """
+
+        # PythonCodingSolver may not have a cluster_config, just ExternalPythonCodingSolver does for now
+        if hasattr(self.solver, "cluster_config"):
+            if isinstance(self.solver.cluster_config, LocalConfig):
+                return True
+
+        # Check reproduction's cluster_config
+        if isinstance(self.reproduction.cluster_config, LocalConfig):
+            return True
+
+        # Check judge's cluster_config
+        if isinstance(self.judge.cluster_config, LocalConfig):
+            return True
+
+        return False
+
+    def run_sanity_checks(self) -> None:
+        self.check_for_docker()
+        self.check_for_lfs()
+        self.check_for_computer_grading()
+
+    def check_for_docker(self) -> None:
+        if self.uses_local_config():
+            assert is_docker_running(), (
+                "Docker is not running, but a local config requested."
+                " Please ensure Docker is running if you wish to use `LocalConfig` for any of the `cluster_config`s."
+            )
+
+    def check_for_lfs(self) -> None:
+        # Check dataset has been pulled from git lfs
+        papers_dir = get_paperbench_data_dir() / "papers"
+        papers = list(papers_dir.glob("**/paper.md"))
+
+        for paper in papers:
+            with open(paper, "r") as f:
+                assert len(f.readlines()) > 5, f"Paper at {paper} should be pulled from git lfs"
+
+    def check_for_computer_grading(self) -> None:
+        if not self.judge.grade_locally:
+            raise NotImplementedError("Grading on computer is not fully supported yet.")

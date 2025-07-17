@@ -74,7 +74,7 @@ def create_depth_score_plot(data: list[dict], output_path: str) -> None:
         plt.text(
             i,
             row["mean"] + row["stderr"] + 0.001,
-            f'{row["mean"]:.2f}±{row["stderr"]:.2f}',
+            f"{row['mean']:.2f}±{row['stderr']:.2f}",
             ha="center",
             va="bottom",
         )

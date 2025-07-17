@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import structlog.stdlib
+
 from paperbench.utils import get_paperbench_data_dir
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -16,22 +20,22 @@ class ExampleRun:
     submission_dir: Path
     expected_result: Path
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert isinstance(self.id, str), "Example run id must be a string."
         assert isinstance(self.paper_id, str), "Paper id must be a string."
         assert isinstance(self.submission_dir, Path), "Submission directory must be a Path."
         assert isinstance(self.expected_result, Path), "Expected result must be a Path."
         assert len(self.id) > 0, "Example run id cannot be empty."
         assert len(self.paper_id) > 0, "Paper id cannot be empty."
-        assert (
-            self.submission_dir.exists()
-        ), f"Submission directory {self.submission_dir} does not exist."
-        assert (
-            self.expected_result.exists()
-        ), f"Expected result file {self.expected_result} does not exist."
+        assert self.submission_dir.exists(), (
+            f"Submission directory {self.submission_dir} does not exist."
+        )
+        assert self.expected_result.exists(), (
+            f"Expected result file {self.expected_result} does not exist."
+        )
 
     @staticmethod
-    def from_dict(data: dict) -> "ExampleRun":
+    def from_dict(data: dict[str, Any]) -> ExampleRun:
         try:
             return ExampleRun(
                 id=data["id"],
@@ -40,7 +44,7 @@ class ExampleRun:
                 expected_result=data["expected_result"],
             )
         except KeyError as e:
-            raise ValueError(f"Missing key {e} in example run config!")
+            raise ValueError("Missing key in example run config!") from e
 
 
 class ExampleRunRegistry:

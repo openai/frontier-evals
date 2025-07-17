@@ -3,9 +3,10 @@ import math
 import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from typing import Callable, Generator, Type
+from typing import Callable, Generator
 
 import pytest
+
 from paperbench.judge.base import Judge
 from paperbench.judge.dummyrandom import DummyJudge
 from paperbench.judge.simple import SimpleJudge
@@ -35,9 +36,9 @@ def submission_factory() -> Generator[Callable[[str], Path], None, None]:
     tmpdir = TemporaryDirectory()
 
     def create_gold_submission(submission_name: str) -> Path:
-        assert (
-            len(submission_name.split(".")) and submission_name.count(".") == 1
-        ), "Expected `submission_name` to be of the form `{{paper_id}}.{{uuid}}`."
+        assert len(submission_name.split(".")) and submission_name.count(".") == 1, (
+            "Expected `submission_name` to be of the form `{{paper_id}}.{{uuid}}`."
+        )
 
         paper_id, uuid = submission_name.split(".")
         src = get_ancestor("tests") / "unit" / "fixtures" / "submissions" / paper_id / uuid
@@ -103,12 +104,12 @@ def empty_markdown() -> Generator[Path, None, None]:
 @pytest.mark.parametrize("task", ["empty", "hex_flag", "hex_flags", "nested_hex_flags"])
 async def test_all_gold_submissions_achieve_a_perfect_score_on_a_trivial_rubric(
     task: str,
-    JudgeClass: Type[Judge],
+    JudgeClass: type[Judge],
     empty_pdf: Path,
     empty_markdown: Path,
     submission_factory: Callable[[str], Path],
     rubric_factory: Callable[[str], TaskNode],
-):
+) -> None:
     # Given
     gold_submission = submission_factory(f"{task}.gold")
     rubric = rubric_factory("trivial")
@@ -126,9 +127,9 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_a_trivial_rubric(
     graded_tree = await judge.judge()
 
     # Then
-    assert math.isclose(
-        graded_tree.score, 1.0
-    ), f"Expected score to be 1.0, but got {graded_tree.score}"
+    assert math.isclose(graded_tree.score, 1.0), (
+        f"Expected score to be 1.0, but got {graded_tree.score}"
+    )
 
 
 @pytest.mark.asyncio
@@ -137,12 +138,12 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_a_trivial_rubric(
 @pytest.mark.parametrize("task", ["empty", "hex_flag", "hex_flags", "nested_hex_flags"])
 async def test_all_gold_submissions_achieve_a_null_score_on_an_impossible_rubric(
     task: str,
-    JudgeClass: Type[Judge],
+    JudgeClass: type[Judge],
     empty_pdf: Path,
     empty_markdown: Path,
     submission_factory: Callable[[str], Path],
     rubric_factory: Callable[[str], TaskNode],
-):
+) -> None:
     # Given
     gold_submission = submission_factory(f"{task}.gold")
     rubric = rubric_factory("impossible")
@@ -160,9 +161,9 @@ async def test_all_gold_submissions_achieve_a_null_score_on_an_impossible_rubric
     graded_tree = await judge.judge()
 
     # Then
-    assert math.isclose(
-        graded_tree.score, 0.0
-    ), f"Expected score to be 0.0, but got {graded_tree.score}"
+    assert math.isclose(graded_tree.score, 0.0), (
+        f"Expected score to be 0.0, but got {graded_tree.score}"
+    )
 
 
 @pytest.mark.asyncio
@@ -171,12 +172,12 @@ async def test_all_gold_submissions_achieve_a_null_score_on_an_impossible_rubric
 @pytest.mark.parametrize("task", ["empty", "hex_flag", "hex_flags", "nested_hex_flags"])
 async def test_all_gold_submissions_achieve_a_perfect_score_on_their_corresponding_rubric(
     task: str,
-    JudgeClass: Judge,
+    JudgeClass: type[Judge],
     empty_pdf: Path,
     empty_markdown: Path,
     submission_factory: Callable[[str], Path],
     rubric_factory: Callable[[str], TaskNode],
-):
+) -> None:
     # Given
     gold_submission = submission_factory(f"{task}.gold")
     rubric = rubric_factory(task)
@@ -194,9 +195,9 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_their_correspondi
     graded_tree = await judge.judge()
 
     # Then
-    assert math.isclose(
-        graded_tree.score, 1.0
-    ), f"Expected score to be 1.0, but got {graded_tree.score}"
+    assert math.isclose(graded_tree.score, 1.0), (
+        f"Expected score to be 1.0, but got {graded_tree.score}"
+    )
 
 
 @pytest.mark.asyncio
@@ -205,12 +206,12 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_their_correspondi
 @pytest.mark.parametrize("task", ["hex_flag", "hex_flags", "nested_hex_flags"])
 async def test_empty_submission_achieves_a_null_score_on_all_non_trvial_rubrics(
     task: str,
-    JudgeClass: Judge,
+    JudgeClass: type[Judge],
     empty_pdf: Path,
     empty_markdown: Path,
     submission_factory: Callable[[str], Path],
     rubric_factory: Callable[[str], TaskNode],
-):
+) -> None:
     # Given
     empty_submission = submission_factory("empty.gold")
     rubric = rubric_factory(task)
@@ -228,9 +229,9 @@ async def test_empty_submission_achieves_a_null_score_on_all_non_trvial_rubrics(
     graded_tree = await judge.judge()
 
     # Then
-    assert math.isclose(
-        graded_tree.score, 0.0
-    ), f"Expected score to be 0.0, but got {graded_tree.score}"
+    assert math.isclose(graded_tree.score, 0.0), (
+        f"Expected score to be 0.0, but got {graded_tree.score}"
+    )
 
 
 @pytest.mark.asyncio
@@ -246,15 +247,15 @@ async def test_empty_submission_achieves_a_null_score_on_all_non_trvial_rubrics(
 )
 async def test_submission_with_n_missing_files_to_the_hex_flags_task_achieves_a_partial_score(
     n_missing: int,
-    JudgeClass: Judge,
+    JudgeClass: type[Judge],
     empty_pdf: Path,
     empty_markdown: Path,
     submission_factory: Callable[[str], Path],
     rubric_factory: Callable[[str], TaskNode],
-):
+) -> None:
     # Given
     submission = submission_factory("hex_flags.gold")
-    files = list(sorted(submission.rglob("*.txt")))
+    files = sorted(submission.rglob("*.txt"))
 
     for file in files[:n_missing]:  # Delete the first `n_missing` files
         file.unlink()
@@ -276,21 +277,21 @@ async def test_submission_with_n_missing_files_to_the_hex_flags_task_achieves_a_
     actual_score = graded_tree.score
 
     # Then
-    assert math.isclose(
-        actual_score, expected_score
-    ), f"Expected score to be {expected_score}, but got {actual_score}"
+    assert math.isclose(actual_score, expected_score), (
+        f"Expected score to be {expected_score}, but got {actual_score}"
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("JudgeClass", non_dummy_judges)  # Skip DummyJudge
 @pytest.mark.skipif(in_ci(), reason="Test does not apply to DummyJudge")
 async def test_nested_context_preserved_in_grading(
-    JudgeClass: Type[Judge],
+    JudgeClass: type[Judge],
     empty_pdf: Path,
     empty_markdown: Path,
     submission_factory: Callable[[str], Path],
     rubric_factory: Callable[[str], TaskNode],
-):
+) -> None:
     """
     This test checks whether the nested context is preserved in grading.
     """
@@ -316,6 +317,6 @@ async def test_nested_context_preserved_in_grading(
     actual_score = graded_tree.find(node_id).score
 
     # Then
-    assert math.isclose(
-        actual_score, 1.0
-    ), f"Expected score for node {node_id} to be 1.0, but got {actual_score}"
+    assert math.isclose(actual_score, 1.0), (
+        f"Expected score for node {node_id} to be 1.0, but got {actual_score}"
+    )

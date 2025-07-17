@@ -1,90 +1,147 @@
+from __future__ import annotations
+
+import dataclasses
+from dataclasses import dataclass, field
+
 import structlog.stdlib
-from paperbench.judge.graded_task_node import GradedTaskNode
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+from paperbench.judge.graded_task_node import GradedTaskNode
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
 
-def _get_leaf_node_scores(
-    task: GradedTaskNode, expected_result: GradedTaskNode
-) -> tuple[list[int], list[int]]:
+@dataclass(slots=True)
+class MetricSummary:
+    """Binary‑classification metrics (macro‑averaged)."""
+
+    accuracy: float
+    precision: float
+    recall: float
+    f1: float
+    num_positives: int
+    num_negatives: int
+    num_samples: int
+
+    def log(self, prefix: str = "") -> None:
+        """Structured‑log every field with an optional *prefix*."""
+        for field_ in dataclasses.fields(self):
+            value = getattr(self, field_.name)
+            logger.info("%s%s: %.4f", prefix, field_.name, value)
+
+
+@dataclass(slots=True)
+class LeafScores:
+    """Predicted and true scores gathered from leaf nodes."""
+
+    y_pred: list[float] = field(default_factory=list)
+    y_true: list[float] = field(default_factory=list)
+
+    def extend(self, other: LeafScores) -> None:
+        """Extend this instance with another LeafScores in-place."""
+        self.y_pred.extend(other.y_pred)
+        self.y_true.extend(other.y_true)
+
+
+@dataclass(slots=True)
+class JudgeMetrics:
+    """Overall and per‑category metric summaries."""
+
+    overall: MetricSummary
+    stratified: dict[str | None, MetricSummary]
+
+
+@dataclass(slots=True)
+class JudgeResult:
+    """Return value of calculate_judge_scores."""
+
+    metrics: JudgeMetrics
+    scores: dict[str | None, LeafScores]
+
+
+def _get_leaf_node_scores(task: GradedTaskNode, expected_result: GradedTaskNode) -> LeafScores:
     """Extract predicted and true scores from leaf nodes of the task tree."""
+
     if not task.valid_score:
-        return [], []
+        return LeafScores()
 
     if task.is_leaf():
         expected_result_node = expected_result.find(task.id)
-        return [[task.score], [expected_result_node.score]]
+        return LeafScores([task.score], [expected_result_node.score])
 
-    scores = []
-    expected_results = []
-    for t in task.sub_tasks:
-        s, e = _get_leaf_node_scores(t, expected_result)
-        scores.extend(s)
-        expected_results.extend(e)
-    return scores, expected_results
+    leaf_scores = LeafScores()
+    for sub_task in task.sub_tasks:
+        s = _get_leaf_node_scores(sub_task, expected_result)
+        leaf_scores.extend(s)
+    return leaf_scores
 
 
 def _get_leaf_node_scores_stratified(
     task: GradedTaskNode, expected_result: GradedTaskNode
-) -> dict[str, tuple[list[int], list[int]]]:
+) -> dict[str | None, LeafScores]:
     """Extract predicted and true scores from leaf nodes, broken down by task.task_category."""
-    category_scores: dict[str, tuple[list[int], list[int]]] = {}
+    category_scores: dict[str | None, LeafScores] = {}
     if not task.valid_score:
         return category_scores
     if task.is_leaf():
         expected_result_node = expected_result.find(task.id)
         cat = task.task_category
         if cat not in category_scores:
-            category_scores[cat] = ([], [])
-        category_scores[cat][0].append(task.score)
-        category_scores[cat][1].append(expected_result_node.score)
+            category_scores[cat] = LeafScores()
+        category_scores[cat].y_pred.append(task.score)
+        category_scores[cat].y_true.append(expected_result_node.score)
         return category_scores
     for sub_task in task.sub_tasks:
-        child_scores = _get_leaf_node_scores_stratified(sub_task, expected_result)
-        for cat, (child_pred, child_true) in child_scores.items():
+        stratified_child_scores = _get_leaf_node_scores_stratified(sub_task, expected_result)
+        for cat, child_scores in stratified_child_scores.items():
             if cat not in category_scores:
-                category_scores[cat] = ([], [])
-            category_scores[cat][0].extend(child_pred)
-            category_scores[cat][1].extend(child_true)
+                category_scores[cat] = LeafScores()
+            category_scores[cat].extend(child_scores)
     return category_scores
 
 
 def calculate_judge_scores(
     graded_task_tree: GradedTaskNode, expected_result: GradedTaskNode
-) -> tuple[dict[str, float], dict[str, tuple[list[int], list[int]]]]:
+) -> JudgeResult:
     """Calculate evaluation metrics for a graded task tree against expected results."""
-    y_pred, y_true = _get_leaf_node_scores(graded_task_tree, expected_result)
+    leaf_scores = _get_leaf_node_scores(graded_task_tree, expected_result)
 
-    results = compute_metrics(y_true, y_pred)
+    overall_metrics = compute_metrics(leaf_scores.y_true, leaf_scores.y_pred)
     # Compute metrics broken down by task.task_category
     stratified_scores = _get_leaf_node_scores_stratified(graded_task_tree, expected_result)
-    stratified = {}
-    for category, (cat_pred, cat_true) in stratified_scores.items():
-        metrics = compute_metrics(cat_true, cat_pred)
-        stratified[category] = metrics
-        for key, value in metrics.items():
-            logger.info(f"{category} {key}: {round(value, 4)}")
-    results["stratified"] = stratified
+    stratified: dict[str | None, MetricSummary] = {}
 
-    for key, value in results.items():
-        if key != "stratified":  # already logged category metrics above
-            logger.info(f"Overall {key}: {round(value, 4)}")
+    for category, cat_scores in stratified_scores.items():
+        metrics = compute_metrics(cat_scores.y_true, cat_scores.y_pred)
+        stratified[category] = metrics
+        metrics.log(prefix=f"{category} ")
+
+    results = JudgeMetrics(overall=overall_metrics, stratified=stratified)
+    overall_metrics.log(prefix="Overall ")
 
     scores = {
-        "Overall": (y_pred, y_true),
+        "Overall": leaf_scores,
         **stratified_scores,
     }
-    return results, scores
+    return JudgeResult(metrics=results, scores=scores)
 
 
-def compute_metrics(y_true: list[int], y_pred: list[int]) -> dict[str, float]:
-    return {
-        "accuracy": accuracy_score(y_true, y_pred),
-        "precision": precision_score(y_true, y_pred, zero_division=0, average="macro"),
-        "recall": recall_score(y_true, y_pred, zero_division=0, average="macro"),
-        "f1": f1_score(y_true, y_pred, zero_division=0, average="macro"),
-        "num_positives": sum(y_true),
-        "num_negatives": len(y_true) - sum(y_true),
-        "num_samples": len(y_true),
-    }
+def compute_metrics(y_true: list[float], y_pred: list[float]) -> MetricSummary:
+    accuracy = float(accuracy_score(y_true, y_pred))
+    precision = float(precision_score(y_true, y_pred, average="macro", zero_division=0))
+    recall = float(recall_score(y_true, y_pred, average="macro", zero_division=0))
+    f1 = float(f1_score(y_true, y_pred, average="macro", zero_division=0))
+
+    num_positives = int(sum(y_true))
+    num_samples = len(y_true)
+    num_negatives = num_samples - num_positives
+
+    return MetricSummary(
+        accuracy=accuracy,
+        precision=precision,
+        recall=recall,
+        f1=f1,
+        num_positives=num_positives,
+        num_negatives=num_negatives,
+        num_samples=num_samples,
+    )

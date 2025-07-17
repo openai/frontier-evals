@@ -30,7 +30,12 @@ class OpenAITurnCompleter(TurnCompleter):
     def __init__(self, model: str, reasoning_effort: str | None = None):
         self.model: str = model
         self.reasoning_effort: str | None = reasoning_effort
-        self.encoding_name: str = tiktoken.encoding_name_for_model(model)
+        try:
+            self.encoding_name: str = tiktoken.encoding_name_for_model(model)
+        except KeyError:
+            # Fallback to o200k_base
+            logger.warning(f"Model {model} not found in tiktoken, using o200k_base")
+            self.encoding_name: str = "o200k_base"
         self.n_ctx: int = get_model_context_window_length(model)
 
     class Config(TurnCompleter.Config):
@@ -180,9 +185,11 @@ def get_model_context_window_length(model: str | None) -> int:
         "o1-mini-2024-09-12": 128000,
         "o1": 200000,
         "o1-2024-12-17": 200000,
+        "o3": 200000,
         "o3-mini-2024-12-17": 128000,
         "o3-mini-2025-01-31": 200000,
         "o3-mini": 200000,
+        "o4-mini": 200000,
         "o1-preview": 128000,
         "gpt-4-turbo": 128000,
     }

@@ -445,9 +445,7 @@ class SimpleJudge(Judge):
 
         file_content_tasks = [
             read_file_content(
-                (self.submission_dir / rel_path.strip().strip("/")).relative_to(
-                    self.submission_dir
-                ),
+                self.submission_dir / rel_path.strip().strip("/"),
                 self.computer,
             )
             for rel_path in selected_files.split("\n")[: max_files or None]

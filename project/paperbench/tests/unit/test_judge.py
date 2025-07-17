@@ -1,19 +1,27 @@
 import json
 import math
+import os
 import shutil
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Callable, Generator
 
 import pytest
+from dotenv import load_dotenv
+from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
 
 from paperbench.judge.base import Judge
 from paperbench.judge.dummyrandom import DummyJudge
 from paperbench.judge.simple import SimpleJudge
 from paperbench.rubric.tasks import TaskNode
-from paperbench.utils import in_ci
+from paperbench.utils import find_dotenv, in_ci
+
+load_dotenv(find_dotenv())
 
 non_dummy_judges = [SimpleJudge]
+
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 def get_ancestor(name: str) -> Path:
@@ -119,7 +127,7 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_a_trivial_rubric(
         addendum=None,
         judge_addendum=None,
         submission_dir=gold_submission,
-        model="gpt-4o",
+        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -134,7 +142,8 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_a_trivial_rubric(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("JudgeClass", non_dummy_judges)  # Skip DummyJudge
-@pytest.mark.skipif(in_ci(), reason="Test does not apply to DummyJudge")
+@pytest.mark.skipif(in_ci(), reason="Skip non-dummy judge in CI.")
+@pytest.mark.skipif(OPENAI_API_KEY is None, reason="OPENAI_API_KEY is not set.")
 @pytest.mark.parametrize("task", ["empty", "hex_flag", "hex_flags", "nested_hex_flags"])
 async def test_all_gold_submissions_achieve_a_null_score_on_an_impossible_rubric(
     task: str,
@@ -153,7 +162,7 @@ async def test_all_gold_submissions_achieve_a_null_score_on_an_impossible_rubric
         addendum=None,
         judge_addendum=None,
         submission_dir=gold_submission,
-        model="gpt-4o",
+        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -168,7 +177,8 @@ async def test_all_gold_submissions_achieve_a_null_score_on_an_impossible_rubric
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("JudgeClass", non_dummy_judges)  # Skip DummyJudge
-@pytest.mark.skipif(in_ci(), reason="Test does not apply to DummyJudge")
+@pytest.mark.skipif(in_ci(), reason="Skip non-dummy judge in CI.")
+@pytest.mark.skipif(OPENAI_API_KEY is None, reason="OPENAI_API_KEY is not set.")
 @pytest.mark.parametrize("task", ["empty", "hex_flag", "hex_flags", "nested_hex_flags"])
 async def test_all_gold_submissions_achieve_a_perfect_score_on_their_corresponding_rubric(
     task: str,
@@ -187,7 +197,7 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_their_correspondi
         addendum=None,
         judge_addendum=None,
         submission_dir=gold_submission,
-        model="gpt-4o",
+        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -202,7 +212,8 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_their_correspondi
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("JudgeClass", non_dummy_judges)  # Skip DummyJudge
-@pytest.mark.skipif(in_ci(), reason="Test does not apply to DummyJudge")
+@pytest.mark.skipif(in_ci(), reason="Skip non-dummy judge in CI.")
+@pytest.mark.skipif(OPENAI_API_KEY is None, reason="OPENAI_API_KEY is not set.")
 @pytest.mark.parametrize("task", ["hex_flag", "hex_flags", "nested_hex_flags"])
 async def test_empty_submission_achieves_a_null_score_on_all_non_trvial_rubrics(
     task: str,
@@ -221,7 +232,7 @@ async def test_empty_submission_achieves_a_null_score_on_all_non_trvial_rubrics(
         addendum=None,
         judge_addendum=None,
         submission_dir=empty_submission,
-        model="gpt-4o",
+        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -236,7 +247,8 @@ async def test_empty_submission_achieves_a_null_score_on_all_non_trvial_rubrics(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("JudgeClass", non_dummy_judges)  # Skip DummyJudge
-@pytest.mark.skipif(in_ci(), reason="Test does not apply to DummyJudge")
+@pytest.mark.skipif(in_ci(), reason="Skip non-dummy judge in CI.")
+@pytest.mark.skipif(OPENAI_API_KEY is None, reason="OPENAI_API_KEY is not set.")
 @pytest.mark.parametrize(
     "n_missing",
     [
@@ -268,7 +280,7 @@ async def test_submission_with_n_missing_files_to_the_hex_flags_task_achieves_a_
         addendum=None,
         judge_addendum=None,
         submission_dir=submission,
-        model="gpt-4o",
+        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -284,7 +296,8 @@ async def test_submission_with_n_missing_files_to_the_hex_flags_task_achieves_a_
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("JudgeClass", non_dummy_judges)  # Skip DummyJudge
-@pytest.mark.skipif(in_ci(), reason="Test does not apply to DummyJudge")
+@pytest.mark.skipif(in_ci(), reason="Skip non-dummy judge in CI.")
+@pytest.mark.skipif(OPENAI_API_KEY is None, reason="OPENAI_API_KEY is not set.")
 async def test_nested_context_preserved_in_grading(
     JudgeClass: type[Judge],
     empty_pdf: Path,
@@ -308,7 +321,7 @@ async def test_nested_context_preserved_in_grading(
         addendum=None,
         judge_addendum=None,
         submission_dir=submission,
-        model="gpt-4o",
+        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 

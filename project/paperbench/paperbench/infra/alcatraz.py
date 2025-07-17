@@ -5,6 +5,7 @@ from typing import AsyncGenerator, Optional
 import blobfile as bf
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
+    ExecutionResult,
 )
 from paperbench.constants import LOGS_DIR
 from structlog.stdlib import BoundLogger

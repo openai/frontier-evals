@@ -8,11 +8,14 @@ import blobfile as bf
 import chz
 import structlog
 from alcatraz.clusters.local import LocalConfig
-from nanoeval.eval import RetryableSystemError
+from nanoeval.eval import RolloutSystemError
 from nanoeval.recorder import get_recorder
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from nanoeval.solvers.computer_tasks.code_execution_interface import (
+    ComputerInterface,
+    RuntimeConfig,
+)
 from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver
-from nanoeval.solvers.computer_tasks.steps import FinalResult, FinalResultSuccessful, Step
+from nanoeval.solvers.computer_tasks.steps import FinalResult, Step
 from nanoeval.solvers.computer_tasks.task import ComputerTask
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
@@ -53,6 +56,7 @@ class PaperBenchDummySolver(PythonCodingSolver):
         )
     )
     mount_docker_socket: bool = chz.field(default=True)
+    runtime_config: RuntimeConfig
 
     @override
     def shortname(self) -> str:
@@ -181,13 +185,13 @@ class PaperBenchDummySolver(PythonCodingSolver):
         try:
             async with self._start_computer(task) as computer:
                 # 1. Run the task setup
-                await task.setup(computer)
+                await task.setup(computer, self.runtime_config)
 
                 # 2. Run the agent
                 agent_output = await self._run_agent(computer, task)
 
                 # 3. Grade the submission
-                grade: PaperBenchGrade = await task.grade(computer)
+                grade: PaperBenchGrade = await task.grade(computer, self.runtime_config)
                 if grade.paperbench_result.judge_output is None:
                     grade = PaperBenchGrade(
                         paperbench_result=PaperBenchResult(
@@ -205,6 +209,6 @@ class PaperBenchDummySolver(PythonCodingSolver):
                         grader_log="",
                     )
                 grade.paperbench_result.agent_output = agent_output
-            yield FinalResultSuccessful(grade=grade)
+            yield FinalResult(grade=grade)
         except Exception as e:
-            raise RetryableSystemError(f"Run failed with error: {str(e)}") from e
+            raise RolloutSystemError(f"Run failed with error: {str(e)}") from e

@@ -23,7 +23,7 @@ def _lock_and_yield_port() -> Generator[int, None, None]:
         try:
             with open(port_file, "x"):
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.bind(("localhost", port))
+                    s.bind(("127.0.0.1", port))
                 yield port
                 break
         except (FileExistsError, OSError):

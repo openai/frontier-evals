@@ -16,7 +16,7 @@ import nanoeval._db as db
 import structlog.stdlib
 from nanoeval._db import cached_deserialize, default_db, open_run_set_db
 from nanoeval._executor_worker import ExecutorExceptionWrapper, ensure_executor_workers_started
-from nanoeval.eval import Eval, EvalSpec, RetryableSystemError, RunnerArgs, Task
+from nanoeval.eval import Eval, EvalSpec, RolloutSystemError, RunnerArgs, Task
 from nanoeval.library_config import get_library_config
 from nanoeval.recorder import RecorderProtocol, dummy_recorder
 from nanoeval.setup import global_exit_stack
@@ -202,7 +202,7 @@ async def run_eval_in_database(run_id: str) -> dict[str, Any]:
                 # Look only at clean results to avoid double retries
                 for i, (task, result) in enumerate(clean_results):
                     if isinstance(result, ExecutorExceptionWrapper) and isinstance(
-                        result.exception, RetryableSystemError
+                        result.exception, RolloutSystemError
                     ):
                         # Extract the system error by replacing the result
                         clean_results[i] = (task, result.exception)
@@ -269,7 +269,7 @@ async def run_eval_in_database(run_id: str) -> dict[str, Any]:
                 results_without_system_errors = [
                     (task, result)
                     for task, result in clean_results
-                    if not isinstance(result, RetryableSystemError)
+                    if not isinstance(result, RolloutSystemError)
                 ]
 
                 # Update the progress bar
@@ -378,8 +378,11 @@ async def run(spec: EvalSpec) -> dict[str, Any]:  # type: ignore
 
         conn.commit()
 
-        logger.info("Eval loaded into database; now running", run_id=recorder.run_spec.run_id)
-        return await run_eval_in_database(recorder.run_spec.run_id)
+        run_id = recorder.run_spec.run_id
+        logger.info("Eval loaded into database; now running", run_id=run_id)
+        summary = await run_eval_in_database(run_id)
+        summary["run_id"] = run_id
+        return summary
 
 
 async def validate(spec: EvalSpec) -> dict[str, Any]:
@@ -400,7 +403,7 @@ __all__ = [
     "run",
     "validate",
     "EvalSpec",
-    "RetryableSystemError",
+    "RolloutSystemError",
     "Task",
     "RunnerArgs",
     "Eval",

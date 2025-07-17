@@ -11,7 +11,7 @@ import nanoeval._db as db
 import numpy as np
 import pytest
 from nanoeval.asyncio_utils import cancel_task
-from nanoeval.evaluation import EvalSpec, RetryableSystemError, RunnerArgs, Task
+from nanoeval.evaluation import EvalSpec, RolloutSystemError, RunnerArgs, Task
 from nanoeval.examples._gpqa import GPQAEval
 from nanoeval.setup import global_exit_stack
 from nanoeval.solvers.mcq import Answer, MCQSolver, MCQTask, MockSolver
@@ -144,7 +144,7 @@ async def test_retryable_system_errors() -> None:
         async def solve(self, task: MCQTask) -> Answer:
             if task.question_id not in self.seen_tasks:
                 self.seen_tasks.add(task.question_id)
-                raise RetryableSystemError("failing once for test purposes")
+                raise RolloutSystemError("failing once for test purposes")
 
             return Answer(correct=True, picked=task.question.correct_indices.pop())
 
@@ -176,17 +176,17 @@ async def test_errors_in_summary() -> None:
         @override
         async def evaluate(self, task: Task) -> Any:
             del task
-            raise RetryableSystemError("failing for test purposes")
+            raise RolloutSystemError("failing for test purposes")
 
         @override
         async def get_full_summary(
-            self, results: list[tuple[Task, RetryableSystemError]]
+            self, results: list[tuple[Task, RolloutSystemError]]
         ) -> dict[str, Any]:
             # Override full summary so we can observe system errors
             assert len(results) == 1
             # should have retried many times!!
             assert results[0][0].retry_idx == max_retries
-            assert isinstance(results[0][1], RetryableSystemError)
+            assert isinstance(results[0][1], RolloutSystemError)
             return {"accuracy": sentinel_made_it_here}
 
     async with global_exit_stack:
@@ -368,3 +368,32 @@ async def test_concurrency_none() -> None:
             )
         )
         assert "accuracy" in report
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("use_multiprocessing", [True, False])
+async def test_asyncio_gather_two_runs(use_multiprocessing: bool) -> None:
+    async with global_exit_stack, db.open_run_set_db(backup=False):
+        spec1 = EvalSpec(
+            eval=GPQAEval(solver=MockSolver()),
+            runner=RunnerArgs(
+                n_tasks=1,
+                concurrency=1,
+                experimental_use_multiprocessing=use_multiprocessing,
+                num_processes=1 if use_multiprocessing else None,
+            ),
+        )
+        spec2 = EvalSpec(
+            eval=GPQAEval(solver=MockSolver()),
+            runner=RunnerArgs(
+                n_tasks=1,
+                concurrency=1,
+                experimental_use_multiprocessing=use_multiprocessing,
+                num_processes=1 if use_multiprocessing else None,
+            ),
+        )
+
+        # Both evaluations must be able to run concurrently from within a single event loop.
+        # A hang here would indicate a bug in the executor pooling or result collection logic.
+        results = await asyncio.gather(nanoeval.run(spec1), nanoeval.run(spec2))
+        assert all("accuracy" in r for r in results)

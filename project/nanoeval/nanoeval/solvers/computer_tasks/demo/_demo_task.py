@@ -1,4 +1,7 @@
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from nanoeval.solvers.computer_tasks.code_execution_interface import (
+    ComputerInterface,
+    RuntimeConfig,
+)
 from nanoeval.solvers.computer_tasks.task import ComputerTask, Grade
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import Field
@@ -13,10 +16,10 @@ class DemoTask(ComputerTask):
         ]
     )
 
-    async def _setup(self, computer: ComputerInterface) -> None:
+    async def _setup(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> None:
         pass
 
-    async def grade(self, computer: ComputerInterface) -> Grade:
+    async def grade(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> Grade:
         res = await computer.check_shell_command(
             "if [ -e /root/ANSWER.txt ]; then cat /root/ANSWER.txt; fi"
         )

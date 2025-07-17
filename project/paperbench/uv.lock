@@ -143,6 +143,7 @@ name = "alcatraz"
 version = "0.1.0"
 source = { editable = "../alcatraz" }
 dependencies = [
+    { name = "async-lru" },
     { name = "asyncvnc" },
     { name = "azure-identity" },
     { name = "azure-mgmt-compute" },
@@ -168,6 +169,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "async-lru" },
     { name = "asyncvnc" },
     { name = "azure-identity" },
     { name = "azure-mgmt-compute" },
@@ -1842,7 +1844,7 @@ wheels = [
 [[package]]
 name = "nanoeval"
 version = "0.1.0"
-source = { git = "https://github.com/openai/preparedness.git?subdirectory=project%2Fnanoeval#d1a76c1bfbd5ac797f874c03b5cb4367b26e2182" }
+source = { editable = "../nanoeval" }
 dependencies = [
     { name = "aiodebug" },
     { name = "aiomonitor" },
@@ -1859,7 +1861,6 @@ dependencies = [
     { name = "numpy" },
     { name = "openai" },
     { name = "pandas" },
-    { name = "pandas-stubs" },
     { name = "psutil" },
     { name = "ptpython" },
     { name = "pyarrow" },
@@ -1872,11 +1873,47 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 
+[package.metadata]
+requires-dist = [
+    { name = "aiodebug" },
+    { name = "aiomonitor" },
+    { name = "blobfile" },
+    { name = "boostedblob" },
+    { name = "chz" },
+    { name = "dill" },
+    { name = "ipython" },
+    { name = "jinja2" },
+    { name = "litecli" },
+    { name = "loky" },
+    { name = "matplotlib" },
+    { name = "more-itertools" },
+    { name = "numpy" },
+    { name = "openai" },
+    { name = "pandas" },
+    { name = "psutil" },
+    { name = "ptpython" },
+    { name = "pyarrow" },
+    { name = "pydantic", specifier = ">=2" },
+    { name = "pydantic-core" },
+    { name = "pytest-asyncio" },
+    { name = "streamlit" },
+    { name = "structlog" },
+    { name = "tqdm" },
+    { name = "typing-extensions" },
+]
+
 [[package]]
 name = "nanoeval-alcatraz"
 version = "0.1.0"
-source = { git = "https://github.com/openai/preparedness.git?subdirectory=project%2Fnanoeval_alcatraz#d1a76c1bfbd5ac797f874c03b5cb4367b26e2182" }
+source = { editable = "../nanoeval_alcatraz" }
 dependencies = [
+    { name = "async-lru" },
+    { name = "structlog" },
+    { name = "typing-extensions" },
+]
+
+[package.metadata]
+requires-dist = [
     { name = "async-lru" },
     { name = "structlog" },
     { name = "typing-extensions" },
@@ -1884,11 +1921,11 @@ dependencies = [
 
 [[package]]
 name = "narwhals"
-version = "1.47.0"
+version = "1.47.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d8/8c/ba6c454ab019d1e24573c68b89a1c4edaad69d4cdf9ed107812802780742/narwhals-1.47.0.tar.gz", hash = "sha256:38238882f3ab2bbc8e7121bc9be951a8a58f1a810bdb14aa2b18792bafac01f8", size = 514799 }
+sdist = { url = "https://files.pythonhosted.org/packages/fa/97/f9072f2dd368e52a37c0f5578f5910c689d5ac9c1108f8d2ed6c84c1c8fc/narwhals-1.47.1.tar.gz", hash = "sha256:3e477a54984a141b500ebd65d0b946b7a991080939b4a3321a6b01ea97258c9a", size = 516244 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a7/c1/1e1109cca762087fd101064c00f576a5a8fa6889d07e70f1efe20205af46/narwhals-1.47.0-py3-none-any.whl", hash = "sha256:8b4ead8866046829de24058d1079e776806bd4aab7d38f55f17c58ce4c0994d2", size = 374667 },
+    { url = "https://files.pythonhosted.org/packages/c0/15/278693412221859a0159719878e51a79812a189edceef2fe325160a8e661/narwhals-1.47.1-py3-none-any.whl", hash = "sha256:b9f2b2557aba054231361a00f6fcabc5017e338575e810e82155eb34e38ace93", size = 375506 },
 ]
 
 [[package]]
@@ -2063,6 +2100,7 @@ dependencies = [
     { name = "nanoeval" },
     { name = "nanoeval-alcatraz" },
     { name = "openai" },
+    { name = "pandas-stubs" },
     { name = "pre-commit" },
     { name = "preparedness-turn-completer" },
     { name = "pytest-asyncio" },
@@ -2097,10 +2135,11 @@ requires-dist = [
     { name = "docker", specifier = ">=7.1.0" },
     { name = "drain3", specifier = ">=0.9.11" },
     { name = "flask", specifier = ">=3.0.3" },
-    { name = "nanoeval", git = "https://github.com/openai/preparedness.git?subdirectory=project%2Fnanoeval" },
-    { name = "nanoeval-alcatraz", git = "https://github.com/openai/preparedness.git?subdirectory=project%2Fnanoeval_alcatraz" },
+    { name = "nanoeval", editable = "../nanoeval" },
+    { name = "nanoeval-alcatraz", editable = "../nanoeval_alcatraz" },
     { name = "openai", specifier = ">=1.44.1" },
     { name = "openai", specifier = ">=1.54.3" },
+    { name = "pandas-stubs", specifier = ">=2.3.0.250703" },
     { name = "pre-commit", specifier = ">=4.1.0" },
     { name = "preparedness-turn-completer", editable = "../preparedness_turn_completer" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },

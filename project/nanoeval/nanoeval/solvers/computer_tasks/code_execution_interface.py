@@ -1,13 +1,19 @@
 import ast
+import shlex
 from abc import ABC, abstractmethod
+from contextlib import asynccontextmanager
+from enum import StrEnum, auto
 from functools import cached_property
 from pathlib import Path
-from typing import Any, AsyncContextManager, Literal, Sequence
+from typing import Any, AsyncContextManager, AsyncGenerator, Literal, Sequence
 
 import chz
+import structlog.stdlib
 from IPython.core.inputtransformer2 import TransformerManager
-from pydantic import BaseModel, field_validator
-from typing_extensions import deprecated
+from pydantic import BaseModel, Field, field_validator
+from typing_extensions import deprecated, final
+
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 class JupyterExecutionResult(BaseModel):
@@ -35,6 +41,30 @@ class JupyterExecutionResult(BaseModel):
 class ExecutionResult(BaseModel):
     output: bytes
     exit_code: int
+
+    @property
+    def unicode_output_best_effort(self) -> str:
+        """
+        Not all command outputs are valid Unicode, because the unix command line is binary. However, it is very common
+        to want to treat the output as Unicode. This is a utility function that decodes the output as best as possible
+        and replaces any invalid characters with the Unicode replacement character.
+        """
+        return self.output.decode("utf-8", errors="replace")
+
+
+class NetworkMode(StrEnum):
+    """
+    The mode specifying the network configuration for the container.
+    """
+
+    # No network access
+    NONE = auto()
+    # Webcache access, only GET requests allowed
+    WEBCACHE_GET_ONLY = auto()
+    # Unproxied access to the internet
+    UNPROXIED = auto()
+    # full GET access + whitelisted POST access to LLM provider APIs
+    API_ACCESS = auto()
 
 
 class ComputerInterface(ABC):
@@ -65,14 +95,16 @@ class ComputerInterface(ABC):
         pass
 
     @abstractmethod
-    async def send_shell_command(self, cmd: str) -> ExecutionResult:
+    async def send_shell_command(self, cmd: str, *, idempotent: bool = False) -> ExecutionResult:
         """
-        Executes the shell command in a new bash shell. Every command should be unique
-        in terms of environment, etc.
+        Executes the shell command in a new bash shell. Every command should be unique in terms of environment.
+
+        If ``idempotent`` is ``True`` the call may transparently retry on failure. Only pass ``True`` if the command
+        can be safely repeated without side effects.
         """
 
-    async def check_shell_command(self, cmd: str) -> ExecutionResult:
-        res = await self.send_shell_command(cmd)
+    async def check_shell_command(self, cmd: str, *, idempotent: bool = False) -> ExecutionResult:
+        res = await self.send_shell_command(cmd, idempotent=idempotent)
         assert res.exit_code == 0, (
             f"Command failed with {res.exit_code=}\n\n{cmd=}\n\n{res.output.decode(errors='ignore')}"
         )
@@ -130,6 +162,20 @@ class ContainerResources(BaseModel):
     memory: int = 1024
 
 
+class VolumeMount(BaseModel):
+    """
+    Mounts files from the host onto the container.
+    """
+
+    host_path: str
+    container_path: str
+
+
+@chz.chz
+class RuntimeConfig:
+    """Configuration for runtime-specific resources."""
+
+
 class ComputerConfiguration(BaseModel):
     """
     Very roughly, this class represents how to construct a Docker Compose-style workload for a
@@ -156,7 +202,11 @@ class ComputerConfiguration(BaseModel):
 
     azure_files_config: dict[str, str] | None = None
     azure_container_config: dict[str, str] | None = None
-    volumes_config: dict[str, Any] = {}
+    volumes_config: dict[str, Any] = Field(
+        default={},
+        deprecated=True,
+        description="For backwards compatibility with datasets that explicitly specify volumes. Note that volumes_config now does absolutely nothing, you should use volume_mounts instead.",
+    )
     shm_size: str | None = None
     # TODO(kevinliu) remove this
     mem_limit: str | None = None
@@ -171,7 +221,69 @@ class ComputerConfiguration(BaseModel):
 
     resources: ContainerResources = ContainerResources()
     limits: ContainerResources = ContainerResources()
-    allow_internet: bool = False
+    volume_mounts: list[VolumeMount] = Field(
+        default_factory=list,
+        description="Mounts files from the host onto the container. Volume mounts are read only.",
+    )
+    network_mode: NetworkMode = Field(
+        default=NetworkMode.NONE,
+        description="The mode specifying the network configuration for the container. If set to NONE, container will not be attached to any Internet route. It will still have access to side containers on the internal network.  Due to runtime restrictions, this is DIFFERENT from computer.disable_internet() which also disconnects the container from the internal network.",
+    )
+    num_gpus: int = 0
+
+    def validate_runtime_config(self, runtime_config: RuntimeConfig) -> RuntimeConfig:
+        """Validate runtime-specific resources."""
+        assert type(runtime_config) is RuntimeConfig, (
+            "Task must override validate_resources to use runtime-specific resources"
+        )
+        return runtime_config
+
+    async def setup(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> None:
+        """
+        This setup function enforces and verifies the ComputerConfiguration invariants on the computer. All tasks
+        should call this function in their setup function.
+        """
+
+        logger.info("Beginning setup")
+
+        # Sanity checks
+        if self.num_gpus > 0:
+            num_gpus = await computer.check_shell_command("nvidia-smi -L | wc -l", idempotent=True)
+            num_gpus = int(num_gpus.output.decode())
+            assert self.num_gpus == num_gpus, f"{self.num_gpus=} != {num_gpus=}"
+
+        if isinstance(computer, JupyterComputerInterface):
+            await computer.check_execute(f"%cd {self.cwd}")
+            res = await computer.check_execute("import os; os.getcwd()")
+            assert res.parsed_final_expression_output == self.cwd, (
+                f"Jupyter execution environment didn't properly set up cwd: {res}"
+            )
+
+        # TODO(kevinliu) move this out and validate on Alcatraz
+        # cd to the proper root folder. Try to cover all bases with .bashrc, .profile, and .bash_profile;
+        # note that the existence of .bash_profile overrides .profile so be careful to gate on existence.
+        await computer.send_shell_command(
+            f"""
+            echo cd {shlex.quote(self.cwd)} >> ~/.bashrc
+            [ -f ~/.profile ] && echo cd {shlex.quote(self.cwd)} >> ~/.profile
+            [ -f ~/.bash_profile ] && echo cd {shlex.quote(self.cwd)} >> ~/.bash_profile
+            """,
+            idempotent=True,
+        )
+        res = await computer.check_shell_command("bash -lc 'pwd'", idempotent=True)
+        if res.unicode_output_best_effort.strip() != self.cwd:
+            raise RuntimeError(f"bash -lc didn't set up cwd properly: {res}")
+
+        # Check the volumes are setup properly
+        for volume_mount in self.volume_mounts:
+            await computer.check_shell_command(
+                f"test -d {shlex.quote(volume_mount.container_path)} || test -f {shlex.quote(volume_mount.container_path)} || test -S {shlex.quote(volume_mount.container_path)}",
+                idempotent=True,
+            )
+
+    @property
+    def allow_internet(self) -> bool:
+        return self.network_mode != NetworkMode.NONE
 
     # Validators
     @field_validator("cwd")
@@ -190,13 +302,66 @@ class ComputerRuntime(ABC):
     Many realistic solvers may be implementation-specific and will not use this interface directly, but may use
     a concrete downstream implementation.
 
+    Generally, you want to call `runtime.run` to start a computer and then use the `ComputerInterface`
+    to interact with the computer.
     """
 
-    @abstractmethod
-    def run(self, task: ComputerConfiguration) -> AsyncContextManager[ComputerInterface]:
+    runtime_config: RuntimeConfig = chz.field(default_factory=RuntimeConfig)
+
+    @final
+    async def setup_computer(
+        self, task: ComputerConfiguration, computer: ComputerInterface
+    ) -> None:
         """
-        Start the task. Returns a context manager that owns the underlying container and will stop the underlying
-        resources when the context manager exits.
+        General setup flow:
+
+        - runtime.run -> creates computer
+        - runtime.setup_computer
+            - runtime.runtime_presetup -> sets up the computer with any runtime-specific parameters
+            - task.setup -> sets up the task with any task-specific parameters
+        """
+
+        # TODO(kevinliu): In the future, due to different model harnesses, we may want to have 4 stages instead of 3:
+        # 1. Create computer
+        # 2. Runtime setup
+        # 3. Model specific setup (e.g., tools)
+        # 4. Task setup
+        # For now, runtime setup also includes model-specific setup.
+        runtime_config = task.validate_runtime_config(self.runtime_config)
+        await self._do_runtime_setup(task, computer)
+        await task.setup(computer, runtime_config=runtime_config)
+
+    @final
+    @asynccontextmanager
+    async def run(self, task: ComputerConfiguration) -> AsyncGenerator[ComputerInterface, None]:
+        """
+        Provides an interface to a computer that is ready to run agent code.
+
+        Internally, this function creates a new computer via the appropriate runtime backend, runs runtime setup, and
+        runs task setup.
+        """
+        async with self._start_computer(task) as computer:
+            await self.setup_computer(task, computer)
+            yield computer
+
+    # Override the functions below to implement your own runtime
+    @abstractmethod
+    async def _do_runtime_setup(
+        self, task: ComputerConfiguration, computer: ComputerInterface
+    ) -> None:
+        """
+        This function is called before the task.setup function. It is used to set up any runtime-specific
+        settings on the computer - e.g., overriding proxies, installing packages, etc.
+        """
+        pass
+
+    @abstractmethod
+    def _start_computer(
+        self, task: ComputerConfiguration
+    ) -> AsyncContextManager[ComputerInterface]:
+        """
+        Starts the computer and returns a context manager that owns the underlying container.
+        The context manager will stop the underlying resources when the context manager exits.
         """
         pass
 

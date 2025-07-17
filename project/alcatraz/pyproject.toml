@@ -24,7 +24,8 @@ dependencies = [
     "azure-identity",
     "vncdotool",
     "asyncvnc",
-    "structlog"
+    "structlog",
+    "async-lru",
 ]
 
 [tool.setuptools]
@@ -36,3 +37,7 @@ dev = ["pre-commit>=3.7"]
 
 [tool.black]
 line-length = 100 # match the precommit
+
+[build-system]
+requires = ["setuptools<78.0.0", "wheel"]
+build-backend = "setuptools.build_meta"

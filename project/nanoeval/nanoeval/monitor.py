@@ -49,7 +49,7 @@ def _load_result(data: bytes | None) -> Any:
 _STATUSES: dict[str, str] = {
     "initialized": "result IS NULL AND executor_pid IS NULL",
     "running": "result IS NULL AND executor_pid IS NOT NULL",
-    "errored": "result LIKE '%RetryableSystemError%'",
+    "errored": "result LIKE '%RolloutSystemError%'",
     "completed": "result NOT NULL",
 }
 
@@ -75,7 +75,7 @@ def _load_task_data(
         CASE
             WHEN executor_pid IS NULL AND result is NULL THEN 'initialized'
             WHEN result IS NULL THEN 'running'
-            WHEN result LIKE '%RetryableSystemError%' THEN 'errored'
+            WHEN result LIKE '%RolloutSystemError%' THEN 'errored'
             ELSE 'completed'
         END AS status
     FROM task

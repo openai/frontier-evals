@@ -45,8 +45,11 @@ class LimitsHelper:
         assert self.validate_connection_limit > 0
 
         assert (
-            self.max_time_seconds + self.exception_handling_timeout <= self.total_sample_timeout
-        ), "max_time_seconds + exception_handling_timeout should be less than total_sample_timeout"
+            self.max_time_seconds + self.exception_handling_timeout
+            <= self.total_sample_timeout - 10
+        ), (
+            "max_time_seconds + exception_handling_timeout should be less than total_sample_timeout (with 10 second buffer)"
+        )
 
     @asynccontextmanager
     async def enforce_timeout(

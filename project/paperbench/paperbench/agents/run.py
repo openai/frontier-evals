@@ -9,7 +9,7 @@ import time
 
 import blobfile as bf
 from alcatraz.clusters.local import ClusterConfig, VolumesConfig
-from nanoeval.eval import RetryableSystemError
+from nanoeval.eval import RolloutSystemError
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from structlog.stdlib import BoundLogger
 
@@ -65,7 +65,7 @@ async def run_agent_in_computer(
         logger.exception(f"Run failed with error:\n{str(error)}")
     finally:
         # re-raise retryable errors
-        if isinstance(error, RetryableSystemError):
+        if isinstance(error, RolloutSystemError):
             raise error
 
         end = time.time()

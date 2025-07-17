@@ -16,7 +16,10 @@ load_dotenv()
 import structlog.stdlib
 from alcatraz.clusters.local import LocalConfig
 from nanoeval.recorder import get_recorder
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from nanoeval.solvers.computer_tasks.code_execution_interface import (
+    ComputerInterface,
+    RuntimeConfig,
+)
 from nanoeval.solvers.computer_tasks.task import ComputerTask
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
@@ -93,7 +96,7 @@ class PBTask(ComputerTask):
             yield AlcatrazComputerInterface(cluster_value=cluster)
 
     @override
-    async def _setup(self, computer: ComputerInterface) -> None:
+    async def _setup(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> None:
         """
         Called by ComputerTask.setup(), implements the setup logic specific to PBTask instances.
         Specifically, sets up the files and folders necessary for attempting the PBTask.
@@ -226,7 +229,9 @@ class PBTask(ComputerTask):
         return not self.reproduction.skip_reproduction and not self.judge.code_only
 
     @override
-    async def grade(self, computer: ComputerInterface) -> PaperBenchGrade:
+    async def grade(
+        self, computer: ComputerInterface, runtime_config: RuntimeConfig
+    ) -> PaperBenchGrade:
         """Defines the grading process for a PBTask."""
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir

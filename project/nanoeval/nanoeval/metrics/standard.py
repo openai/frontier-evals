@@ -4,7 +4,7 @@ from typing import Any, Awaitable, Callable, Sequence, cast
 
 import pandas as pd
 from more_itertools import flatten
-from nanoeval.eval import RetryableSystemError, TResult, TTask
+from nanoeval.eval import RolloutSystemError, TResult, TTask
 from nanoeval.library_config import get_library_config
 
 
@@ -17,9 +17,9 @@ def _validate_input_data(
         missing_cols = required_sample_columns - set(samples_df.columns)
         raise ValueError(f"'samples_df' is missing required columns: {missing_cols}")
 
-    assert (
-        samples_df["instance"].str.contains(":").sum() == 0
-    ), "Instance names cannot contain ':' (used in bootstrapping)"
+    assert samples_df["instance"].str.contains(":").sum() == 0, (
+        "Instance names cannot contain ':' (used in bootstrapping)"
+    )
 
     # Ensure 'answer_group_correctness_df' has the required columns
     required_correctness_columns = {"instance", "answer_group_id", "is_correct"}
@@ -105,7 +105,7 @@ def compute_default_metrics_on_correctness_without_answer_groups(
 
 async def handle_system_errors_and_compute_metrics(
     metrics_fn: Callable[[list[tuple[TTask, TResult]]], Awaitable[dict[str, Any]]],
-    results: Sequence[tuple[TTask, TResult | RetryableSystemError]],
+    results: Sequence[tuple[TTask, TResult | RolloutSystemError]],
     process_invalid: Callable[[TTask], TResult],
 ) -> dict[str, Any]:
     """
@@ -142,7 +142,7 @@ async def handle_system_errors_and_compute_metrics(
     results_treating_system_errors_as_fails = [
         (
             task,
-            _process_invalid_or_none(task) if isinstance(result, RetryableSystemError) else result,
+            _process_invalid_or_none(task) if isinstance(result, RolloutSystemError) else result,
         )
         for task, result in results
     ]
@@ -151,7 +151,7 @@ async def handle_system_errors_and_compute_metrics(
     }
 
     results_excluding_errors = [
-        (task, result) for task, result in results if not isinstance(result, RetryableSystemError)
+        (task, result) for task, result in results if not isinstance(result, RolloutSystemError)
     ]
     task_ids_excluding_errors = {task.question_id for task, _ in results_excluding_errors}
 

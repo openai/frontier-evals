@@ -474,8 +474,9 @@ class BaseAlcatrazCluster(ABC):
             acr_registries = {
                 image.split(".azurecr.io")[0] for image in images if ".azurecr.io" in image
             }
-            for registry_name in acr_registries:
-                await _acr_login(registry_name)
+            if self.pull_from_registry:
+                for registry_name in acr_registries:
+                    await _acr_login(registry_name)
 
         if not docker_client_initialized:
             self.docker_client = await self._get_docker_client()

@@ -11,6 +11,7 @@ from typing import Any, Generator, Self
 import blobfile as bf
 import boostedblob as bbb
 import chz
+from boostedblob.request import RequestFailure
 from nanoeval.fs_paths import database_dir
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class PersistentDb:
         if not self.backup:
             return
 
-        if not bf.exists(self.database_file):
+        if not os.path.exists(self.database_file):
             # Download the database
             logger.info("Downloading database %s", self.path)
             try:
@@ -94,6 +95,23 @@ class PersistentDb:
             except FileNotFoundError:
                 logger.info("Database %s not found, skipping", self.path)
                 return
+            except RequestFailure as e:
+                if "Reason: 'The specified container does not exist.'" in str(
+                    e
+                ) and self.path.startswith("az://"):
+                    # This is probably an Azure path, and the container doesn't exist.
+                    # Let's raise a nicer error so we can tell the user what to do.
+                    account, container, *_parts = self.path.removeprefix("az://").split("/")
+
+                    raise FileNotFoundError(
+                        f"nanoeval requires the storage container `az://{account}/{container}` to be created to access the path {self.path}. Unfortunately, this cannot be done automatically.\n"
+                        "\n"
+                        "To create the container, please run:\n"
+                        "\n"
+                        f"az storage container create --account-name {account} --name {container} --auth-mode login"
+                    ) from e
+                else:
+                    raise
 
     async def _upload(self) -> None:
         if _IS_CI:

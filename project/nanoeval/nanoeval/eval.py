@@ -14,7 +14,6 @@ from typing import (
     Self,
     Sequence,
     TypeVar,
-    final,
 )
 
 import chz
@@ -69,9 +68,12 @@ TResult = TypeVar("TResult")
 logger = logging.getLogger(__name__)
 
 
-class RetryableSystemError(Exception):
+class RolloutSystemError(Exception):
     """
-    An error that is blamed on the system, not the model - hence it should be retried.
+    An error that is blamed on the system, not the model. nanoeval can retry these if max_retries > 0.
+
+    To prevent unintentional error swallowing, only errors that are subclasses of this class will be swallowed.
+    All other exceptions will be raised immediately and end the eval.
     """
 
     pass
@@ -86,16 +88,16 @@ class SystemErrorsNotSupported(ValueError):
 
 
 def assert_no_system_errors(
-    results: Sequence[tuple[TTask, TResult | RetryableSystemError]],
+    results: Sequence[tuple[TTask, TResult | RolloutSystemError]],
 ) -> Sequence[tuple[TTask, TResult]]:
     """
     Raises an exception if any of the results are system errors.
     """
     results_clean = [
-        (task, result) for task, result in results if not isinstance(result, RetryableSystemError)
+        (task, result) for task, result in results if not isinstance(result, RolloutSystemError)
     ]
     results_errors = [
-        (task, result) for task, result in results if isinstance(result, RetryableSystemError)
+        (task, result) for task, result in results if isinstance(result, RolloutSystemError)
     ]
     if len(results_clean) != len(results):
         raise SystemErrorsNotSupported(
@@ -137,7 +139,7 @@ class Eval(Generic[TTask, TResult], HasAsyncContextManager):
         raise NotImplementedError
 
     async def get_full_summary(
-        self, results: list[tuple[TTask, TResult | RetryableSystemError]]
+        self, results: list[tuple[TTask, TResult | RolloutSystemError]]
     ) -> dict[str, Any]:
         """
         Returns a final summary of evaluation results as a dictionary. This is the same as `eval.get_summary()`, but
@@ -155,7 +157,7 @@ class Eval(Generic[TTask, TResult], HasAsyncContextManager):
 
     def process_invalid(self, task: TTask) -> TResult:
         """
-        Returns the result to use when a system error occurs. This is called when a task raises a RetryableSystemError.
+        Returns the result to use when a system error occurs. This is called when a task raises a RolloutSystemError.
         There is no harm if you don't override this method, but then you don't get summary["metrics_including_errors"].
         """
         raise NotImplementedError
@@ -169,7 +171,6 @@ class Eval(Generic[TTask, TResult], HasAsyncContextManager):
         del partial_results, pbar
         pass
 
-    @final
     async def self_test(self) -> None:
         """
         Simple self test to check if the eval is configured correctly. It takes some time to complete, so it is
@@ -187,9 +188,9 @@ class Eval(Generic[TTask, TResult], HasAsyncContextManager):
         # Test robustness to retryable system errors
         try:
             await self.get_full_summary(
-                [(task, RetryableSystemError("moo")) for task in tasks[: len(tasks) // 2]]
+                [(task, RolloutSystemError("moo")) for task in tasks[: len(tasks) // 2]]
             )
-            await self.get_full_summary([(task, RetryableSystemError("moo")) for task in tasks])
+            await self.get_full_summary([(task, RolloutSystemError("moo")) for task in tasks])
         except SystemErrorsNotSupported:
             # fine if eval explicitly does not support system errors
             pass
@@ -234,7 +235,7 @@ class RunnerArgs:
     )
     max_retries: int = chz.field(
         default=16,
-        doc="Number of times to retry a task if it raises a RetryableSystemError. Note that no other exception types are retried.",
+        doc="Number of times to retry a task if it raises a RolloutSystemError. Note that no other exception types are retried.",
     )
     should_backup: bool = chz.field(
         default=True,
@@ -250,9 +251,9 @@ class RunnerArgs:
     def _validate_multiprocessing_options(self) -> None:
         if self.num_processes:
             assert self.num_processes > 0
-            assert (
-                self.experimental_use_multiprocessing
-            ), "num_processes requires experimental_use_multiprocessing"
+            assert self.experimental_use_multiprocessing, (
+                "num_processes requires experimental_use_multiprocessing"
+            )
 
     @chz.validate
     def _numerical_limits(self) -> None:

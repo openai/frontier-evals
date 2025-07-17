@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
-from nanoeval.eval import RetryableSystemError, Task
+from nanoeval.eval import RolloutSystemError, Task
 from nanoeval.metrics.standard import compute_default_metrics
 
 
@@ -44,7 +44,7 @@ def _compute_metrics_plus_outcome_aggregations(samples_df: pd.DataFrame) -> dict
 
 
 def get_summary_error_aware(
-    results: list[tuple[Task, bool | RetryableSystemError]],
+    results: list[tuple[Task, bool | RolloutSystemError]],
 ) -> dict[str, Any]:
     """
     Reusable utility function that computes a summary including a bunch of metadata about
@@ -62,11 +62,11 @@ def get_summary_error_aware(
             "instance": [task.question_id for task, _ in results],
             "attempt": [task.attempt_id for task, _ in results],
             "correct": [
-                not isinstance(result, RetryableSystemError) and result for _, result in results
+                not isinstance(result, RolloutSystemError) and result for _, result in results
             ],
-            "system_error": [isinstance(result, RetryableSystemError) for _, result in results],
+            "system_error": [isinstance(result, RolloutSystemError) for _, result in results],
             "error": [
-                str(result) if isinstance(result, RetryableSystemError) else None
+                str(result) if isinstance(result, RolloutSystemError) else None
                 for (_, result) in results
             ],
         }

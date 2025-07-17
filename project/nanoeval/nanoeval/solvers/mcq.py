@@ -26,6 +26,7 @@ class Question(BaseModel):
     # reproducible way. If None, the solver should be deterministic.
     image: str | None = None  # solver code assumes image is in base64 encoding
     seed: int | None = 42
+    metadata: dict[str, Any] = {}
 
     # Whether the question may have multiple correct answers.
     # If True, the solver should return a set of picked indices, which must match correct_indices to be marked correct.

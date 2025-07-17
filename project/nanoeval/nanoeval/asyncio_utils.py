@@ -6,7 +6,17 @@ import warnings
 from contextlib import asynccontextmanager
 from functools import cached_property
 from types import TracebackType
-from typing import Any, AsyncContextManager, AsyncGenerator, Coroutine, Self, TypeVar
+
+import chz
+from typing_extensions import (
+    Any,
+    AsyncContextManager,
+    AsyncGenerator,
+    Coroutine,
+    Generic,
+    Self,
+    TypeVar,
+)
 
 T = TypeVar("T")
 
@@ -57,6 +67,9 @@ async def gather_with_concurrency(
         logger.warning("Ignoring GeneratorExit (likely a spurious error from task cleanup)")
 
 
+TContext = TypeVar("TContext", default=None)
+
+
 class HasAsyncContextManager:
     """
     Mixin that allows you to ergonomically define a context manager for an object.
@@ -65,11 +78,11 @@ class HasAsyncContextManager:
     """
 
     @asynccontextmanager
-    async def _context(self) -> AsyncGenerator[None, None]:
+    async def _context(self) -> AsyncGenerator[Any, None]:
         yield
 
     @cached_property
-    def __context_singleton(self) -> AsyncContextManager[None]:
+    def __context_singleton(self) -> AsyncContextManager[Any]:
         return self._context()
 
     async def __aenter__(self) -> Self:
@@ -83,6 +96,44 @@ class HasAsyncContextManager:
         tb: TracebackType | None,
     ) -> bool | None:
         await self.__context_singleton.__aexit__(exc_type, exc_value, tb)
+        return None
+
+
+@chz.chz
+class HasAsyncContextManagerWithValue(HasAsyncContextManager, Generic[TContext]):
+    """
+    The context manager can optionally return a value, accessible with `self._context_value`. Access will error if the object hasn't been __aenter__'d.
+    """
+
+    @asynccontextmanager
+    async def _context(self) -> AsyncGenerator[TContext, None]:
+        raise NotImplementedError("Subclasses must implement _context() to return a value")
+        yield
+
+    @property
+    def _context_value(self) -> TContext:
+        return self._context_state_internal["context"]
+
+    @chz.init_property
+    def _context_state_internal(self) -> dict[str, Any]:
+        return {}
+
+    @cached_property
+    def __context_singleton(self) -> AsyncContextManager[TContext]:
+        return self._context()
+
+    async def __aenter__(self) -> Self:
+        self._context_state_internal["context"] = await self.__context_singleton.__aenter__()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        tb: TracebackType | None,
+    ) -> bool | None:
+        await self.__context_singleton.__aexit__(exc_type, exc_value, tb)
+        del self._context_state_internal["context"]
         return None
 
 

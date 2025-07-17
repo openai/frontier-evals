@@ -13,11 +13,15 @@ from dotenv import load_dotenv
 load_dotenv()
 import chz
 from alcatraz.clusters.local import ClusterConfig, LocalConfig
-from nanoeval.eval import RetryableSystemError
+from nanoeval.eval import RolloutSystemError
 from nanoeval.recorder import get_recorder
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
+from nanoeval.solvers.computer_tasks.code_execution_interface import (
+    ComputerInterface,
+    NetworkMode,
+    RuntimeConfig,
+)
 from nanoeval.solvers.computer_tasks.solver import PythonCodingEval, PythonCodingSolver
-from nanoeval.solvers.computer_tasks.steps import FinalResult, FinalResultSuccessful, Step
+from nanoeval.solvers.computer_tasks.steps import FinalResult, Step
 from nanoeval.solvers.computer_tasks.task import ComputerTask
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
@@ -93,6 +97,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             pull_from_registry=False,
         )
     )
+    runtime_config: RuntimeConfig
 
     iterative: bool = chz.field(default=False)
 
@@ -171,13 +176,13 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         try:
             async with self._start_computer(task) as computer:
                 # 1. Run the task setup
-                await task.setup(computer)
+                await task.setup(computer, self.runtime_config)
 
                 # 2. Run the agent
                 agent_output = await self._run_agent(computer, task)
 
                 # 3. Grade the submission
-                grade: PaperBenchGrade = await task.grade(computer)
+                grade: PaperBenchGrade = await task.grade(computer, self.runtime_config)
                 if grade.paperbench_result.judge_output is None:
                     grade = PaperBenchGrade(
                         paperbench_result=PaperBenchResult(
@@ -195,9 +200,9 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                     )
                 grade.paperbench_result.agent_output = agent_output
 
-            yield FinalResultSuccessful(grade=grade)
+            yield FinalResult(grade=grade)
         except Exception as e:
-            raise RetryableSystemError(f"Run failed with error: {str(e)}") from e
+            raise RolloutSystemError(f"Run failed with error: {str(e)}") from e
 
     async def _run_agent(self, computer: ComputerInterface, task: PBTask) -> AgentOutput:
         ctx_logger = logger.bind(
@@ -513,7 +518,9 @@ class PaperBench(PythonCodingEval):
                         judge=self.judge,
                         reproduction=self.reproduction,
                         save_cluster_output_to_host=self.save_cluster_output_to_host,
-                        allow_internet=self.allow_internet,
+                        network_mode=NetworkMode.UNPROXIED
+                        if self.allow_internet
+                        else NetworkMode.NONE,
                         cwd="/home",
                     )
                 )
@@ -533,7 +540,7 @@ class PaperBench(PythonCodingEval):
 
     @override
     async def get_full_summary(
-        self, results: list[tuple[ComputerTask, FinalResult | RetryableSystemError]]
+        self, results: list[tuple[ComputerTask, FinalResult | RolloutSystemError]]
     ) -> dict[str, Any]:
         tasks = [t for t, _ in results]
         final_results = [
@@ -554,7 +561,7 @@ class PaperBench(PythonCodingEval):
         }
 
         # health
-        results_clean = [r for r in final_results if not isinstance(r, RetryableSystemError)]
+        results_clean = [r for r in final_results if not isinstance(r, RolloutSystemError)]
         run_health = {
             "n_rollouts_failed": len(
                 [r for r in results_clean if not r.agent_output or not r.submission_exists]

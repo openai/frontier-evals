@@ -37,4 +37,5 @@ def dummy_recorder(log: bool = True) -> RecorderConfig:
     """
     Returns a dummy recorder that does nothing.
     """
+    logger.warning("You are using a dummy recorder. Nothing will be logged.")
     return get_library_config().get_dummy_recorder(log)

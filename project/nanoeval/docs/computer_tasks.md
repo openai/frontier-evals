@@ -7,6 +7,6 @@ Computer tasks are a type of task that involve code execution on one or more con
 
 1. A `ComputerRuntime` starts a rollout from a `ComputerTask`, calls `task.setup()` and returns an implementation of
    `ComputerInterface`.
-2. The agent gets a `ComputerInterface` and can call arbitrary functions using `computer.send_shell_command` or
-   `computer.execute`.
+2. The agent gets a `ComputerInterface` and can call arbitrary functions using `computer.send_shell_command` (set
+   `idempotent=True` if the command is safe to retry) or `computer.execute`.
 3. When the agent is done, the eval calls `task.grade()`, which returns the score from the eval.

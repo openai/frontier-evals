@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shlex
 from abc import ABC, abstractmethod
 from typing import ClassVar
 
@@ -11,6 +10,7 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerConfiguration,
     ComputerInterface,
     JupyterComputerInterface,
+    RuntimeConfig,
     valid_ipython_code,
 )
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
@@ -47,14 +47,16 @@ class ComputerTask(ABC, ComputerConfiguration, Task, SerializableBaseModel):
     hints: list[str] = []
 
     @abstractmethod
-    async def grade(self, computer: ComputerInterface) -> Grade:
+    async def grade(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> Grade:
         pass
 
     @abstractmethod
-    async def _setup(self, computer: ComputerInterface) -> None:
+    async def _setup(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> None:
         pass
 
-    async def check_for_valid_submission(self, computer: ComputerInterface) -> bool:
+    async def check_for_valid_submission(
+        self, computer: ComputerInterface, runtime_config: RuntimeConfig
+    ) -> bool:
         """
         Function used to check if the model has generated any potential solution, regardless of
         whether or not it is correct. This is a simple way to poke the model to try again if it
@@ -74,25 +76,10 @@ class ComputerTask(ABC, ComputerConfiguration, Task, SerializableBaseModel):
         # supports pokes if method was overridden
         return type(self).check_for_valid_submission != ComputerTask.check_for_valid_submission
 
-    async def setup(self, computer: ComputerInterface) -> None:
-        logger.info("Beginning setup")
-
-        if isinstance(computer, JupyterComputerInterface):
-            await computer.check_execute(f"%cd {self.cwd}")
-            res = await computer.check_execute("import os; os.getcwd()")
-            assert res.parsed_final_expression_output == self.cwd, (
-                f"Execution environment didn't properly set up cwd: {res}"
-            )
-
-        await self._setup(computer)
-
-        # Check the volumes are setup properly
-        for volume_config in self.volumes_config.values():
-            # Assert the bind dest exists. We also check if it can be a socket
-            # because /var/run/docker.sock is a common bind dest.
-            await computer.check_shell_command(
-                f"test -d {shlex.quote(volume_config['bind_dest'])} || test -f {shlex.quote(volume_config['bind_dest'])} || test -S {shlex.quote(volume_config['bind_dest'])}"
-            )
+    async def setup(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> None:
+        await super().setup(computer, runtime_config)
+        # Now, we run the task-specific setup function.
+        await self._setup(computer, runtime_config)
 
     @field_validator("prompt")
     @classmethod
@@ -136,7 +123,7 @@ class SimpleJupyterTask(ComputerTask):
         return v
 
     @override
-    async def _setup(self, computer: ComputerInterface) -> None:
+    async def _setup(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> None:
         assert isinstance(computer, JupyterComputerInterface), (
             "Computer must be a JupyterComputerInterface"
         )
@@ -144,7 +131,7 @@ class SimpleJupyterTask(ComputerTask):
         await computer.check_execute(self.setup_cell)
 
     @override
-    async def grade(self, computer: ComputerInterface) -> Grade:
+    async def grade(self, computer: ComputerInterface, runtime_config: RuntimeConfig) -> Grade:
         assert isinstance(computer, JupyterComputerInterface), (
             "Computer must be a JupyterComputerInterface"
         )

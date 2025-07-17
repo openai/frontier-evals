@@ -2,25 +2,25 @@ from __future__ import annotations
 
 import asyncio
 import itertools
+import json
 import os
 import time
 from abc import ABC, abstractmethod
 from asyncio import CancelledError
 from collections import defaultdict
 from contextlib import asynccontextmanager, contextmanager
-from typing import Any, AsyncGenerator, Generator, Sequence
+from typing import Any, AsyncGenerator, Generator, Sequence, final
 
 import chz
+import nanoeval
 import numpy as np
 import structlog.stdlib
 from nanoeval.asyncio_utils import HasAsyncContextManager, generator_with_cleanup
-from nanoeval.eval import Eval, RetryableSystemError
+from nanoeval.eval import RolloutSystemError
 from nanoeval.metrics.agents import get_summary_error_aware
 from nanoeval.recorder import RecorderProtocol, get_recorder
 from nanoeval.solvers.computer_tasks.steps import (
     FinalResult,
-    FinalResultSuccessful,
-    FinalResultWithException,
     Step,
 )
 from nanoeval.solvers.computer_tasks.task import ComputerTask, Grade
@@ -47,6 +47,9 @@ class PythonCodingSolver(ABC, HasAsyncContextManager):
         """
         pass
 
+    def get_additional_metrics(self) -> dict[str, Any]:
+        return {}
+
 
 @chz.chz
 class DummyPythonCodingSolver(PythonCodingSolver):
@@ -63,9 +66,7 @@ class DummyPythonCodingSolver(PythonCodingSolver):
     @override
     async def run(self, task: ComputerTask) -> AsyncGenerator[Step | FinalResult, None]:
         del task
-        yield FinalResultSuccessful(
-            grade=Grade(score=1, grader_log="Dummy solver always returns correct")
-        )
+        yield FinalResult(grade=Grade(score=1, grader_log="Dummy solver always returns correct"))
 
 
 def strip_all_metadata(
@@ -190,7 +191,7 @@ def _log_results(task: ComputerTask, result: FinalResult) -> None:
 
 
 @chz.chz
-class PythonCodingEval(Eval[ComputerTask, FinalResult]):
+class PythonCodingEval(nanoeval.Eval[ComputerTask, FinalResult]):
     solver: PythonCodingSolver = DummyPythonCodingSolver()
     n_tries: int = 1
     record_pretty: bool = False
@@ -205,6 +206,22 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
     @abstractmethod
     async def get_instances(self) -> Sequence[ComputerTask]:
         pass
+
+    @override
+    async def self_test(self) -> None:
+        await super().self_test()
+
+        # The base Task class already checks that individual fields are
+        # multiprocess-safe, but it is still possible for a pydantic model to
+        # include non-serializable objects (e.g., dataclass instances without
+        # their own .model_dump implementation).  We rely on JSON serialization
+        # for some downstream usages of ComputerTask, so we validate that the
+        # ComputerTask tree can round trip through json.dumps() without a
+        # TypeError being raised.
+        for instance in await self.get_instances():
+            if instance.unsafe_skip_serialization_validation:
+                continue
+            json.dumps(instance.model_dump())
 
     @override
     async def get_tasks(self) -> Sequence[ComputerTask]:
@@ -227,9 +244,7 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
         try:
             async with generator_with_cleanup(self.solver.run(task)) as gen:
                 async for step in gen:
-                    assert not isinstance(step, FinalResultWithException), (
-                        "FinalResultWithException has been deprecated"
-                    )
+                    logger.info("Solver got step", step=step)
 
                     await asyncio.to_thread(
                         _log,
@@ -237,11 +252,12 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
                         step,
                         self.record_pretty,
                     )
-                    if isinstance(step, FinalResultSuccessful):
+                    if isinstance(step, FinalResult):
                         logger.info(
-                            "Final result: %s (%d messages)",
-                            step.correct,
-                            len(step.convo.messages) if step.convo else 0,
+                            "Got final result",
+                            correct=step.correct,
+                            num_messages=len(step.convo.messages) if step.convo else 0,
+                            grade=step.grade,
                         )
 
                         # For compatibility with simple evalboard vis, log a match.
@@ -249,7 +265,7 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
                         return step
         except CancelledError as e:
             logger.exception("Cancelled error detected - this is clearly a bug")
-            raise RetryableSystemError("Cancelled error detected - this is clearly a bug") from e
+            raise RolloutSystemError("Cancelled error detected - this is clearly a bug") from e
         raise ValueError("Solver did not return a final result! This is a programming error.")
 
     @override
@@ -266,21 +282,26 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
         return res
 
     def process_invalid(self, task: ComputerTask) -> FinalResult:
-        return FinalResultSuccessful(grade=Grade(score=0, grader_log="Task was invalid"))
+        return FinalResult(grade=Grade(score=0, grader_log="Task was invalid"))
+
+    @final
+    async def get_summary(self, results: list[tuple[ComputerTask, FinalResult]]) -> dict[str, Any]:
+        msg = (
+            f"{self.__class__.__name__}.get_summary() is not used. "
+            "Override get_full_summary() instead."
+        )
+        raise AssertionError(msg)
 
     @override
     async def update_progress(
         self,
-        partial_results: list[
-            tuple[ComputerTask, FinalResultSuccessful | FinalResultWithException]
-        ],
+        partial_results: list[tuple[ComputerTask, FinalResult]],
         pbar: Any,
     ) -> None:
         summary: dict[str, Any] = {
             "num_correct": 0,
             "num_incorrect": 0,
             "num_incorrect_with_error": 0,
-            "num_incorrect_max_steps_reached": 0,
             "error_breakdown": defaultdict(int),
         }
 
@@ -290,12 +311,6 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
             else:
                 summary["num_incorrect"] += 1
 
-            if isinstance(result, FinalResultWithException):
-                summary["error_breakdown"][result.exception] += 1
-                summary["num_incorrect_with_error"] += 1
-            elif result.max_steps_reached:
-                summary["num_incorrect_max_steps_reached"] += 1
-
         pbar.set_postfix(
             corr=summary["num_correct"],
             errs=summary["num_incorrect_with_error"],
@@ -303,12 +318,12 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
         )
 
     def _get_convo_len_stats(
-        self, results: list[tuple[ComputerTask, FinalResult | RetryableSystemError]]
+        self, results: list[tuple[ComputerTask, FinalResult | RolloutSystemError]]
     ) -> dict[str, Any]:
         """
         Get conversation length statistics.
         """
-        completions = [result for _, result in results if isinstance(result, FinalResultSuccessful)]
+        completions = [result for _, result in results if isinstance(result, FinalResult)]
         if not completions:
             return {}
         frac_correct = sum(1 for result in completions if result.correct) / len(completions)
@@ -346,7 +361,7 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
         # compute percentiles
         convo_lens = np.array(convo_lens)
         percentiles = np.percentile(convo_lens, [25, 50, 75])
-        summary_dict["convo_len_percentiles"] = percentiles.tolist() # type: ignore
+        summary_dict["convo_len_percentiles"] = percentiles.tolist()  # type: ignore
 
         return {
             "frac_correct": frac_correct,
@@ -359,35 +374,26 @@ class PythonCodingEval(Eval[ComputerTask, FinalResult]):
 
     @override
     async def get_full_summary(
-        self, results: list[tuple[ComputerTask, FinalResult | RetryableSystemError]]
+        self, results: list[tuple[ComputerTask, FinalResult | RolloutSystemError]]
     ) -> dict[str, Any]:
         """
         How are results classified?
 
-        - FinalResultSuccessful -> goes in correct/incorrect
-        - FinalResultWithException -> shouldn't exist anymore
-        - RetryableSystemError -> marked as has_error, ignored in default metrics, but counted in metrics_including_errors
+        - FinalResult -> goes in correct/incorrect
+        - RolloutSystemError -> marked as has_error, ignored in default metrics, but counted in metrics_including_errors
         """
-
-        for _, result in results:
-            assert not isinstance(result, FinalResultWithException), (
-                "FinalResultWithException has been deprecated in favor of nanoeval system retries"
-            )
 
         summary = await asyncio.to_thread(
             get_summary_error_aware,
             [
                 (
                     task,
-                    (
-                        result.correct
-                        if isinstance(result, (FinalResultSuccessful, FinalResultWithException))
-                        else result
-                    ),
+                    (result.correct if isinstance(result, FinalResult) else result),
                 )
                 for task, result in results
             ],
         )
         summary["length_stats"] = self._get_convo_len_stats(results)
+        summary["solver"] = self.solver.get_additional_metrics()
 
         return summary

@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import Any
 
 import pytest
-from nanoeval.solvers.computer_tasks.steps import FinalResultWithException, Step
+from nanoeval.solvers.computer_tasks.steps import Step
 from nanoeval.solvers.computer_tasks.task import Grade
 
 
@@ -36,7 +36,3 @@ from nanoeval.solvers.computer_tasks.task import Grade
 )
 def test_deserialize_old_step(data: dict[str, Any]) -> None:
     Step.model_validate(data)
-
-
-def test_final_result_with_exception() -> None:
-    FinalResultWithException.from_exception(Exception(), dict())

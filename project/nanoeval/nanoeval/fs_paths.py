@@ -11,7 +11,13 @@ from nanoeval.library_config import get_library_config, root_dir
 
 
 def get_package_root() -> Path:
-    return Path(__file__).resolve().parent
+    current_dir = Path(__file__).resolve().parent
+    parent_dir = current_dir.parent
+
+    if current_dir.name != "nanoeval" or parent_dir.name != "nanoeval":
+        raise ValueError("Couldn't find the root of the `nanoeval` module!")
+
+    return parent_dir
 
 
 @functools.cache

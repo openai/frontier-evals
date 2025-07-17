@@ -27,16 +27,17 @@ dependencies = [
     "structlog>=25.1.0",
     "chz",
     "nanoeval",
-    "nanoeval-alcatraz",
+    "nanoeval_alcatraz",
     "alcatraz",
     "preparedness-turn-completer",
+    "pandas-stubs>=2.3.0.250703",
 ]
 
 [tool.setuptools]
 packages = { find = { include = ["paperbench", "paperbench.*"] } }
 
 [tool.pyright]
-extraPaths = ["../alcatraz", "../preparedness_turn_completer"]
+extraPaths = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
 typeCheckingMode = "off"                                   # we use mypy
 
 [dependency-groups]
@@ -52,8 +53,8 @@ dev = [
 
 [tool.uv.sources]
 chz = { git = "https://github.com/openai/chz.git" }
-nanoeval = { git = "https://github.com/openai/preparedness.git", subdirectory = "project/nanoeval" }
-nanoeval-alcatraz = { git = "https://github.com/openai/preparedness.git", subdirectory = "project/nanoeval_alcatraz" }
+nanoeval = { path = "../nanoeval", editable = true }
+nanoeval_alcatraz = { path = "../nanoeval_alcatraz", editable = true }
 alcatraz = { path = "../alcatraz", editable = true }
 preparedness-turn-completer = { path = "../preparedness_turn_completer", editable = true }
 
@@ -74,9 +75,9 @@ disable_error_code = ["import-untyped"]
 # allow_untyped_defs = true
 # allow_any_generics = true
 exclude = "^(paperbench/agents/aisi-basic-agent)(/|$)"
-mypy_path = ["../alcatraz", "../preparedness_turn_completer"]
+mypy_path = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
 [[tool.mypy.overrides]]
-module = ["alcatraz.*", "preparedness_turn_completer.*"]
+module = ["alcatraz.*", "preparedness_turn_completer.*", "nanoeval.*", "nanoeval_alcatraz.*"]
 ignore_errors = true
 warn_unused_ignores = false
 

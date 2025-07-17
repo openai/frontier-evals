@@ -1,6 +1,7 @@
 import os
 
 from dotenv import load_dotenv
+from nanoeval.solvers.computer_tasks.code_execution_interface import RuntimeConfig
 
 from paperbench.utils import find_dotenv
 
@@ -22,9 +23,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", None)
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY", OPENAI_API_KEY)
 DEFAULT_AZURE_VM_SKU = "Standard_D2as_v4"
 
-LOCAL_DUMMY_SOLVER_CONFIG = PaperBenchDummySolver()
+LOCAL_DUMMY_SOLVER_CONFIG = PaperBenchDummySolver(runtime_config=RuntimeConfig())
 
 LOCAL_AISI_SOLVER_CONFIG = ExternalPythonCodingSolver(
+    runtime_config=RuntimeConfig(),
     agent_id="aisi-basic-agent-openai-dev",
     cluster_config=LocalConfig(
         image="aisi-basic-agent:latest",

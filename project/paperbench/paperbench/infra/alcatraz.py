@@ -69,7 +69,7 @@ async def populate_exclude_list(
     computer: ComputerInterface,
     dir_path_on_computer: Path,
     max_size: str,
-    exclude_list_path: Optional[Path] = None,
+    exclude_list_path: Path | None = None,
 ) -> ExecutionResult:
     """
     Populates `exclude_list_path` with the list of files in `dir_path_on_computer` that
@@ -174,7 +174,7 @@ async def tar_and_extract_from_computer(
     tar_path_on_computer: Path,
     tar_path_on_target: str,
     logger: BoundLogger,
-    max_file_size: Optional[str] = None,
+    max_file_size: str | None = None,
 ):
     """
     1) Tars the dir at dir_path_on_computer to tar_path_on_computer

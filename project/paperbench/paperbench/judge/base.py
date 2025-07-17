@@ -25,7 +25,6 @@ class Judge(ABC):
         addendum: str | None,
         judge_addendum: str | None,
         submission_dir: Path,
-        structured_output_model: str = "gpt-4o-2024-08-06",
         log_path: Path | None = None,
         max_depth: int = 999,
         code_only: bool = False,
@@ -38,7 +37,6 @@ class Judge(ABC):
         self.addendum: str | None = addendum
         self.judge_addendum: str | None = judge_addendum
         self.submission_dir: Path = submission_dir
-        self.structured_output_model: str = structured_output_model
         self.log_path: Path | None = log_path
         self.max_depth: int = max_depth
         self.code_only: bool = code_only

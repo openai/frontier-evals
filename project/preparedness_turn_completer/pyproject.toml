@@ -1,0 +1,7 @@
+[project]
+name = "preparedness_turn_completer"
+version = "0.1.0"
+dependencies = ["openai", "tenacity", "chz", "structlog", "tiktoken"]
+
+[tool.setuptools]
+packages = ["preparedness_turn_completer"]

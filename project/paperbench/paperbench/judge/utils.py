@@ -70,27 +70,6 @@ async def walk_dir(
             yield entry
 
 
-def get_model_context_window_length(model: str) -> int:
-    max_context_window_lengths = {
-        "gpt-4o-mini": 128000,
-        "gpt-4o-mini-2024-07-18": 128000,
-        "gpt-4o": 128000,
-        "gpt-4o-2024-08-06": 128000,
-        "o1-mini": 128000,
-        "o1-mini-2024-09-12": 128000,
-        "o1": 200000,
-        "o1-2024-12-17": 200000,
-        "o3-mini-2024-12-17": 128000,
-        "o3-mini-2025-01-31": 200000,
-        "o3-mini": 200000,
-        "o1-preview": 128000,
-        "gpt-4-turbo": 128000,
-    }
-    if model not in max_context_window_lengths:
-        raise ValueError(f"Context window length not defined for model {model}!")
-    return max_context_window_lengths[model]
-
-
 def sanitize_line(line: str) -> str:
     """
     Convert ephemeral bits (timestamps, progress bars, numeric tokens, IPs, etc.)

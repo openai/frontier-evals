@@ -4,14 +4,16 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
 
 import openai
 import structlog.stdlib
 import tiktoken
 from dotenv import load_dotenv
+from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.turn_completer import TurnCompleter
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
-from openai import AsyncOpenAI
+from openai.types.chat import ParsedChatCompletionMessage
+from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from paperbench.judge.base import Judge
 from paperbench.judge.constants import (
     CRITERION_PROMPT,
@@ -24,14 +26,12 @@ from paperbench.judge.token_usage import TokenUsage
 from paperbench.judge.utils import (
     file_exists,
     format_file,
-    get_model_context_window_length,
     is_symlink,
     read_file_content,
     read_file_mtime,
     walk_dir,
 )
 from paperbench.rubric.tasks import TASK_CATEGORY_QUESTIONS, TaskNode
-from paperbench.utils import oai_completion_with_retry_async
 from pydantic import BaseModel
 from structlog.stdlib import BoundLogger
 from typing_extensions import override
@@ -56,14 +56,6 @@ class ParseError(Exception):
     pass
 
 
-RETRYABLE_EXCEPTIONS = (
-    openai.RateLimitError,
-    openai.APIConnectionError,
-    openai.APITimeoutError,
-    openai.InternalServerError,
-)
-
-
 @dataclass
 class FilesContentData:
     all_files_content: str
@@ -86,14 +78,16 @@ class SimpleJudge(Judge):
         addendum: str | None,
         judge_addendum: str | None,
         submission_dir: Path,
-        model: str,
         paper_md: Path,
+        completer_config: TurnCompleter.Config,
+        structured_completer_config: OpenAITurnCompleter.Config = OpenAITurnCompleter.Config(
+            model="gpt-4o-2024-08-06",
+        ),
         log_path: Path | None = None,
         buffer_tokens: int = 10000,  # 10k tokens of buffer
         max_depth: int = 999,
         code_only: bool = False,
         max_prior_nodes: int | None = None,
-        completion_kwargs: dict | None = None,
         max_file_depth: int = 4,
         computer: ComputerInterface | None = None,
     ):
@@ -109,9 +103,13 @@ class SimpleJudge(Judge):
             computer=computer,
         )
 
-        self.model = model
-        self.token_encoder = tiktoken.encoding_for_model(self.model)
-        self.completion_kwargs = completion_kwargs or {}
+        self.completer_config = completer_config
+        self.completer = completer_config.build()
+        self.token_encoder = tiktoken.get_encoding(self.completer.encoding_name)
+
+        self.structured_completer_config = structured_completer_config
+        self.structured_completer: OpenAITurnCompleter = structured_completer_config.build()
+
         self.paper_md = paper_md.read_text()
         self.rubric = rubric
         self.prompt = build_judge_task_prompt(code_only)
@@ -123,7 +121,6 @@ class SimpleJudge(Judge):
             self.joined_addendum = "(NO ADDENDUM GIVEN)"
         self.reproduce_touched_files = True  # by default assume reproduce was functional
         self.max_file_depth = max_file_depth
-        self.openai_client = AsyncOpenAI()
 
     async def process_file_content(self):
         """
@@ -161,7 +158,7 @@ class SimpleJudge(Judge):
             "Result Analysis": len(self.paper_md_tokens) + len(self.reproduce_log_tokens),
             "Subtree": len(self.paper_md_tokens) + len(self.reproduce_log_tokens),
         }
-        model_context_length = get_model_context_window_length(self.model)
+        model_context_length = self.completer.n_ctx
 
         return model_context_length - (reserved_context_lens[task_category] + self.buffer_tokens)
 
@@ -175,7 +172,7 @@ class SimpleJudge(Judge):
         Further truncates log and paper until theres at least 5k tokens of space left
         Prioritizing log truncation over paper truncation
         """
-        context_window_tokens = get_model_context_window_length(self.model)
+        context_window_tokens = self.completer.n_ctx
         half_context_window = context_window_tokens // 2
         five_k_tokens = 5000
 
@@ -498,7 +495,7 @@ class SimpleJudge(Judge):
         tree_structure = files_prep_outcome.files_content_data.tree_structure
         all_files_names = files_prep_outcome.files_content_data.all_file_names
 
-        messages = [
+        messages: list[ChatCompletionMessageParam] = [
             {
                 "role": "system",
                 "content": FILE_RANKING_PROMPT,
@@ -520,13 +517,10 @@ class SimpleJudge(Judge):
                 "content": f"Here are the files in the submission attempt:\n\nDirectory structure:\n{tree_structure}\n\nFlat file list:\n{all_files_names}\n\nNow return a list of the {str(max_files) + ' ' if max_files else ''}most relevant files in order of relevance (descending) to the resolution criteria, to be provided for your inspection. Your response must contain each filename separated by newlines, with each file containing the full path. Use the exact paths from the flat file list. Do not write anything else.",
             },
         ]
-        model_response = await oai_completion_with_retry_async(
-            self.openai_client.chat.completions.create,
-            model=self.model,
-            messages=messages,
-            **self.completion_kwargs,
-        )
-        selected_files = model_response.choices[0].message.content
+        model_response = await self.completer.async_completion(conversation=messages)
+        selected_files = model_response.output_messages[0].content
+        if selected_files is None:
+            raise Exception("No response received from completer for file selection")
         leaf_logger.info(f"Model file selection raw output:\n{selected_files}")
 
         selected_files_tokens = []
@@ -577,7 +571,7 @@ class SimpleJudge(Judge):
 
     async def _construct_grade_leaf_messages(
         self, task: TaskNode, leaf_logger: BoundLogger
-    ) -> list[dict[str, Any]]:
+    ) -> list[ChatCompletionMessageParam]:
         relevant_files = await self._prepare_relevant_files(task, leaf_logger)
         relevant_files_prompt = (
             f"Here are the most relevant files included in the submission attempt, concatenated:\n<files>\n{relevant_files}\n</files>"
@@ -590,7 +584,7 @@ class SimpleJudge(Judge):
         for node in relevant_rubric_nodes:
             relevant_rubric_context += f" -> {node.requirements}\n"
 
-        reproduce_files_messages = []
+        reproduce_files_messages: list[ChatCompletionMessageParam] = []
         if self.code_only:
             reproduce_files_messages = []
         elif task.task_category == "Code Development":
@@ -612,7 +606,7 @@ class SimpleJudge(Judge):
                 },
             ]
 
-        messages = [
+        messages: list[ChatCompletionMessageParam] = [
             {
                 "role": "system",
                 "content": self.prompt,
@@ -669,23 +663,28 @@ class SimpleJudge(Judge):
                         judge_metadata=None,
                     )
                 else:
-                    judge_token_usage = TokenUsage()
+                    judge_token_usage = None
                     messages = await self._construct_grade_leaf_messages(task, leaf_logger)
-                    model_response = await oai_completion_with_retry_async(
-                        self.openai_client.chat.completions.create,
-                        model=self.model,
-                        messages=messages,
-                        **self.completion_kwargs,
+                    response: TurnCompleter.Completion = await self.completer.async_completion(
+                        conversation=messages
                     )
-                    judge_token_usage.add_from_completion(self.model, model_response.usage)
-                    model_response = model_response.choices[0].message.content
+                    if isinstance(self.completer, OpenAITurnCompleter) and isinstance(
+                        response, OpenAITurnCompleter.OpenAICompletion
+                    ):
+                        judge_token_usage = TokenUsage()
+                        judge_token_usage.add_from_completion(self.completer.model, response.usage)
+                    model_response = response.output_messages[0].content
                     messages += [{"role": "assistant", "content": model_response}]
 
                     leaf_logger.info(f"model response: {model_response}")
                     score_response, parse_usage = await self._parse_model_response(
                         model_response, continuous=(task.task_category == "Subtree")
                     )
-                    judge_token_usage.add_from_completion(self.structured_output_model, parse_usage)
+                    if judge_token_usage is None:
+                        judge_token_usage = TokenUsage()
+                    judge_token_usage.add_from_completion(
+                        self.structured_completer.model, parse_usage
+                    )
                     graded_task_node = GradedTaskNode.from_task(
                         task,
                         score=score_response.score,
@@ -742,9 +741,13 @@ class SimpleJudge(Judge):
         return graded_leaf_shim
 
     async def _parse_model_response(
-        self, response: str, continuous: bool = False
-    ) -> tuple[ParsedJudgeResponseFloat | ParsedJudgeResponseInt, openai.types.CompletionUsage]:
+        self, response: str | None, continuous: bool = False
+    ) -> tuple[
+        ParsedJudgeResponseFloat | ParsedJudgeResponseInt, openai.types.CompletionUsage | None
+    ]:
         """Parses a model response as a `ParsedJudgeResponse`."""
+        if response is None:
+            raise ParseError("No response received")
 
         score_instruction = "(either 0 or 1)" if not continuous else "(between 0 and 1)"
         messages = [
@@ -760,15 +763,12 @@ class SimpleJudge(Judge):
 
         try:
             response_format = ParsedJudgeResponseInt if not continuous else ParsedJudgeResponseFloat
-            completion = await oai_completion_with_retry_async(
-                self.openai_client.beta.chat.completions.parse,
-                model=self.structured_output_model,
-                messages=messages,
-                response_format=response_format,
+            completion = await self.structured_completer.async_completion(
+                conversation=messages, **{"response_format": response_format}
             )
             usage = completion.usage
-            score_response = completion.choices[0].message
-            if score_response.parsed:
+            score_response = completion.output_messages[0]
+            if isinstance(score_response, ParsedChatCompletionMessage) and score_response.parsed:
                 # check if score is between 0 and 1
                 if not (0 <= score_response.parsed.score <= 1):
                     raise ParseError(f"Score is not between 0 and 1: {score_response.parsed.score}")

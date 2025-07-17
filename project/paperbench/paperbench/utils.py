@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any, Callable
 
 import blobfile as bf
-import docker
 import openai
 import structlog.stdlib
 import tenacity

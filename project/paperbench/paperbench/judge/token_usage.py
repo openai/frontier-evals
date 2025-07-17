@@ -18,8 +18,10 @@ class TokenUsage:
         self.usage[model]["in"] += input_tokens
         self.usage[model]["out"] += output_tokens
 
-    def add_from_completion(self, model: str, usage: openai.types.CompletionUsage):
+    def add_from_completion(self, model: str, usage: openai.types.CompletionUsage | None):
         """Add token usage from an OpenAI completion response."""
+        if usage is None:
+            return
         self.add_usage(model, usage.prompt_tokens, usage.completion_tokens)
 
     def to_dict(self) -> dict:

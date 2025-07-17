@@ -15,6 +15,8 @@ import dotenv
 import numpy as np
 import structlog.stdlib
 from alcatraz.clusters.local import ClusterConfig, LocalConfig
+from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.turn_completer import TurnCompleter
 from nanoeval.eval import RetryableSystemError
 from nanoeval.recorder import get_recorder
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
@@ -98,10 +100,12 @@ class JudgeConfig(BaseModel):
     grade_id: int = 0
     overwrite_existing_output: bool = False
     scaffold: str = "simple"
-    model: str = "o3-mini-2025-01-31"
+    completer_config: TurnCompleter.Config = OpenAITurnCompleter.Config(
+        model="o3-mini-2025-01-31",
+        reasoning_effort="high",
+    )
     code_only: bool = False
     resources_provided: bool = False
-    reasoning_effort: Optional[str] = "high"
     cluster_config: LocalConfig = LocalConfig(
         image="pb-env:latest",
         pull_from_registry=False,
@@ -585,7 +589,7 @@ class PBTask(ComputerTask):
                     destinations=["run"],
                 )
 
-                return JudgeOutput.from_dict(grader_output)
+                return JudgeOutput.from_dict(grader_output, self.judge.completer_config.__class__)
 
         if not self.judge.grade:
             ctx_logger.info(
@@ -606,12 +610,11 @@ class PBTask(ComputerTask):
                 grader_upload_path=grader_upload_path,
                 paper_id=paper_id,
                 judge_type=self.judge.scaffold,
-                model_name=self.judge.model,
+                completer_config=self.judge.completer_config,
                 logger=ctx_logger.bind(destinations=["run"]),
                 code_only=self.judge.code_only,
                 computer=computer,
                 resources_provided=self.judge.resources_provided,
-                reasoning_effort=self.judge.reasoning_effort,
             )
 
         return judge_output

@@ -42,6 +42,7 @@ jobs:
         pip install -e ../alcatraz
         pip install "nanoeval @ git+https://github.com/openai/preparedness.git#subdirectory=project/nanoeval"
         pip install "nanoeval_alcatraz @ git+https://github.com/openai/preparedness.git#subdirectory=project/nanoeval_alcatraz"
+        pip install -e ../preparedness_turn_completer
         # Finally install paperbench
         pip install -e ".[dev]"
 

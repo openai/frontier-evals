@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import tarfile
 import tempfile
@@ -5,10 +7,11 @@ import time
 from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Type
 
 import blobfile as bf
 import structlog.stdlib
+from preparedness_turn_completer.turn_completer import TurnCompleter
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
 from paperbench.judge.graded_task_node import GradedTaskNode
@@ -25,7 +28,7 @@ logger = structlog.stdlib.get_logger(component=__name__)
 @dataclass(frozen=True)
 class JudgeOutput:
     judge_type: str
-    model_name: str
+    completer_config: TurnCompleter.Config
     score: float
     num_leaf_nodes: int
     num_invalid_leaf_nodes: int
@@ -36,7 +39,7 @@ class JudgeOutput:
     def to_dict(self) -> dict:
         return {
             "judge_type": self.judge_type,
-            "model_name": self.model_name,
+            "completer_config": self.completer_config.model_dump(),
             "score": self.score,
             "num_leaf_nodes": self.num_leaf_nodes,
             "num_invalid_leaf_nodes": self.num_invalid_leaf_nodes,
@@ -46,7 +49,7 @@ class JudgeOutput:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "JudgeOutput":
+    def from_dict(cls, data: dict, CompleterConfig: Type[TurnCompleter.Config]) -> JudgeOutput:
         token_usage = None
 
         try:
@@ -55,7 +58,7 @@ class JudgeOutput:
 
             return cls(
                 judge_type=data["judge_type"],
-                model_name=data["model_name"],
+                completer_config=CompleterConfig(**data["completer_config"]),
                 score=data["score"],
                 num_leaf_nodes=data["num_leaf_nodes"],
                 num_invalid_leaf_nodes=data["num_invalid_leaf_nodes"],
@@ -75,11 +78,10 @@ async def run_judge(
     submission_path: Path,
     paper_id: str,
     judge_type: str,
-    model_name: str,
+    completer_config: TurnCompleter.Config,
     code_only: bool,
     max_depth: int = 999,
     out_dir: Path | None = None,
-    reasoning_effort: str | None = None,
     resources_provided: bool = False,
     computer: ComputerInterface | None = None,
 ) -> GradedTaskNode:
@@ -105,7 +107,7 @@ async def run_judge(
     if resources_provided:
         task_tree = task_tree.resources_provided()
 
-    judge_kwargs = handle_judge_kwargs(judge_type, code_only, paper, model_name, reasoning_effort)
+    judge_kwargs = handle_judge_kwargs(judge_type, code_only, paper, completer_config)
     judge = create_judge(
         judge_type=judge_type,
         judge_kwargs=judge_kwargs,
@@ -128,10 +130,9 @@ async def grade_submission(
     grader_upload_path: str,
     paper_id: str,
     judge_type: str,
-    model_name: str,
+    completer_config: TurnCompleter.Config,
     logger: BoundLogger,
     code_only: bool = False,
-    reasoning_effort: str | None = None,
     resources_provided: bool = False,
     computer: ComputerInterface | None = None,
 ) -> Optional[JudgeOutput]:
@@ -172,9 +173,8 @@ async def grade_submission(
                 submission_path=submission_dir,
                 paper_id=paper_id,
                 judge_type=judge_type,
-                model_name=model_name,
+                completer_config=completer_config,
                 code_only=code_only,
-                reasoning_effort=reasoning_effort,
                 resources_provided=resources_provided,
                 computer=computer,
             )
@@ -185,7 +185,7 @@ async def grade_submission(
 
             judge_output = JudgeOutput(
                 judge_type=judge_type,
-                model_name=model_name,
+                completer_config=completer_config,
                 score=graded_task_tree.score,
                 num_leaf_nodes=len(graded_task_tree.get_leaf_nodes()),
                 num_invalid_leaf_nodes=(

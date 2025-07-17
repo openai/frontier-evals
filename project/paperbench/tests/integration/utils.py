@@ -7,6 +7,7 @@ from pathlib import Path
 
 import blobfile as bf
 from alcatraz.clusters.local import LocalConfig
+from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
 from paperbench.nano.eval import ExternalPythonCodingSolver, JudgeConfig, ReproductionConfig
 
 DEFAULT_AZURE_VM_SKU = "Standard_D2as_v4"
@@ -143,7 +144,7 @@ def setup_judge_config(skip_grading: bool = True, scaffold: str = "dummy") -> Ju
         scaffold=scaffold,
         grade=not skip_grading,
         cluster_config=cluster_config,
-        model="gpt-4o-mini",  # cheap and quick
+        completer_config=OpenAITurnCompleter.Config(model="gpt-4o-mini"),  # cheap and quick
     )
 
 

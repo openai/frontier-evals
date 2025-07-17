@@ -259,17 +259,20 @@ async def test_reproduction() -> None:
 
 @pytest.mark.skipif(not is_docker_running(), reason="Docker is not running")
 @pytest.mark.parametrize(
-    "judge_scaffold",
+    "judge_scaffold, grade_locally",
     [
         pytest.param(
             judge_scaffold,
+            grade_locally,
             marks=(pytest.mark.skipif(in_ci(), reason="Not running grading tests in CI")),
         )
         for judge_scaffold in ("dummy", "simple")
+        for grade_locally in (True, False)
     ],
 )
 async def test_grading(
     judge_scaffold: str,
+    grade_locally: bool,
 ) -> None:
     """
     Test grading produces the expected output when using the dummy agent. We create a fake result of a rollout,
@@ -285,6 +288,8 @@ async def test_grading(
         solver = setup_solver("dummy")
         judge_config = setup_judge_config(
             skip_grading=False,
+            scaffold=judge_scaffold,
+            grade_locally=grade_locally,
         )
         reproduction_config = setup_reproduction_config()
         async with global_exit_stack:

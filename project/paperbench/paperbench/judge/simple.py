@@ -32,14 +32,7 @@ from paperbench.judge.constants import (
 )
 from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.judge.token_usage import TokenUsage
-from paperbench.judge.utils import (
-    file_exists,
-    format_file,
-    is_symlink,
-    read_file_content,
-    read_file_mtime,
-    walk_dir,
-)
+from paperbench.judge.utils import format_file, read_file_content, walk_dir_with_mtimes
 from paperbench.rubric.tasks import TASK_CATEGORY_QUESTIONS, TaskNode
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -64,17 +57,9 @@ class ParseError(Exception):
 
 
 @dataclass
-class FilesContentData:
-    all_files_content: str
+class TreePrepOutcome:
     tree_structure: str
-    all_file_names: str
-
-
-@dataclass
-class FilesPreparationOutcome:
-    success: bool
-    all_files_fit: bool
-    files_content_data: FilesContentData
+    within_token_budget: bool
 
 
 class SimpleJudge(Judge):
@@ -145,15 +130,15 @@ class SimpleJudge(Judge):
         self.paper_md_tokens = self.token_encoder.encode(self.paper_md, disallowed_special=())
         self._truncate_input()
 
-        self.avail_context_lens = {
+        self.avail_context_lens: dict[str, int] = {
             "Code Development": self._get_available_context("Code Development"),
             "Code Execution": self._get_available_context("Code Execution"),
             "Result Analysis": self._get_available_context("Result Analysis"),
             "Subtree": self._get_available_context("Subtree"),
         }
 
-        self.files_string_prep_outcome = {
-            k: await self._prepare_relevant_files_strings(k)
+        self.tree_structures = {
+            k: await self._prepare_tree_structure(k)
             for k in ["Code Development", "Code Execution", "Result Analysis", "Subtree"]
         }
 
@@ -161,7 +146,13 @@ class SimpleJudge(Judge):
         await super().before_grading()
         await self.process_file_content()
 
+    def _truncate_in_token_space(self, input_str: str, max_length_tokens: int) -> str:
+        input_tokens = self.token_encoder.encode(input_str, disallowed_special=())
+        truncated_tokens = input_tokens[:max_length_tokens]
+        return self.token_encoder.decode(truncated_tokens)
+
     def _get_available_context(self, task_category: str) -> int:
+        """number of input tokens available for use for each category"""
         reserved_context_lens = {
             "Code Development": len(self.paper_md_tokens),
             "Code Execution": len(self.paper_md_tokens) + len(self.reproduce_log_tokens),
@@ -275,20 +266,14 @@ class SimpleJudge(Judge):
         }
         whitelisted_extensions = extension_sets.get(task_category, extension_sets["default"])
 
-        async def should_include_file(path: Path) -> bool:
+        def should_include_file(path: Path, mtime: float) -> bool:
             if path.suffix not in whitelisted_extensions:
                 return False
 
-            if (
-                not await file_exists(path, self.computer)
-                or await is_symlink(path, self.computer)
-                and not await file_exists(path.resolve(), self.computer)
-            ):
+            if mtime != mtime:  # if mtime is nan, we can't trust it
                 return False
 
-            file_last_modified_time = datetime.fromtimestamp(
-                await read_file_mtime(path, self.computer), tz=timezone.utc
-            )
+            file_last_modified_time = datetime.fromtimestamp(mtime, tz=timezone.utc)
 
             if task_category == "Result Analysis":
                 return (
@@ -305,7 +290,10 @@ class SimpleJudge(Judge):
                 return True
 
         whitelisted_files = []
-        async for root, dirs, files in walk_dir(self.submission_dir, self.computer):
+        whitelisted_mtimes = []
+        async for root, dirs, files, mtimes in walk_dir_with_mtimes(
+            self.submission_dir, self.computer
+        ):
             # Limit directory traversal based on max_file_depth
             current_depth = len(Path(root).relative_to(self.submission_dir).parts)
             if max_file_depth is not None and current_depth >= max_file_depth:
@@ -316,96 +304,35 @@ class SimpleJudge(Judge):
                 for part in Path(root).parts
             ):
                 continue
-            for file in files:
+            for file, mtime in zip(files, mtimes):
                 full_path = Path(root) / file
                 if full_path.suffix in whitelisted_extensions:
-                    if await should_include_file(full_path):
+                    if should_include_file(full_path, mtime):
                         whitelisted_files.append(full_path)
+                        whitelisted_mtimes.append(mtime)
 
         if task_category == "Result Analysis":
-            tasks = [read_file_mtime(file, self.computer) for file in whitelisted_files]
-            mtimes = await asyncio.gather(*tasks)
-            mtimes_utc = [datetime.fromtimestamp(mtime, tz=timezone.utc) for mtime in mtimes]
+            mtimes_utc = [
+                datetime.fromtimestamp(mtime, tz=timezone.utc) for mtime in whitelisted_mtimes
+            ]
             if all(mtime < self.reproduction_log_creation_time_utc for mtime in mtimes_utc):
                 self.reproduce_touched_files = False
 
         return whitelisted_files
 
-    async def _build_relevant_files_strings(
-        self, task_category: str, max_file_depth: int | None = None
-    ) -> FilesContentData:
-        """
-        Builds the file strings for the given task category.
-        i.e. all the content of the files, all the names of the files, and a tree structure of the files
-        """
+    async def _attempt_preparing_tree_structure(
+        self, task_category: str, max_depth: int | None = None
+    ) -> TreePrepOutcome:
         whitelisted_files: list[Path] = await self._get_whitelisted_files(
-            task_category, max_file_depth=max_file_depth
-        )
-        # can exit early if all the files in submission fit comfortably within context
-        all_files_content = "\n\n".join(
-            [
-                format_file(
-                    full_path.relative_to(self.submission_dir),
-                    await read_file_content(full_path, self.computer),
-                )
-                for full_path in whitelisted_files
-            ]
+            task_category, max_file_depth=max_depth
         )
         tree_structure: str = self._create_tree_structure(
             [p.relative_to(self.submission_dir) for p in whitelisted_files]
         )
-        # TODO we might want to pass in function signatures as well
-        all_file_names = "\n".join(
-            [str(full_path.relative_to(self.submission_dir)) for full_path in whitelisted_files]
-        )
-
-        return FilesContentData(
-            all_files_content=all_files_content,
-            tree_structure=tree_structure,
-            all_file_names=all_file_names,
-        )
-
-    async def _attempt_preparing_files_strings(
-        self, task_category: str, available_context: int, max_file_depth: int | None = None
-    ) -> FilesPreparationOutcome:
-        """
-        Attempts preparing file strings for the given category
-        Taking into account the available context window in its response
-        Available context is in terms of tokens, not characters.
-        """
-        files_content_data = await self._build_relevant_files_strings(task_category, max_file_depth)
-        all_files_content = files_content_data.all_files_content
-        tree_structure = files_content_data.tree_structure
-        all_file_names = files_content_data.all_file_names
-
-        all_files_content_len = len(
-            self.token_encoder.encode(all_files_content, disallowed_special=())
-        )
-        if all_files_content_len < available_context:
-            return FilesPreparationOutcome(
-                success=True,
-                all_files_fit=True,
-                files_content_data=files_content_data,
-            )
-
         tree_structure_len = len(self.token_encoder.encode(tree_structure, disallowed_special=()))
-        all_file_names_len = len(self.token_encoder.encode(all_file_names, disallowed_special=()))
-        if (
-            all_file_names_len >= available_context
-            or tree_structure_len >= available_context
-            or all_file_names_len + tree_structure_len >= available_context
-        ):
-            return FilesPreparationOutcome(
-                success=False,
-                all_files_fit=False,
-                files_content_data=files_content_data,
-            )
-        else:
-            return FilesPreparationOutcome(
-                success=True,
-                all_files_fit=False,
-                files_content_data=files_content_data,
-            )
+        if tree_structure_len >= self.avail_context_lens[task_category]:
+            return TreePrepOutcome(tree_structure=tree_structure, within_token_budget=False)
+        return TreePrepOutcome(tree_structure=tree_structure, within_token_budget=True)
 
     def _truncate_files(
         self, tree_structure: str, all_file_names: str, available_context: int
@@ -442,46 +369,25 @@ class SimpleJudge(Judge):
 
         return truncated_file_names, truncated_tree
 
-    async def _prepare_relevant_files_strings(self, task_category: str) -> FilesPreparationOutcome:
+    async def _prepare_tree_structure(self, task_category: str) -> str:
         """
-        Prepares the relevant file strings necessary for judging specific task categories.
+        Prepares the relevant tree directory structure for a given task category.
         Automatically limits file depth if necessary.
         Automatically truncates to the model context window if necessary.
         """
-        available_context = self.avail_context_lens[task_category]
-
         # 1st try without limiting depth
-        attempt_outcome = await self._attempt_preparing_files_strings(
-            task_category, available_context, max_file_depth=None
-        )
-
+        tree_attempt = await self._attempt_preparing_tree_structure(task_category)
+        if tree_attempt.within_token_budget:
+            return tree_attempt.tree_structure
         # 2nd attempt: limit depth to 4
-        if not attempt_outcome.success:
-            attempt_outcome = await self._attempt_preparing_files_strings(
-                task_category, available_context, max_file_depth=4
-            )
-
+        tree_attempt = await self._attempt_preparing_tree_structure(task_category, max_depth=4)
+        if tree_attempt.within_token_budget:
+            return tree_attempt.tree_structure
         # 3rd attempt: simply truncate the file strings, forcing 'success'
-        if not attempt_outcome.success:
-            files_content_data = attempt_outcome.files_content_data
-            all_files_content = files_content_data.all_files_content  # irrelevant here
-            all_file_names, tree_structure = self._truncate_files(
-                files_content_data.tree_structure,
-                files_content_data.all_file_names,
-                available_context,
-            )
-
-            attempt_outcome = FilesPreparationOutcome(
-                success=True,
-                all_files_fit=False,
-                files_content_data=FilesContentData(
-                    all_files_content=all_files_content,
-                    tree_structure=tree_structure,
-                    all_file_names=all_file_names,
-                ),
-            )
-
-        return attempt_outcome
+        truncated_tree_structure = self._truncate_in_token_space(
+            tree_attempt.tree_structure, self.avail_context_lens[task_category]
+        )
+        return truncated_tree_structure
 
     async def _prepare_relevant_files(
         self,
@@ -500,14 +406,7 @@ class SimpleJudge(Judge):
             were touched (modified or created) during the reproduce.sh execution
             Context window is handled in the same way as above
         """
-        files_prep_outcome = self.files_string_prep_outcome[task.task_category or "Subtree"]
-
-        if files_prep_outcome.all_files_fit:
-            leaf_logger.info("Codebase is within context window, returning entire codebase")
-            return files_prep_outcome.files_content_data.all_files_content
-
-        tree_structure = files_prep_outcome.files_content_data.tree_structure
-        all_files_names = files_prep_outcome.files_content_data.all_file_names
+        tree_structure = self.tree_structures[task.task_category or "Subtree"]
 
         messages: list[ChatCompletionMessageParam] = [
             {
@@ -528,7 +427,7 @@ class SimpleJudge(Judge):
             },
             {
                 "role": "user",
-                "content": f"Here are the files in the submission attempt:\n\nDirectory structure:\n{tree_structure}\n\nFlat file list:\n{all_files_names}\n\nNow return a list of the {str(max_files) + ' ' if max_files else ''}most relevant files in order of relevance (descending) to the resolution criteria, to be provided for your inspection. Your response must contain each filename separated by newlines, with each file containing the full path. Use the exact paths from the flat file list. Do not write anything else.",
+                "content": f"Here are the files in the submission attempt:\n\nDirectory structure:\n{tree_structure}\n\nNow return a list of the {str(max_files) + ' ' if max_files else ''}most relevant files in order of relevance (descending) to the resolution criteria, to be provided for your inspection. Your response must contain each filename separated by newlines, with each file containing the full path. Do not write anything else.",
             },
         ]
         model_response = await self.completer.async_completion(conversation=messages)
@@ -544,13 +443,26 @@ class SimpleJudge(Judge):
             self.avail_context_lens[task.task_category or "Subtree"] - 2000
         )  # Buffer of 2k tokens
 
-        for rel_path in selected_files.split("\n"):
+        file_content_tasks = [
+            read_file_content(
+                (self.submission_dir / rel_path.strip().strip("/")).relative_to(
+                    self.submission_dir
+                ),
+                self.computer,
+            )
+            for rel_path in selected_files.split("\n")[: max_files or None]
+        ]
+
+        file_contents: list[str | BaseException] = await asyncio.gather(
+            *file_content_tasks, return_exceptions=True
+        )
+
+        for rel_path, content in zip(selected_files.split("\n"), file_contents):
             full_path = self.submission_dir / rel_path.strip()
             try:
-                file_content = format_file(
-                    full_path.relative_to(self.submission_dir),
-                    await read_file_content(full_path, self.computer),
-                )
+                if isinstance(content, BaseException):
+                    raise content
+                file_content = format_file(full_path.relative_to(self.submission_dir), content)
                 content_tokens = self.token_encoder.encode(
                     file_content + "\n\n", disallowed_special=()
                 )

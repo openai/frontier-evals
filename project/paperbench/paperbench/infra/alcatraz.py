@@ -2,10 +2,12 @@ import io
 import os
 import tarfile
 import time
+from collections import defaultdict
 from pathlib import Path
-from typing import AsyncGenerator
+from typing import AsyncGenerator, TypedDict
 
 import blobfile as bf
+import structlog.stdlib
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
     ExecutionResult,
@@ -13,6 +15,8 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
 from structlog.stdlib import BoundLogger
 
 from paperbench.constants import LOGS_DIR
+
+logger = structlog.stdlib.get_logger(component=__name__)
 
 
 async def extract_file_from_computer(
@@ -223,12 +227,15 @@ async def file_is_symlink_on_computer(
     return result.exit_code == 0 and "->" in result.output.decode("utf-8")
 
 
-async def read_text_on_computer(computer: ComputerInterface, file_path: Path) -> str:
+async def read_text_on_computer(
+    computer: ComputerInterface, file_path: Path, max_bytes: int | None = None
+) -> str:
     """
     Try to read a file, with robustness to different encodings.
     (Without this, we sometimes get `'utf-8' codec can't decode byte 0xa4 in position 64: invalid start byte`)
     """
-    result = await computer.check_shell_command(f"cat {file_path}")
+    file_limiting_string = f" -c {max_bytes}" if max_bytes else ""
+    result = await computer.check_shell_command(f"head {file_limiting_string} {file_path}")
     try:
         return result.output.decode("utf-8")
     except UnicodeDecodeError:
@@ -244,57 +251,109 @@ async def get_mtime_on_computer(computer: ComputerInterface, file_path: Path) ->
     return float(result.output.decode("utf-8").strip())
 
 
-async def walk_dir_on_computer(
-    computer: ComputerInterface, dir_path: Path
-) -> AsyncGenerator[tuple[str, list[str], list[str]], None]:
-    """
-    Asynchronously walks a directory on the remote computer, yielding a tuple of
-    (current_directory, list_of_directory_names, list_of_file_names) similarly to os.walk.
+class WalkDirEntry(TypedDict):
+    dirs: list[str]  # sub-directories
+    files: list[str]  # file names
+    mtimes: list[float]  # modification times (epoch seconds)
 
-    This function uses the remote computer's `find` command with a maximum depth of 1.
-    It then parses the output, distinguishing directories (identified with type 'd')
-    from other file types. Note that symbolic links (type 'l') and other types are treated as files,
-    consistent with the default behavior of os.walk when not following symlinks.
+
+async def walk_dir_with_mtimes_on_computer(
+    computer: "ComputerInterface",
+    dir_path: Path,
+    warn_threshold: int = 1_000_000,  # One million entries
+) -> AsyncGenerator[tuple[str, list[str], list[str], list[float]], None]:
+    """
+    Asynchronously walk a directory tree on the remote computer with a single find command.
+    Yields (current_directory, subdirectory_names, file_names, file_mtimes) in top-down,
+    depth-first order, similar to os.walk.
     """
 
-    async def _walk(current_path: str) -> AsyncGenerator[tuple[str, list[str], list[str]], None]:
-        # Use find to list items in the current directory with their type.
-        # -mindepth 1 and -maxdepth 1 constrain the search to the current directory only.
-        # The printf format prints the type (e.g., d for directory, f for file, l for symlink)
-        # and the basename of the file, separated by a pipe.
-        cmd = f"find '{current_path}' -mindepth 1 -maxdepth 1 -printf '%y|%f\\n'"
-        result = await computer.send_shell_command(cmd)
-        if result.exit_code != 0:
-            # If the command fails, simply return and do not yield further.
+    root_path = os.path.normpath(str(dir_path))
+
+    cmd_count = f"find '{root_path}' -mindepth 0 -print | wc -l"
+    result_count = await computer.check_shell_command(cmd_count)
+    try:
+        entry_count = int(result_count.output.decode("utf-8").strip())
+    except ValueError:
+        entry_count = None
+    if entry_count is not None and entry_count > warn_threshold:
+        logger.warning(
+            f"WARNING: Directory '{root_path}' contains {entry_count:,} entries. "
+            "This may require a large amount of memory to process."
+        )
+
+    cmd_list = f"find '{root_path}' -mindepth 0 -printf '%y|%Y|%T@|%p\\n'"
+
+    result_list = await computer.check_shell_command(cmd_list)
+    lines = result_list.output.decode("utf-8").splitlines()
+
+    # parent_path → {"dirs": [...], "files": [...], "mtimes": [...]}}
+    walk_dir_adjacency: dict[str, WalkDirEntry] = defaultdict(
+        lambda: {"dirs": [], "files": [], "mtimes": []}
+    )
+    for line in lines:
+        try:
+            # d,f,l; d,f,?; modified time; full path
+            base_type, target_type, mtime_str, full_path = line.split("|", 3)
+        except ValueError:
+            continue  # skip malformed lines
+
+        full_path = os.path.normpath(full_path)
+
+        if full_path == root_path:
+            # root directory itself; ensure it's in adjacency
+            if full_path not in walk_dir_adjacency:
+                walk_dir_adjacency[full_path] = {"dirs": [], "files": [], "mtimes": []}
+            continue
+
+        parent = os.path.dirname(full_path)
+        name = os.path.basename(full_path)
+
+        is_real_dir = base_type == "d"
+        is_symlink_dir = base_type == "l" and target_type == "d"
+
+        if is_real_dir or is_symlink_dir:
+            walk_dir_adjacency[parent]["dirs"].append(name)
+            if is_real_dir and full_path not in walk_dir_adjacency:
+                walk_dir_adjacency[full_path] = {"dirs": [], "files": [], "mtimes": []}
+        else:
+            walk_dir_adjacency[parent]["files"].append(name)
+            try:
+                walk_dir_adjacency[parent]["mtimes"].append(float(mtime_str))
+            except ValueError:
+                walk_dir_adjacency[parent]["mtimes"].append(float("nan"))
+
+    for walkdir_entry in walk_dir_adjacency.values():
+        walkdir_entry["dirs"].sort()
+        pairs = sorted(zip(walkdir_entry["files"], walkdir_entry["mtimes"]), key=lambda x: x[0])
+        walkdir_entry["files"] = [p[0] for p in pairs]
+        walkdir_entry["mtimes"] = [p[1] for p in pairs]
+
+    # actual os.walk simulation
+    async def _walk(
+        current_path: str,
+    ) -> AsyncGenerator[tuple[str, list[str], list[str], list[float]], None]:
+        try:
+            subdirs = walk_dir_adjacency[current_path]["dirs"]
+            files = walk_dir_adjacency[current_path]["files"]
+            mtimes = walk_dir_adjacency[current_path]["mtimes"]
+
+            yield (current_path, subdirs, files, mtimes)
+
+            for d in subdirs:
+                next_path = os.path.join(current_path, d)
+                if next_path in walk_dir_adjacency:  # skip symlink dirs we've already seen
+                    async for sub_entry in _walk(next_path):
+                        yield sub_entry
+        except RecursionError:
+            logger.warning(
+                "RecursionError: Directory tree is too deep to walk in its entirety. Stopping traversal."
+            )
             return
 
-        dirs = []
-        files = []
-        output = result.output.decode("utf-8").strip()
-        if output:
-            for line in output.splitlines():
-                # Split each line into its type and filename parts.
-                try:
-                    typ, name = line.split("|", 1)
-                except ValueError:
-                    # If the line is not well formatted, skip it.
-                    continue
-                # Only treat entries of type 'd' as directories.
-                if typ == "d":
-                    dirs.append(name)
-                else:
-                    files.append(name)
-        # Yield the tuple consistent with os.walk: (root, dirs, files)
-        yield (current_path, dirs, files)
-        # Recurse into each discovered directory.
-        for d in dirs:
-            next_path = os.path.join(current_path, d)
-            async for entry in _walk(next_path):
-                yield entry
-
-    # Start the walk from the provided directory path.
-    async for entry in _walk(str(dir_path)):
-        yield entry
+    if root_path in walk_dir_adjacency:
+        async for entry in _walk(root_path):
+            yield entry
 
 
 async def copy_dir_to_computer(

@@ -665,7 +665,6 @@ class PaperBench(PythonCodingEval):
     def run_sanity_checks(self) -> None:
         self.check_for_docker()
         self.check_for_lfs()
-        self.check_for_computer_grading()
 
     def check_for_docker(self) -> None:
         if self.uses_local_config():
@@ -682,7 +681,3 @@ class PaperBench(PythonCodingEval):
         for paper in papers:
             with open(paper, "r") as f:
                 assert len(f.readlines()) > 5, f"Paper at {paper} should be pulled from git lfs"
-
-    def check_for_computer_grading(self) -> None:
-        if not self.judge.grade_locally:
-            raise NotImplementedError("Grading on computer is not fully supported yet.")

@@ -145,7 +145,11 @@ def setup_reproduction_config(skip_reproduction: bool = True) -> ReproductionCon
     )
 
 
-def setup_judge_config(skip_grading: bool = True, scaffold: str = "dummy") -> JudgeConfig:
+def setup_judge_config(
+    skip_grading: bool = True,
+    scaffold: str = "dummy",
+    grade_locally: bool = True,
+) -> JudgeConfig:
     image = "pb-env:latest"
     cluster_config = setup_cluster_config(image)
     return JudgeConfig(
@@ -153,6 +157,7 @@ def setup_judge_config(skip_grading: bool = True, scaffold: str = "dummy") -> Ju
         grade=not skip_grading,
         cluster_config=cluster_config,
         completer_config=OpenAITurnCompleter.Config(model="gpt-4o-mini"),  # cheap and quick
+        grade_locally=grade_locally,
     )
 
 

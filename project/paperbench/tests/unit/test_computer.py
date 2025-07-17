@@ -8,8 +8,8 @@ from alcatraz.clusters.local import LocalConfig
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 
-from paperbench.infra.alcatraz import copy_dir_to_computer
-from paperbench.judge.utils import walk_dir
+from paperbench.infra.alcatraz import copy_dir_to_computer, walk_dir_with_mtimes_on_computer
+from paperbench.judge.utils import walk_dir_with_mtimes, walk_dir_with_mtimes_locally
 
 
 @pytest.fixture(scope="function")
@@ -63,14 +63,13 @@ async def test_walk_dir_equivalence_with_copy(computer: ComputerInterface) -> No
         remote_base = "/tmp/test_dir"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk],
-            str(local_base),
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -90,13 +89,13 @@ async def test_empty_directory(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_empty_dir"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -121,13 +120,13 @@ async def test_hidden_files(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_hidden_files"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -153,13 +152,13 @@ async def test_symlink(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_symlink"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base, followlinks=False))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -187,13 +186,13 @@ async def test_deep_nested_structure(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_deep_nested_structure"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -222,13 +221,13 @@ async def test_special_characters_in_names(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_special_chars"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -253,13 +252,13 @@ async def test_unicode_filenames(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_unicode"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -287,13 +286,13 @@ async def test_broken_symlink(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_broken_symlink"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base, followlinks=False))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
@@ -336,16 +335,89 @@ async def test_mixed_content(computer: ComputerInterface) -> None:
         remote_base = "/tmp/test_mixed_content"
         await copy_dir_to_computer(computer, local_base, remote_base)
 
-        local_walk = list(os.walk(local_base, followlinks=False))
-        normalized_local = normalize_relative_walk(
-            [(str(root), dirs, files) for root, dirs, files in local_walk], str(local_base)
-        )
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
 
         remote_walk = []
-        async for root, dirs, files in walk_dir(Path(remote_base), computer):
+        async for root, dirs, files, _ in walk_dir_with_mtimes(Path(remote_base), computer):
             remote_walk.append((root, dirs, files))
         normalized_remote = normalize_relative_walk(remote_walk, remote_base)
 
         assert normalized_local == normalized_remote, (
             f"Mixed content test mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
+        )
+
+
+@pytest.mark.asyncio
+async def test_warn_if_exceeds_threshold(
+    computer: ComputerInterface, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """
+    Test that if the remote directory has more entries than `warn_threshold`,
+    we see a warning message in stdout.
+    """
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        local_base = Path(tmpdirname)
+        # Create 6 small files
+        for i in range(6):
+            (local_base / f"file_{i}.txt").write_text("content")
+
+        remote_base = "/tmp/test_warn_if_exceeds_threshold"
+        await copy_dir_to_computer(computer, local_base, remote_base)
+
+        # Use a small warn_threshold=5 so that 6 files triggers the warning
+        remote_walk = []
+        async for root, dirs, files, _ in walk_dir_with_mtimes_on_computer(
+            computer=computer, dir_path=Path(remote_base), warn_threshold=5
+        ):
+            remote_walk.append((root, dirs, files))
+
+        captured = capsys.readouterr()
+        assert "WARNING: Directory" in captured.out, (
+            f"Expected a warning when exceeding threshold, got:\n{captured.out}"
+        )
+
+
+@pytest.mark.asyncio
+async def test_symlinked_directory(computer: ComputerInterface) -> None:
+    """
+    Test that a symlink pointing to a directory is reported just like os.walk:
+    it appears in the 'dirs' list and (by default) is not recursed into.
+    """
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        local_base = Path(tmpdirname) / "symlinked_dir_test"
+        local_base.mkdir()
+        # Create a real directory with one file inside
+        target_dir = local_base / "real_dir"
+        target_dir.mkdir()
+        (target_dir / "inner.txt").write_text("inside real dir")
+
+        # Create a symlink pointing to that directory
+        symlink_dir = local_base / "link_to_real"
+        relative_target = os.path.relpath(target_dir, symlink_dir.parent)
+        os.symlink(relative_target, symlink_dir, target_is_directory=True)
+
+        remote_base = "/tmp/test_symlinked_directory"
+        await copy_dir_to_computer(computer, local_base, remote_base)
+
+        # Collect local walk
+        local_walk = []
+        for root, dirs, files, _ in walk_dir_with_mtimes_locally(local_base):
+            local_walk.append((root, dirs, files))
+        normalized_local = normalize_relative_walk(local_walk, str(local_base))
+
+        # Collect remote walk
+        remote_walk = []
+        async for root, dirs, files, _ in walk_dir_with_mtimes_on_computer(
+            computer, Path(remote_base)
+        ):
+            remote_walk.append((root, dirs, files))
+        normalized_remote = normalize_relative_walk(remote_walk, remote_base)
+
+        # Check that both see "link_to_real" in dirs, not in files,
+        # and that they only recurse into real_dir, not into the symlink.
+        assert normalized_local == normalized_remote, (
+            f"Symlinked-directory mismatch:\nLocal: {normalized_local}\nRemote: {normalized_remote}"
         )

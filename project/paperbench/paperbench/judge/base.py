@@ -2,7 +2,6 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
-from logging import Logger
 from pathlib import Path
 from typing import Awaitable, Callable
 

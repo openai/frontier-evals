@@ -1,14 +1,18 @@
+import io
+import os
+import tarfile
 import time
 from pathlib import Path
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator
 
 import blobfile as bf
+from structlog.stdlib import BoundLogger
+
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
     ExecutionResult,
 )
 from paperbench.constants import LOGS_DIR
-from structlog.stdlib import BoundLogger
 
 
 async def extract_file_from_computer(

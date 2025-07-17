@@ -2,11 +2,11 @@ import asyncio
 import json
 import os
 import time
+from collections.abc import AsyncGenerator, Sequence
 from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator, Literal, Sequence
+from typing import Any, Literal
 
 import blobfile as bf
-import numpy as np
 import structlog.stdlib
 from dotenv import load_dotenv
 
@@ -48,7 +48,12 @@ from paperbench.utils import (
     get_timestamp,
     is_docker_running,
     purple,
+    safe_mean,
 )
+
+MIN_UPLOAD_INTERVAL_MESSAGES = 5
+MIN_UPLOAD_INTERVAL_SECONDS = 1800
+
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
@@ -64,7 +69,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
         default=False, doc="Whether to make the local NVIDIA GPU available to the agent"
     )
 
-    upload_interval_messages: int = chz.field(
+    upload_interval_messages: int | None = chz.field(
         default=None,
         doc="Upload interval in agent steps for heavy logs",
     )
@@ -123,16 +128,23 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             destinations=["run"],
         )
 
-        if self.upload_interval_messages and self.upload_interval_messages <= 5:
+        if (
+            self.upload_interval_messages
+            and self.upload_interval_messages <= MIN_UPLOAD_INTERVAL_MESSAGES
+        ):
             ctx_logger.warning(
                 "Uploading artifacts every five messages or less is untested. "
                 "Consider setting `upload_interval_messages` to a higher value.",
                 destinations=["run"],
             )
 
-        if self.upload_interval_seconds and self.upload_interval_seconds < 1800:
+        if (
+            self.upload_interval_seconds
+            and self.upload_interval_seconds < MIN_UPLOAD_INTERVAL_SECONDS
+        ):
             ctx_logger.warning(
-                "Uploading artifacts more frequently than every 1800 seconds is untested. "
+                "Uploading artifacts more frequently than every"
+                f" {MIN_UPLOAD_INTERVAL_SECONDS} seconds is untested. "
                 "Consider setting `upload_interval_seconds` to a higher value.",
                 destinations=["run"],
             )
@@ -257,7 +269,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             )
 
             ctx_logger.info(f"status: {status}", destinations=["run"])
-            start_time = status.get("created_at") if status.get("created_at") else time.time()
+            start_time = status.get("created_at", time.time())
             if status.get("agent_finished_at"):
                 end_time = status.get("agent_finished_at")
             elif status.get("last_updated"):
@@ -572,7 +584,7 @@ class PaperBench(PythonCodingEval):
         }
 
         other_stats = {
-            "repro_mean_time": np.mean(
+            "repro_mean_time": safe_mean(
                 [
                     r.reproduction_output.metadata.repro_execution_time  # type: ignore
                     for r in results_clean
@@ -636,16 +648,7 @@ class PaperBench(PythonCodingEval):
         return run_ids
 
     def uses_local_config(self) -> bool:
-        """
-        Check if any of paperbench.solver.cluster_config, paperbench.reproduction.cluster_config,
-        or paperbench.judge.cluster_config is an instance of LocalConfig.
-
-        Args:
-            paperbench: A PaperBench PythonCodingEval instance
-
-        Returns:
-            bool: True if any of the cluster configs is a LocalConfig, False otherwise
-        """
+        """Return True if any cluster config uses LocalConfig."""
 
         # PythonCodingSolver may not have a cluster_config, just ExternalPythonCodingSolver does for now
         if hasattr(self.solver, "cluster_config"):

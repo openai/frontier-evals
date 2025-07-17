@@ -6,9 +6,10 @@ import tarfile
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Awaitable, Callable, ParamSpec, TypeVar
+from typing import Any, Awaitable, Callable, ParamSpec, Sequence, TypeVar
 
 import blobfile as bf
+import numpy as np
 import openai
 import structlog.stdlib
 import tenacity
@@ -93,6 +94,25 @@ def get_timestamp() -> str:
     """Returns the current timestamp in the format `YYYY-MM-DDTHH-MM-SS-Z`."""
 
     return time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
+
+
+def safe_mean(values: Sequence[float | int], default: float = np.nan) -> float:
+    """Return the mean or a default when no values are provided."""
+
+    assert isinstance(values, Sequence), "`values` must be a sequence"
+    assert all(isinstance(v, (int, float)) for v in values), "`values` must be numeric list"
+    assert isinstance(default, (int, float)), "`default` must be numeric"
+
+    if not values:
+        return float(default)
+
+    result = float(np.mean(values))
+
+    assert isinstance(result, (int, float)), (
+        f"Expected the mean to be a number, but got `{type(result)}`"
+    )
+
+    return result
 
 
 def get_commit_hash() -> str:

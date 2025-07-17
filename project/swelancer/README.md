@@ -47,6 +47,9 @@ command, below.
 Note, if you do not want to skip pushing the images, then you should remove the
 `--skip-push` argument and provide a `--registry` argument.
 
+Note, we have also already pushed the images to dockerhub,
+[link](https://hub.docker.com/orgs/swelancer/repositories)
+
 ### Environment variables
 
 There are a couple of environment variables SWELancer relies on.
@@ -89,7 +92,9 @@ uv run python swelancer/run_swelancer.py \
   swelancer.solver.apply_gold_solution=True \
   swelancer.solver.computer_runtime=nanoeval_alcatraz.alcatraz_computer_interface:AlcatrazComputerRuntime \
   swelancer.solver.computer_runtime.env=alcatraz.clusters.local:LocalConfig \
-  swelancer.solver.computer_runtime.env.pull_from_registry=False \
+  swelancer.solver.computer_runtime.env.pull_from_registry=True \
+  swelancer.docker_image_prefix=swelancer/swelancer_x86 \
+  swelancer.docker_image_tag=releasev1 \
   runner.concurrency=20 \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \
@@ -109,7 +114,9 @@ uv run python swelancer/run_swelancer.py \
   swelancer.solver.apply_gold_solution=True \
   swelancer.solver.computer_runtime=nanoeval_alcatraz.alcatraz_computer_interface:AlcatrazComputerRuntime \
   swelancer.solver.computer_runtime.env=alcatraz.clusters.local:LocalConfig \
-  swelancer.solver.computer_runtime.env.pull_from_registry=False \
+  swelancer.solver.computer_runtime.env.pull_from_registry=True \
+  swelancer.docker_image_prefix=swelancer/swelancer_x86 \
+  swelancer.docker_image_tag=releasev1 \
   runner.concurrency=20 \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \
@@ -138,7 +145,9 @@ uv run python swelancer/run_swelancer.py \
   swelancer.solver.model=openai/gpt-4o \
   swelancer.solver.computer_runtime=nanoeval_alcatraz.alcatraz_computer_interface:AlcatrazComputerRuntime \
   swelancer.solver.computer_runtime.env=alcatraz.clusters.local:LocalConfig \
-  swelancer.solver.computer_runtime.env.pull_from_registry=False
+  swelancer.solver.computer_runtime.env.pull_from_registry=True \
+  swelancer.docker_image_prefix=swelancer/swelancer_x86 \
+  swelancer.docker_image_tag=releasev1 \
   runner.concurrency=4 \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \

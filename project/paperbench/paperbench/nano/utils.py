@@ -3,6 +3,7 @@ from typing import Tuple
 
 import structlog.stdlib
 from alcatraz.clusters.local import LocalConfig
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.constants import AGENT_DIR, SUBMISSION_DIR, WORKSPACE_BASE
 from paperbench.metrics import EvaluationRun, PaperEvaluation
 from paperbench.utils import get_experiments_dir, get_paperbench_data_dir, is_docker_running
@@ -121,6 +122,19 @@ def build_reproduce_command(task: "PaperBenchTask") -> str:  # type: ignore
     return " ".join(map(str, cmd))
 
 
+async def check_submission_exists(computer: ComputerInterface, logger: BoundLogger) -> bool:
+    """Checks if there is at least one file in the submission directory in the cluster."""
+
+    result = await computer.send_shell_command(f"ls -A {SUBMISSION_DIR} | wc -l")
+    num_files = int(result.output.decode("utf-8").strip())
+    submission_exists = result.exit_code == 0 and num_files > 0
+
+    if not submission_exists:
+        logger.error(f"No files found in submission directory!")
+
+    return submission_exists
+
+
 def get_file_at_duration(
     files: list[str], duration_hr: int, logger: BoundLogger
 ) -> Tuple[str, timedelta]:
@@ -143,8 +157,8 @@ def get_file_at_duration(
     # Extract timestamps from filenames
     timestamps = []
     for file in files:
-        # Extract timestamp string between last / and .tar.gz
-        ts_str = file.split("/")[-1].replace(".tar.gz", "")
+        # Extract extract timestamp from the path
+        ts_str = file.split("/")[-2].replace(".tar.gz", "")
         if "step" in ts_str:
             ts_str = ts_str.split("_step_")[0]
         # Parse timestamp string into datetime

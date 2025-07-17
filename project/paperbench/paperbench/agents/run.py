@@ -18,6 +18,7 @@ from paperbench.infra.alcatraz import (
     count_aisi_basic_agent_messages,
     upload_sources,
 )
+from paperbench.nano.utils import check_submission_exists
 from paperbench.paper_registry import Paper
 from paperbench.utils import purple
 from pydantic import BaseModel
@@ -249,12 +250,13 @@ async def upload_heavy_logs(
     retry_time: float | None = None,
     num_messages: int | None = None,
 ):
-    filename = f"{time.strftime('%Y-%m-%dT%H-%M-%S-%Z', time.gmtime())}"
+    timestamp = f"{time.strftime('%Y-%m-%dT%H-%M-%S-%Z', time.gmtime())}"
+
     await upload_sources(
         computer=computer,
         sources=agent_dir_config.directories_to_save,
         run_dir=run_dir,
-        filename=filename,
+        timestamp=timestamp,
         logger=logger,
     )
     if runtime is None or productive_runtime is None or retry_time is None:
@@ -264,7 +266,7 @@ async def upload_heavy_logs(
     await upload_log_info(
         start_time=agent_start_time,
         run_dir=run_dir,
-        filename=filename,
+        timestamp=timestamp,
         num_messages=num_messages,
         runtime=runtime,
         productive_runtime=productive_runtime,
@@ -340,7 +342,7 @@ async def upload_status(
 async def upload_log_info(
     start_time: int,
     run_dir: str,
-    filename: str,
+    timestamp: str,
     num_messages: int,
     runtime: str,
     productive_runtime: str,
@@ -354,7 +356,7 @@ async def upload_log_info(
         "retry_time": retry_time,
     }
     bf.write_bytes(
-        bf.join(run_dir, f"{filename}.json"),
+        bf.join(run_dir, "submissions", timestamp, "log.json"),
         json.dumps(log_info, indent=4).encode("utf-8"),
     )
 
@@ -482,22 +484,6 @@ async def save_computer_output(
     """
     for dir_to_save in directories_to_save:
         await extract_dir_from_computer(computer, dir_to_save, save_dir, logger=logger)
-
-
-async def check_submission_exists(computer: ComputerInterface, logger: BoundLogger):
-    """
-    Checks if there is at least one file in the submission directory in the cluster.
-
-    Args:
-        computer: The computer instance.
-        save_dir: The directory where the output folder/file will be saved.
-    """
-    res = await computer.send_shell_command(f"ls -A {SUBMISSION_DIR} | wc -l")
-    num_files = int(res.output.decode("utf-8").strip())
-    if res.exit_code != 0 or num_files <= 1:  # we expect the initial .git file
-        logger.exception(f"No files found in submission directory\n{num_files}")
-        return False
-    return True
 
 
 async def extract_dir_from_computer(

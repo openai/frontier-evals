@@ -182,7 +182,14 @@ In each run directory there is:
 - `run.log`: The log for that run.
 - `status.json`: The status of that run.
 - `metadata.json`: Metadata for that run.
-- `pb_result.json`: The grading result for that run.
+- `grade.json`: The grading result for that run.
+- A submissions directory, containing multiple timestamped submission directories (e.g., `2025-03-28T10-34-35-UTC`), each with:
+    - `log.json`: Logs from this submission attempt
+    - `submission.tar.gz`: The archived submission files
+    - If the submission was executed/graded, the directory may also contain:
+        - `submission_executed_grader_output_0.json`: Output from the grader.
+        - `submission_executed_metadata.json`: Metadata about the execution.
+        - `submission_executed.tar.gz`: The archived files after execution.
 
 Snapshots from the agent rollout are also stored in the run directory. An initial snapshot is created when the agent starts, and a final snapshot is created when the agent finishes. Intermediate snapshots are created throughout the agent rollout and can be set via `paperbench.solver.upload_interval_messages` or `paperbench.solver.upload_interval_seconds`.
 
@@ -190,21 +197,22 @@ Snapshots from the agent rollout are also stored in the run directory. An initia
 ```
 runs/
 ├── <run_group_id>/
+│   ├── group.log
 │   ├── <run_id>/
-│   │   ├── <inital_snapshot_metadata.json>
-│   │   ├── <inital_snapshot.tar.gz>
-│   │   ├── ...
-│   │   ├── ...
-│   │   ├── <final_snapshot_metadata.json>
-│   │   ├── <final_snapshot.tar.gz>
-│   │   ├── <final_snapshot>_repro.tar.gz>
-│   │   ├── <final_snapshot>_repro_grader_output_0.json
-│   │   ├── <final_snapshot>_repro_metadata.json
 │   │   ├── metadata.json
-│   │   ├── pb_result.json
+│   │   ├── grade.json
 │   │   ├── status.json
 │   │   └── run.log
-│   ├── group.log
+│   │   ├── submissions/
+│   │   │   ├── <timestamp-1>/
+│   │   │   │   ├── log.json
+│   │   │   │   └── submission.tar.gz
+│   │   │   └── <timestamp-2>/
+│   │   │       ├── log.json
+│   │   │       ├── submission.tar.gz
+│   │   │       ├── submission_executed_grader_output_0.json  # if graded
+│   │   │       ├── submission_executed_metadata.json  # if executed
+│   │   │       └── submission_executed.tar.gz  # if executed
 │   └── <other_run_ids>/...
 └── <other_run_group_ids>/...
 ```

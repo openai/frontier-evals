@@ -57,8 +57,6 @@ async def test_rollout(agent_id: str):
     perform reproduction or grading in this test.
     """
     with run_dir_ctx_manager() as runs_dir:
-        runs_dir = bf.join(runs_dir, uuid.uuid4().hex)
-
         solver = setup_solver(agent_id)
         judge_config = setup_judge_config()
         reproduction_config = setup_reproduction_config()
@@ -106,7 +104,6 @@ async def test_resuming():
     with run_dir_ctx_manager() as runs_dir:
         # Create a partially-completed run group, containing one "rice" run
         run_group_id = uuid.uuid4().hex
-        runs_dir = bf.join(runs_dir, run_group_id)
         run_id = create_run_id("rice")
         run_dir = create_run_dir(run_group_id, run_id, runs_dir)
         create_fake_submission(run_dir)
@@ -166,7 +163,6 @@ async def test_reproduction():
     with run_dir_ctx_manager() as runs_dir:
         # Create a partially-completed run group, containing one "rice" run
         run_group_id = uuid.uuid4().hex
-        runs_dir = bf.join(runs_dir, run_group_id)
         run_id = create_run_id("rice")
         run_dir = create_run_dir(run_group_id, run_id, runs_dir)
         create_fake_submission(run_dir)
@@ -276,7 +272,6 @@ async def test_grading(
     with run_dir_ctx_manager() as runs_dir:
         # Create a partially-completed run group, containing one "rice" run
         run_group_id = uuid.uuid4().hex
-        runs_dir = bf.join(runs_dir, run_group_id)
         run_id = create_run_id("rice")
         run_dir = create_run_dir(run_group_id, run_id, runs_dir)
         create_fake_submission(run_dir)
@@ -316,9 +311,8 @@ async def test_grading(
         paper_dir = bf.join(run_group_dir, paper_dirs[0])
 
         # Check grader output
-        grader_output_files = [
-            i for i in bf.listdir(paper_dir) if i.endswith("_grader_output_0.json")
-        ]
+        pattern = bf.join(paper_dir, "**/*.json")
+        grader_output_files = [i for i in bf.glob(pattern) if i.endswith("_grader_output_0.json")]
         assert (
             len(grader_output_files) == 1
         ), f"Expected one grader output file in {paper_dir}, found {len(grader_output_files)}"
@@ -335,6 +329,4 @@ async def test_grading(
         )  # Check graded task tree can be loaded
 
         # Check pb_result
-        assert bf.exists(
-            bf.join(paper_dir, "pb_result.json")
-        ), f"pb_result.json not found in {paper_dir}"
+        assert bf.exists(bf.join(paper_dir, "grade.json")), f"grade.json not found in {paper_dir}"

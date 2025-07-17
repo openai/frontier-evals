@@ -75,6 +75,12 @@ def get_experiments_dir() -> Path:
     return get_root().parent / "experiments"
 
 
+def get_dotenv() -> Path:
+    """Returns an absolute path to the .env file."""
+
+    return get_root().parent / ".env"
+
+
 def get_timestamp() -> str:
     """Returns the current timestamp in the format `YYYY-MM-DDTHH-MM-SS-Z`."""
 

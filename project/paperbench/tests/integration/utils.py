@@ -60,17 +60,18 @@ def assert_rollout_files_exist(paper_dir: str, agent_id: str):
         bf.join(paper_dir, "metadata.json")
     ), f"metadata.json not found in paper directory at {paper_dir}"
 
-    tar_files = [i for i in bf.listdir(paper_dir) if i.endswith(".tar.gz")]
+    pattern = paper_dir + "/**/submission.tar.gz"
+    tar_files = list(bf.glob(pattern))
+
     assert (
         len(tar_files) >= 1
     ), f"Expected at least 1 tar.gz file in {paper_dir}, found {len(tar_files)}"
 
-    run_tar_files = sorted([f for f in tar_files if "repro" not in f])
+    run_tar_files = sorted([f for f in tar_files if "executed" not in f])
     assert (
         len(run_tar_files) >= 1
-    ), f"Expected at least one non-repro tar.gz file in {paper_dir}, found {len(run_tar_files)}"
-    tar_file = bf.join(paper_dir, run_tar_files[-1])  # Take the latest one (last in sorted order)
-    extracted_dir = tar_file.replace(".tar.gz", "")
+    ), f"Expected at least one non-executed tar.gz file in {paper_dir}, found {len(run_tar_files)}"
+    tar_file = run_tar_files[-1]  # Take the latest one (last in sorted order)
 
     # Extract the submission locally and check for expected files
     with tempfile.TemporaryDirectory() as tmp_submission_dir:

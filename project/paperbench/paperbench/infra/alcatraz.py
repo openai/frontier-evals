@@ -75,15 +75,17 @@ async def populate_exclude_list(
     Populates `exclude_list_path` with the list of files in `dir_path_on_computer` that
     are larger than `max_size`.
     """
+
     exclude_list_path = exclude_list_path or Path("/tmp") / "exclude.txt"
+
     cmds = [
         f"MAX_SIZE={max_size}",
         f"EXCLUDE_LIST={exclude_list_path}",
         f"find {dir_path_on_computer} -type f -not -name 'agent.log' -not -name 'inspect.log' -size +$MAX_SIZE -printf '%P\\n' > $EXCLUDE_LIST",
         "cat $EXCLUDE_LIST",
     ]
-    excluded = await computer.check_shell_command(" && ".join(cmds))
-    return excluded
+
+    return await computer.check_shell_command(" && ".join(cmds))
 
 
 async def upload_sources(
@@ -91,19 +93,23 @@ async def upload_sources(
     sources: list[str],
     run_dir: Path | str,
     logger: BoundLogger,
-    filename: str | None = None,
+    timestamp: str | None = None,
 ):
     """
     Tars all source directories and files into a single tarball and uploads it
     """
-    if filename is None:
-        filename = time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
-    file_path = bf.join(run_dir, f"{filename}.tar.gz")
 
-    container_tmp_dir = Path("/tmp") / f"{filename}"
-    container_tar_path = Path("/tmp") / f"{filename}.tar.gz"
+    if timestamp is None:
+        timestamp = time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
 
-    logger.info(f"Creating tar for {sources} and uploading to {file_path}")
+    fpath = bf.join(run_dir, "submissions", timestamp, "submission.tar.gz")
+    container_tmp_dir = Path("/") / "tmp" / "submissions" / timestamp
+    container_tar_path = Path("/") / "tmp" / "submissions" / f"{timestamp}.tar.gz"
+
+    if not fpath.startswith("az://"):
+        Path(fpath).parent.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"Creating tar for {sources} and uploading to {fpath}")
     await computer.check_shell_command(f"mkdir -p {container_tmp_dir}")
 
     for source in sources:
@@ -114,13 +120,13 @@ async def upload_sources(
 
     excluded = await populate_exclude_list(computer, container_tmp_dir, "10M")
 
-    for fpath in excluded.output.decode("utf-8").strip().splitlines():
-        logger.info(f"Excluding file from submission zip (> 10MB): {fpath}")
+    for path in excluded.output.decode("utf-8").strip().splitlines():
+        logger.info(f"Excluding file from submission zip (> 10MB): {path}")
 
     cmds = [
         f"ARCHIVE_PATH={container_tar_path}",
         "EXCLUDE_LIST=/tmp/exclude.txt",
-        f"tar -czf $ARCHIVE_PATH -X $EXCLUDE_LIST -C {container_tmp_dir.parent} '{filename}'",
+        f"tar -czf $ARCHIVE_PATH -X $EXCLUDE_LIST -C {container_tmp_dir.parent} '{timestamp}'",
     ]
 
     await computer.check_shell_command(" && ".join(cmds))
@@ -128,7 +134,7 @@ async def upload_sources(
     await extract_file_from_computer(
         computer=computer,
         path_on_computer=container_tar_path,
-        extract_to=file_path,
+        extract_to=fpath,
         logger=logger,
     )
 

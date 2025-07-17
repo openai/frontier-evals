@@ -2,6 +2,9 @@ import argparse
 import asyncio
 import datetime
 import json
+import shutil
+import tarfile
+import tempfile
 from pathlib import Path
 
 import structlog.stdlib
@@ -28,13 +31,33 @@ async def monitor_single_log(
 
     # look at latest checkpoint
     checkpoints = [
-        i for i in list(run_dir.glob("*-GMT")) + list(run_dir.glob("*-UTC")) if i.is_dir()
+        i
+        for i in list(run_dir.glob("submissions/*-GMT")) + list(run_dir.glob("submissions/*-UTC"))
+        if i.is_dir()
     ]
     if len(checkpoints) == 0:
         logger.warning(f"No checkpoints found for {run_id}")
         return None
-    latest_checkpoint = sorted(checkpoints, key=lambda x: x.stem)[-1]
-    log_file = latest_checkpoint / "logs" / "agent.log"
+
+    latest_checkpoint = None
+
+    for checkpoint in sorted(checkpoints, key=lambda x: x.stem, reverse=True):
+        if (checkpoint / "submission.tar.gz").exists():
+            latest_checkpoint = checkpoint
+            break
+
+    if not latest_checkpoint:
+        logger.warning(f"No submission.tar.gz found for {run_id}")
+        return None
+
+    with tempfile.TemporaryDirectory() as extract_to:
+        with tarfile.open(latest_checkpoint / "submission.tar.gz", "r:gz") as tar:
+            tar.extractall(path=extract_to)
+
+        matches = list(Path(extract_to).glob("**/logs/agent.log"))
+        assert len(matches) == 1, f"Expected exactly one agent.log file, found {len(matches)}"
+        log_file = latest_checkpoint / "agent.log"
+        shutil.copy(matches[0], log_file)
 
     paper_id = get_paper_id_from_run_id(run_id)
 

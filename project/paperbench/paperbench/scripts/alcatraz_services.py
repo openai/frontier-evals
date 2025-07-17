@@ -81,10 +81,6 @@ async def reproduce_on_computer(
         result = await computer.send_shell_command(cmd_str)
         assert result.exit_code == 0, f"Install failed: {result}"
 
-        # Get the submission stem which will be the prefix for various outputs
-        # e.g. /path/to/2024-12-03T17-47-25-GMT.tar.gz -> 2024-12-03T17-47-25-GMT
-        submission_stem = Path(submission_path).stem.split(".tar")[0]
-
         # Step 1: Put submission to /submission
         await put_submission_in_computer(computer, submission_path, logger)
 
@@ -98,25 +94,24 @@ async def reproduce_on_computer(
         )
 
         # Step 3: Save outputs
-        bf.write_bytes(
-            bf.join(run_dir, f"{submission_stem}_repro_metadata.json"),
-            json.dumps(repro_metadata).encode("utf-8"),
-        )
+        path_to_output = submission_path.replace(".tar.gz", "_executed_metadata.json")
+        bf.write_bytes(path_to_output, json.dumps(repro_metadata).encode("utf-8"))
 
         # extract tar of the submission
-        tar_path = output_cluster_path / f"{submission_stem}_repro.tar.gz"
-        upload_to_path = bf.join(run_dir, f"{submission_stem}_repro.tar.gz")
+        timestamp = Path(submission_path).parts[-2]
+        upload_from = output_cluster_path / f"submission_executed.tar.gz"
+        upload_to = bf.join(run_dir, "submissions", timestamp, f"submission_executed.tar.gz")
 
         await tar_and_extract_from_computer(
             computer=computer,
             dir_path_on_computer=submission_cluster_path,
-            tar_path_on_computer=tar_path,
-            tar_path_on_target=upload_to_path,
+            tar_path_on_computer=upload_from,
+            tar_path_on_target=upload_to,
             max_file_size="10M",
             logger=logger,
         )
 
-        logger.info(f"Reproduced dir has been written: {upload_to_path}")
+        logger.info(f"Reproduced dir has been written: {upload_to}")
     except Exception as e:
         error_msg = str(e)
         logger.exception(f"Reproduction failed with error:\n{error_msg}")

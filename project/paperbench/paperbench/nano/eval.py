@@ -17,6 +17,7 @@ import structlog.stdlib
 from alcatraz.clusters.local import ClusterConfig, LocalConfig
 from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
 from preparedness_turn_completer.turn_completer import TurnCompleter
+from dotenv import load_dotenv
 from nanoeval.eval import RetryableSystemError
 from nanoeval.recorder import get_recorder
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
@@ -50,6 +51,7 @@ from paperbench.utils import (
     create_run_dir,
     create_run_id,
     get_default_runs_dir,
+    get_dotenv,
     get_experiments_dir,
     get_timestamp,
     purple,
@@ -58,29 +60,13 @@ from pydantic import BaseModel
 from structlog.stdlib import BoundLogger
 from typing_extensions import override
 
-dotenv.load_dotenv()
+load_dotenv(get_dotenv())
 
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
 
 logger = structlog.stdlib.get_logger(component=__name__)
-
-
-async def check_submission_exists(computer: ComputerInterface, logger: BoundLogger):
-    """
-    Checks if there is at least one file in the submission directory in the cluster.
-
-    Args:
-        cluster: The Alcatraz cluster instance.
-        save_dir: The directory where the output folder/file will be saved.
-    """
-    res = await computer.send_shell_command(f"ls -A {SUBMISSION_DIR} | wc -l")
-    num_files = int(res.output.decode("utf-8").strip())
-    if res.exit_code != 0 or num_files <= 1:  # we expect the initial .git file
-        logger.exception(f"No files found in submission directory\n{num_files}")
-        return False
-    return True
 
 
 class ReproductionConfig(BaseModel):
@@ -335,13 +321,14 @@ class PBTask(ComputerTask):
 
         ctx_logger.info("Successfully uploaded logs before grading!", destinations=["run"])
 
-        prelim_submission_path, _ = checkpoint
+        path_to_submission, _ = checkpoint
+        path_to_executed_submission = path_to_submission.replace(".tar.gz", "_executed.tar.gz")
         reproduction_output = None
 
         if self.reproduction.skip_reproduction or self.judge.code_only:
-            submission_to_grade_path = prelim_submission_path
+            submission_to_grade_path = path_to_submission
         else:
-            submission_to_grade_path = prelim_submission_path.replace(".tar.gz", "_repro.tar.gz")
+            submission_to_grade_path = path_to_executed_submission
 
             ctx_logger.info(
                 f"Starting the reproduction process for `{self.question_id}.{self.attempt_id}`...",
@@ -420,9 +407,7 @@ class PBTask(ComputerTask):
                 reproduction_output=reproduction_output,
             ),
             score=judge_output.score if judge_output else 0.0,
-            grader_log=(
-                json.dumps(judge_output.to_dict()) if judge_output else "Log file not found!"
-            ),
+            grader_log="Grading completed successfully" if judge_output else "Log file not found!",
         )
 
         get_recorder().record_extra(
@@ -433,10 +418,10 @@ class PBTask(ComputerTask):
             }
         )
 
-        pb_result_path = bf.join(self.run_dir, "pb_result.json")
-        bf.write_bytes(pb_result_path, json.dumps(grade.to_dict(), indent=2).encode("utf-8"))
+        path_to_grade = bf.join(self.run_dir, "grade.json")
+        bf.write_bytes(path_to_grade, json.dumps(grade.to_dict(), indent=2).encode("utf-8"))
         ctx_logger.info(
-            purple(f"Grades saved to {pb_result_path}"), destinations=["group", "run"], _print=True
+            purple(f"Grades saved to {path_to_grade}"), destinations=["group", "run"], _print=True
         )
 
         return grade
@@ -461,8 +446,8 @@ class PBTask(ComputerTask):
             )
 
         submission, _ = checkpoint
-        reproduce_output_path = submission.replace(".tar.gz", "_repro.tar.gz")
-        repro_metadata_path = submission.replace(".tar.gz", "_repro_metadata.json")
+        reproduce_output_path = submission.replace(".tar.gz", "_executed.tar.gz")
+        repro_metadata_path = submission.replace(".tar.gz", "_executed_metadata.json")
 
         ctx_logger.info(f"Reproducing submission {reproduce_output_path}...", destinations=["run"])
 
@@ -536,15 +521,14 @@ class PBTask(ComputerTask):
 
         # First, identify the submission that we want to grade
         # (each run_id can have multiple timestamped submissions, we need to select one)
-        # Runs are organized as {run_group_id}/{run_id}/{log_timestamp}.tar.gz
+        # Runs are organized as {run_group_id}/{run_id}/submissions/{timestamp}/submission.tar.gz
+        pattern = bf.join(self.run_dir, "**/*.tar.gz")
         submission_checkpoints = [
             i
-            for i in bf.listdir(self.run_dir)
-            if not i.endswith("_repro.tar.gz") and i.endswith(".tar.gz")
+            for i in bf.glob(pattern)
+            if i.endswith(".tar.gz") and not i.endswith("_executed.tar.gz")
         ]
-        submission_checkpoints = [
-            bf.join(self.run_dir, i) for i in submission_checkpoints
-        ]  # convert to absolute paths
+
         if not submission_checkpoints:
             return None
         # Get the submission at the target duration if it is set, otherwise get the latest submission
@@ -686,6 +670,20 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             f"Attempting to start a cluster instance. This may take a while...",
             destinations=["run"],
         )
+
+        if self.upload_interval_messages and self.upload_interval_messages <= 5:
+            ctx_logger.warning(
+                "Uploading artifacts every five messages or less is untested. "
+                "Consider setting `upload_interval_messages` to a higher value.",
+                destinations=["run"],
+            )
+
+        if self.upload_interval_seconds and self.upload_interval_seconds < 1800:
+            ctx_logger.warning(
+                "Uploading artifacts more frequently than every 1800 seconds is untested. "
+                "Consider setting `upload_interval_seconds` to a higher value.",
+                destinations=["run"],
+            )
 
         agent = agent_registry.get_agent(self.agent_id)
         alcatraz_config = task_to_alcatraz_config(task, self.cluster_config)
@@ -880,7 +878,8 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             json.dump(agent_output.to_dict(), f, indent=4)
 
         # Now the result should exist
-        num_tars = len([i for i in bf.listdir(task.run_dir) if i.endswith(".tar.gz")])
+        pattern = bf.join(task.run_dir, "**/*.tar.gz")
+        num_tars = len(list(bf.glob(pattern)))
         ctx_logger.info(f"Found {num_tars} tars for {task.run_id}", destinations=["run"])
 
         if num_tars < 1:
@@ -889,6 +888,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                 destinations=["group", "run"],
                 _print=True,
             )
+
             get_recorder().record_extra(
                 {
                     "run_group_id": task.run_group_id,

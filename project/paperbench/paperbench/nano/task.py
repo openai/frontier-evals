@@ -433,11 +433,6 @@ class PBTask(ComputerTask):
 
     async def _select_checkpoint(self) -> tuple[str, timedelta] | None:
         """Identifies the submission tarball to use for reproduction/grading."""
-        ctx_logger = logger.bind(
-            run_group_id=self.run_group_id,
-            run_id=self.run_id,
-            runs_dir=self.runs_dir,
-        )
 
         # First, identify the submission that we want to grade
         # (each run_id can have multiple timestamped submissions, we need to select one)
@@ -454,13 +449,14 @@ class PBTask(ComputerTask):
 
         # Get the submission at the target duration if it is set, otherwise get the latest submission
         target_duration_hr = self.target_duration_hr if self.target_duration_hr else 10000
-        submission_path, submission_duration = get_file_at_duration(
-            submission_checkpoints,
-            target_duration_hr,
-            ctx_logger.bind(destinations=["run"]),
-        )
+        checkpoint = get_file_at_duration(submission_checkpoints, target_duration_hr)
 
-        return submission_path, submission_duration
+        path, duration = checkpoint["path"], checkpoint["duration"]
+
+        assert isinstance(path, str)
+        assert isinstance(duration, timedelta)
+
+        return path, duration
 
     async def _run_judge(
         self,

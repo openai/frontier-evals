@@ -79,9 +79,7 @@ async def check_submission_exists(computer: ComputerInterface, logger: BoundLogg
     return submission_exists
 
 
-def get_file_at_duration(
-    files: list[str], duration_hr: int, logger: BoundLogger
-) -> tuple[str, timedelta]:
+def get_file_at_duration(files: list[str], duration_hr: int) -> dict[str, timedelta | str]:
     """
     Given a list of files with timestamped names, return the file closest to `duration_hr`-hours
     after the earliest file in the list.
@@ -98,30 +96,44 @@ def get_file_at_duration(
     > "path/to/file/2024-12-07T11-19-56-GMT/file.tar.gz",
     ```
     """
-    # Extract timestamps from filenames
+    assert files
+    assert duration_hr >= 0
+
     timestamps = []
+
     for file in files:
-        # Extract timestamp from the path
-        ts_str = file.split("/")[-2].replace(".tar.gz", "")
-        if "step" in ts_str:
-            ts_str = ts_str.split("_step_")[0]
-        # Parse timestamp string into datetime
+        parts = file.split("/")
+
+        if len(parts) < 2:
+            raise ValueError(f"Invalid path {file!r}")
+
+        ts_segment = parts[-2]
+
+        if not ts_segment:
+            raise ValueError(f"Missing timestamp in {file!r}")
+
+        ts_segment = ts_segment.replace(".tar.gz", "")
+
+        if "_step_" in ts_segment:
+            ts_segment = ts_segment.split("_step_")[0]
+
         try:
-            # Try parsing with timezone
-            dt = datetime.strptime(ts_str, "%Y-%m-%dT%H-%M-%S-%Z")
+            dt = datetime.strptime(ts_segment, "%Y-%m-%dT%H-%M-%S-%Z")
         except ValueError:
-            # Fallback to GMT if no timezone specified
-            dt = datetime.strptime(ts_str, "%Y-%m-%dT%H-%M-%S-GMT")
+            try:
+                dt = datetime.strptime(ts_segment, "%Y-%m-%dT%H-%M-%S-GMT")
+            except ValueError as exc:
+                raise ValueError(f"Timestamp not found in {file!r}") from exc
+
         timestamps.append(dt)
 
     earliest = min(timestamps)
     target = earliest + timedelta(hours=duration_hr)
 
     # Find file with timestamp closest to target
-    closest_file = min(zip(files, timestamps), key=lambda x: abs((x[1] - target).total_seconds()))
+    idx = min(range(len(timestamps)), key=lambda i: abs((timestamps[i] - target).total_seconds()))
     logger.info(
-        f"Closest file to {duration_hr} hours after earliest file ({earliest}) is {closest_file[0]}"
+        f"Closest file to {duration_hr} hours after earliest file ({earliest}) is {files[idx]}"
     )
-    retrieved_file = closest_file[0]
-    retrieved_duration = closest_file[1] - earliest
-    return retrieved_file, retrieved_duration
+
+    return {"path": files[idx], "duration": timestamps[idx] - earliest}

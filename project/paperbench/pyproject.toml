@@ -74,7 +74,7 @@ disable_error_code = ["import-untyped"]
 # allow_incomplete_defs = true
 # allow_untyped_defs = true
 # allow_any_generics = true
-exclude = "^(paperbench/agents/aisi-basic-agent)(/|$)"
+exclude = "^(paperbench/agents/aisi-basic-agent|tests/integration/runs)(/|$)"
 mypy_path = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
 [[tool.mypy.overrides]]
 module = ["alcatraz.*", "preparedness_turn_completer.*", "nanoeval.*", "nanoeval_alcatraz.*"]

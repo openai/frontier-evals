@@ -159,6 +159,39 @@ uv run python -m paperbench.nano.entrypoint \
 To set the concurrency, simply specify `runner.concurrency=<int>` in the command.
 **Note** You may use a custom solver: set `paperbench.solver` to point to your custom solver class. This solver should be a `PythonCodingSolver` class.
 
+### I have submissions and just want to run grading
+
+If you have already run your agent or you are a human and have submissions
+ready to be graded, you can skip the agent rollout by using our provided
+`PBDirectSubmissionSolver`. Place your submissions as folders in a directory (say
+in `path/to/foo/`) in the following format:
+
+```plaintext
+foo/
+    <paper_id_1>/
+        submission/
+        other_submission/
+        ...
+        (i.e. multiple submissions for the same paper (intended for when paperbench.n_tries > 1). 
+        Single submission is also fine. Missing submissions for a try will just
+        be graded as scoring 0 for that try)
+    ...
+    (does not need a folder for each paper, missing papers will be treated as
+    missing submissions, i.e. graded as scoring 0)
+```
+
+Then run the paperbench like above but with appropriately configured `PBDirectSubmissionSolver`, e.g.:
+
+```bash
+uv run python -m paperbench.nano.entrypoint \
+    paperbench.paper_split=debug \
+    paperbench.solver=paperbench.solvers.direct_submission.solver:PBDirectSubmissionSolver \
+    paperbench.solver.submissions_dir=path/to/foo/ \
+    paperbench.solver.cluster_config=alcatraz.clusters.local:LocalConfig \
+    paperbench.solver.cluster_config.image=pb-env:latest \
+    paperbench.judge.scaffold=dummy \
+    runner.recorder=nanoeval.json_recorder:json_recorder
+```
 
 ## Retrieving results
 

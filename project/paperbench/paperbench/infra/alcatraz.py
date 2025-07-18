@@ -15,6 +15,7 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
 from structlog.stdlib import BoundLogger
 
 from paperbench.constants import LOGS_DIR
+from paperbench.utils import build_canonical_sub_path
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -106,7 +107,7 @@ async def upload_sources(
     if timestamp is None:
         timestamp = time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
 
-    fpath = bf.join(run_dir, "submissions", timestamp, "submission.tar.gz")
+    fpath = build_canonical_sub_path(run_dir, timestamp)
     container_tmp_dir = Path("/") / "tmp" / "submissions" / timestamp
     container_tar_path = Path("/") / "tmp" / "submissions" / f"{timestamp}.tar.gz"
 

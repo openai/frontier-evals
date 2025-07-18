@@ -78,6 +78,13 @@ def get_paperbench_data_dir() -> Path:
     return get_root().parent / "data"
 
 
+def build_canonical_sub_path(run_dir: Path | str, timestamp: str) -> str:
+    """
+    The canonical place where we expect submission.tar.gz to be for repro and grading
+    """
+    return bf.join(run_dir, "submissions", timestamp, "submission.tar.gz")
+
+
 def get_experiments_dir() -> Path:
     """Returns an absolute path to the paperbench data directory."""
 

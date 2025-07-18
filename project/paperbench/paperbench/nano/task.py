@@ -5,12 +5,15 @@ import os
 import tempfile
 import time
 from contextlib import asynccontextmanager, nullcontext
+from dataclasses import asdict
 from datetime import timedelta
 from pathlib import Path
 from typing import Any, AsyncGenerator
 
 import blobfile as bf
 from dotenv import load_dotenv
+
+from paperbench.monitor.monitor import MonitorResult
 
 load_dotenv()
 import structlog.stdlib
@@ -33,6 +36,7 @@ from paperbench.agents.upload import (
 from paperbench.agents.utils import prepare_agent_dir_config
 from paperbench.constants import AGENT_DIR, CODE_DIR, LOGS_DIR, SUBMISSION_DIR, WORKSPACE_BASE
 from paperbench.grade import JudgeOutput, grade_submission
+from paperbench.monitor.create_monitor import create_monitor
 from paperbench.nano.structs import (
     JudgeConfig,
     PaperBenchGrade,
@@ -176,9 +180,14 @@ class PBTask(ComputerTask):
                     f"Exception uploading final logs before grading: {e}", destinations=["run"]
                 )
 
-    def _early_exit_grade(self, grader_log: str) -> PaperBenchGrade:
+    def _early_exit_grade(
+        self,
+        grader_log: str,
+        monitor_ran: bool = False,
+        monitor_result: MonitorResult | None = None,
+    ) -> PaperBenchGrade:
         """Helper function to create a PaperBenchGrade when early exiting for some reason."""
-        return PaperBenchGrade(
+        grade = PaperBenchGrade(
             paperbench_result=PaperBenchResult(
                 paper_id=self.paper_id,
                 run_id=self.run_id,
@@ -189,10 +198,15 @@ class PBTask(ComputerTask):
                 agent_output=None,
                 judge_output=None,
                 reproduction_output=None,
+                monitor_result=monitor_result,
+                monitor_ran=monitor_ran,
             ),
             score=0.0,
             grader_log=grader_log,
         )
+        self._record_extra({"pb_result": grade.to_dict()})
+        self._save_grade(grade)
+        return grade
 
     def _should_grade(self, reproduction_output: ReproductionOutput | None) -> bool:
         """
@@ -245,7 +259,24 @@ class PBTask(ComputerTask):
         path_to_submission, _ = checkpoint
         path_to_executed_submission = path_to_submission.replace(".tar.gz", "_executed.tar.gz")
 
-        # 2. run reproduction
+        # 2. run monitor
+        agent_log_file_path = bf.join(self.run_dir, "agent.log")
+        mon_result = None
+        mon_ran = False
+        if self._should_monitor(agent_log_file_path):
+            mon_result = self._run_monitor(agent_log_file_path)
+            mon_ran = True
+            self._record_extra({"monitor_result": asdict(mon_result)})
+            if mon_result.violations:
+                ctx_logger.warning(
+                    f"Submission for {self.run_id} flagged by monitor",
+                    destinations=["group", "run"],
+                )
+                return self._early_exit_grade(
+                    "Submission flagged by monitor", monitor_ran=mon_ran, monitor_result=mon_result
+                )
+
+        # 3. run reproduction
         repro_output = None
         submission_to_grade_path = path_to_submission
         if self._should_reproduce():
@@ -254,13 +285,13 @@ class PBTask(ComputerTask):
             submission_to_grade_path = path_to_executed_submission
             self._record_extra({"repro_metadata": repro_metadata})
 
-        # 3. run judge
+        # 4. run judge
         judge_output = None
         if self._should_grade(repro_output):
             judge_output = await self._run_judge(submission_to_grade_path, self.paper_id)
             self._record_extra({"judge_output": judge_output.to_dict() if judge_output else None})
 
-        # 4. wrap up
+        # 5. wrap up
         grade = PaperBenchGrade(
             paperbench_result=PaperBenchResult(
                 paper_id=self.paper_id,
@@ -271,6 +302,8 @@ class PBTask(ComputerTask):
                 resources_provided=self.judge.resources_provided,
                 judge_output=judge_output,
                 reproduction_output=repro_output,
+                monitor_ran=mon_ran,
+                monitor_result=mon_result,
             ),
             score=judge_output.score if judge_output else 0.0,
             grader_log="Grading completed successfully" if judge_output else "Log file not found!",
@@ -279,6 +312,39 @@ class PBTask(ComputerTask):
         self._save_grade(grade)
 
         return grade
+
+    def _should_monitor(self, log_file_path: str) -> bool:
+        """Check if we should run the monitor on the agent log file"""
+        ctx_logger = logger.bind(
+            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir
+        )
+
+        if bf.exists(log_file_path):
+            return True
+        else:
+            ctx_logger.info(f"{log_file_path} not found, skipping monitor", destinations=["run"])
+            return False
+
+    def _run_monitor(self, log_file_path: str) -> MonitorResult:
+        """
+        Runs the monitor on an given log file
+        TODO: make this configurable through chz in `PaperBenchEval`
+        """
+        ctx_logger = logger.bind(
+            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir
+        )
+
+        ctx_logger.info(
+            f"Running monitor on {self.run_id} agent.log", destinations=["run"], _print=True
+        )
+        paper = paper_registry.get_paper(self.paper_id)
+        monitor = create_monitor(
+            monitor_type="basic",
+            paper=paper,
+            monitor_kwargs={},
+        )
+        monitor_result = monitor.check_log(log_file_path)
+        return monitor_result
 
     async def _run_reproduce(self, submission: str) -> ReproductionOutput:
         """Runs the reproduction process for the submission associated with the PBTask."""

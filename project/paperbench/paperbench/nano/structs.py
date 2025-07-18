@@ -7,6 +7,8 @@ from typing import Any
 
 from dotenv import load_dotenv
 
+from paperbench.monitor.monitor import MonitorResult
+
 load_dotenv()
 import structlog.stdlib
 from alcatraz.clusters.local import LocalConfig
@@ -69,16 +71,22 @@ class PaperBenchResult:
     agent_output: AgentOutput | None = None
     judge_output: JudgeOutput | None = None
     reproduction_output: ReproductionOutput | None = None
+    monitor_result: MonitorResult | None = None
+    monitor_ran: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         data = {
             "paper_id": self.paper_id,
+            "run_id": self.run_id,
+            "submission_exists": self.submission_exists,
             "skipped_reproduction": self.skipped_reproduction,
             "code_only": self.code_only,
             "resources_provided": self.resources_provided,
             "agent_output": None,
             "judge_output": None,
             "reproduction_output": None,
+            "monitor_result": None,
+            "monitor_ran": self.monitor_ran,
         }
 
         if self.agent_output:
@@ -89,6 +97,9 @@ class PaperBenchResult:
 
         if self.reproduction_output:
             data["reproduction_output"] = self.reproduction_output.to_dict()
+
+        if self.monitor_result:
+            data["monitor_result"] = self.monitor_result.to_dict()
 
         return data
 

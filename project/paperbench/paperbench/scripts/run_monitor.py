@@ -78,7 +78,7 @@ async def monitor_single_log(
     )
 
     # Run monitor on the log file
-    result = await asyncio.to_thread(monitor.check_log, log_file)
+    result = await asyncio.to_thread(monitor.check_log, log_file.as_posix())
 
     return {
         "run_group_id": run_dir.parent.name,

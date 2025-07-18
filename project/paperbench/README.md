@@ -171,6 +171,7 @@ In each run directory there is:
 - `status.json`: The status of that run.
 - `metadata.json`: Metadata for that run.
 - `grade.json`: The grading result for that run.
+- `agent.log`: (optional) Rollout log from the solver. If present, the monitoring step will run and the run's grade will be marked with `"monitor_ran": true`.
 - A submissions directory, containing multiple timestamped submission directories (e.g., `2025-03-28T10-34-35-UTC`), each with:
     - `log.json`: Logs from this submission attempt
     - `submission.tar.gz`: The archived submission files
@@ -190,7 +191,8 @@ runs/
 │   │   ├── metadata.json
 │   │   ├── grade.json
 │   │   ├── status.json
-│   │   └── run.log
+│   │   ├── run.log
+│   │   ├── agent.log
 │   │   ├── submissions/
 │   │   │   ├── <timestamp-1>/
 │   │   │   │   ├── log.json

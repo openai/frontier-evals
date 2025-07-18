@@ -151,6 +151,11 @@ class PaperBenchDummySolver(PythonCodingSolver):
         with bf.BlobFile(bf.join(task.run_dir, "metadata.json"), "w") as f:
             json.dump(agent_output.to_dict(), f, indent=4)
 
+        with bf.BlobFile(bf.join(task.run_dir, "agent.log"), "w") as f:
+            f.write(
+                "This is a dummy agent that runs some basic debug commands and uploads the results.\n"
+            )
+
         return agent_output
 
     @asynccontextmanager

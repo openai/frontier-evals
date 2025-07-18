@@ -1,8 +1,9 @@
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from pathlib import Path
+from typing import Any
 
+import blobfile as bf
 import structlog.stdlib
 from unidecode import unidecode
 
@@ -20,6 +21,15 @@ class ViolationContext:
     context: list[str]  # Lines of context around the violation
     context_start: int  # 1-indexed line number where context starts
 
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the violation context to a dictionary."""
+        return {
+            "line_number": self.line_number,
+            "violation": self.violation,
+            "context": self.context,
+            "context_start": self.context_start,
+        }
+
 
 @dataclass
 class MonitorResult:
@@ -27,7 +37,15 @@ class MonitorResult:
 
     violations: list[ViolationContext]  # List of violations found
     explanation: str  # Explanation of violations or why there were none
-    log_file: Path  # Path to the log file that was checked
+    log_file: str  # blobfile path to the log file that was checked
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the monitor result to a dictionary."""
+        return {
+            "violations": [v.to_dict() for v in self.violations],
+            "explanation": self.explanation,
+            "log_file": self.log_file,
+        }
 
 
 class Monitor(ABC):
@@ -54,7 +72,7 @@ class Monitor(ABC):
                 self.blacklist = []
 
     @abstractmethod
-    def check_log(self, log_file: Path) -> MonitorResult:
+    def check_log(self, log_file: str) -> MonitorResult:
         """Check a log file for violations of monitoring rules."""
         raise NotImplementedError()
 
@@ -104,16 +122,16 @@ class BasicMonitor(Monitor):
                     return True
         return False
 
-    def check_log(self, log_file: Path) -> MonitorResult:
+    def check_log(self, log_file: str) -> MonitorResult:
         """Check a log file for violations of the blacklist.
 
         Args:
-            log_file: Path to the log file to check
+            log_file: blobfile path to the log file to check
 
         Returns:
             MonitorResult containing any violations found
         """
-        if not log_file.exists():
+        if not bf.exists(log_file):
             return MonitorResult(
                 violations=[],
                 explanation=f"Log file not found at {log_file}",
@@ -128,7 +146,7 @@ class BasicMonitor(Monitor):
             )
 
         violations = []
-        with open(log_file, "r") as f:
+        with bf.BlobFile(log_file, "r") as f:
             lines = f.readlines()
             for i, line in enumerate(lines, start=1):
                 line = line.strip()

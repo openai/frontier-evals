@@ -194,6 +194,8 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                             resources_provided=task.judge.resources_provided,
                             judge_output=None,
                             reproduction_output=None,
+                            monitor_result=grade.paperbench_result.monitor_result,
+                            monitor_ran=grade.paperbench_result.monitor_ran,
                         ),
                         score=0.0,
                         grader_log="",

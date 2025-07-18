@@ -45,7 +45,10 @@ from paperbench.nano.structs import (
 )
 from paperbench.nano.utils import get_file_at_duration
 from paperbench.paper_registry import paper_registry
-from paperbench.scripts.run_reproduce import ReproductionMetadata, reproduce_on_computer
+from paperbench.scripts.run_reproduce import (
+    ReproductionMetadata,
+    reproduce_on_computer_with_salvaging,
+)
 from paperbench.utils import purple
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
@@ -377,7 +380,7 @@ class PBTask(ComputerTask):
 
         # Reproduce on alcatraz and collect metadata
         try:
-            metadata = await reproduce_on_computer(
+            metadata = await reproduce_on_computer_with_salvaging(
                 cluster_config=self.reproduction.cluster_config,
                 submission_path=submission,
                 logger=ctx_logger.bind(destinations=["run"]),

@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -129,7 +129,8 @@ async def reproduce(
     submission_path: Path,
     logger: BoundLogger,
     timeout: float | None = None,
-    retry_threshold: float = 0,
+    use_py3_11: bool = False,
+    make_venv: bool = False,
 ) -> ReproductionMetadata:
     """
     args:
@@ -137,8 +138,8 @@ async def reproduce(
         submission_path: Path to the submission directory
         logger: Logger object to log messages
         timeout: (optional) Timeout for the reproduce.sh script
-        retry_threshold: (optional) If greater than 0 and timeout, when the reproduce.sh runs for
-            less than this threshold of seconds, it is retried with series of arbitrary/generic fixes
+        use_py3_11: (optional) Whether to switch python3 to python3.11 before running
+        make_venv: (optional) Whether to create and use a virtualenv before running
     """
     # get git history for interest
     cmd_str = f"bash -c 'cd {submission_path} && git --no-pager log'"
@@ -173,33 +174,14 @@ async def reproduce(
     cmd_str = f"bash -c 'git config --global --add safe.directory {submission_path}'"
     await computer.send_shell_command(cmd_str)
 
-    repro_outcomes: list[ReproScriptRunOutcome] = []
-    repro_outcome = await run_reproduce_script(computer, logger, submission_path, timeout)
-    repro_outcomes.append(repro_outcome)
-
-    valid_threshold = True if timeout is None else retry_threshold < timeout
-    retries_enabled = retry_threshold > 0 and valid_threshold
-    script_ran_quickly = repro_outcome.repro_execution_time <= retry_threshold
-
-    # only ran shortly, something trivial might be broken: maybe trivial fixes help, so retry
-    if retries_enabled and script_ran_quickly:
-        logger.info("Reproduce.sh ran for <= 10 minutes, retrying with small fixes")
-        retry_options = [
-            {"use_py3_11": True, "make_venv": False},
-            {"use_py3_11": False, "make_venv": True},
-            {"use_py3_11": True, "make_venv": True},
-        ]
-        for retry_opts in retry_options:
-            repro_outcome = await run_reproduce_script(
-                computer, logger, submission_path, timeout, **retry_opts
-            )
-            repro_outcomes.append(repro_outcome)
-            if repro_outcome.repro_execution_time > retry_threshold:
-                logger.info("Reproduce.sh ran for more than 10 minutes, breaking out of retry loop")
-                break
-        if repro_outcome.repro_execution_time <= retry_threshold:
-            logger.info("Reproduce.sh still ran for <= 10 minutes, giving up")
-    final_outcome = repro_outcomes[-1]
+    repro_outcome = await run_reproduce_script(
+        computer=computer,
+        logger=logger,
+        submission_path=submission_path,
+        timeout=timeout,
+        use_py3_11=use_py3_11,
+        make_venv=make_venv,
+    )
 
     result = await computer.check_shell_command(f"ls -la {submission_path}")
     files_after_reproduce = result.output.decode("utf-8")
@@ -211,13 +193,13 @@ async def reproduce(
         is_valid_git_repo=is_valid_git_repo,
         git_log=git_log,
         repro_script_exists=repro_script_exists,
-        repro_execution_time=final_outcome.repro_execution_time,
-        repro_log=final_outcome.repro_log,
+        repro_execution_time=repro_outcome.repro_execution_time,
+        repro_log=repro_outcome.repro_log,
         files_before_reproduce=files_before_reproduce,
         files_after_reproduce=files_after_reproduce,
         git_status_after_reproduce=git_status,
-        timedout=final_outcome.timedout,
-        retried_results=repro_outcomes[:-1],
+        timedout=repro_outcome.timedout,
+        # will populate retried_results and executed_submission later
     )
 
 
@@ -229,8 +211,9 @@ async def reproduce_on_computer(
     submission_cluster_path: Path = Path("/submission"),
     output_cluster_path: Path = Path("/output"),
     timeout: float | None = None,
-    retry_threshold: float = 0,
-) -> ReproductionMetadata | None:
+    use_py3_11: bool = False,
+    make_venv: bool = False,
+) -> ReproductionMetadata:
     """
     Reproduce a single submission on a computer.
 
@@ -245,7 +228,6 @@ async def reproduce_on_computer(
     )
     async with start_alcatraz_computer(cluster_config) as computer:
         time_start = time.time()
-        repro_metadata: ReproductionMetadata | None = None
 
         await computer.check_shell_command(
             f"mkdir -p {output_cluster_path} {submission_cluster_path}"
@@ -260,7 +242,8 @@ async def reproduce_on_computer(
             submission_path=submission_cluster_path,
             logger=logger,
             timeout=timeout,
-            retry_threshold=retry_threshold,
+            use_py3_11=use_py3_11,
+            make_venv=make_venv,
         )
 
         # Step 3: Save metadata
@@ -286,3 +269,85 @@ async def reproduce_on_computer(
         logger.info(f"Reproduction completed in {time_end - time_start:.2f} seconds.")
 
         return repro_metadata
+
+
+async def reproduce_on_computer_with_salvaging(
+    cluster_config: ClusterConfig,
+    submission_path: str,
+    logger: BoundLogger,
+    run_dir: str,
+    submission_cluster_path: Path = Path("/submission"),
+    output_cluster_path: Path = Path("/output"),
+    timeout: float | None = None,
+    retry_threshold: float = 0,
+) -> ReproductionMetadata:
+    """
+    Reproduce a single submission on a computer,
+    salvaging reproduce attempts by retrying with slightly different configurations.
+    """
+    valid_threshold = True if timeout is None else retry_threshold < timeout
+    retries_enabled = retry_threshold > 0 and valid_threshold
+
+    retry_options = [{"use_py3_11": False, "make_venv": False}]
+    if retries_enabled:
+        retry_options.extend(
+            [
+                {"use_py3_11": True, "make_venv": False},
+                {"use_py3_11": False, "make_venv": True},
+                {"use_py3_11": True, "make_venv": True},
+            ]
+        )
+
+    repro_attempts: list[ReproductionMetadata] = []
+
+    for opts in retry_options:
+        logger.info(
+            f"Executing reproduce.sh with py3_11={opts['use_py3_11']}"
+            f" and make_venv={opts['make_venv']}"
+        )
+        repro_attempt = await reproduce_on_computer(
+            cluster_config=cluster_config,
+            submission_path=submission_path,
+            logger=logger,
+            run_dir=run_dir,
+            submission_cluster_path=submission_cluster_path,
+            output_cluster_path=output_cluster_path,
+            timeout=timeout,
+            use_py3_11=opts["use_py3_11"],
+            make_venv=opts["make_venv"],
+        )
+        repro_attempts.append(repro_attempt)
+        if _should_retry(retries_enabled, repro_attempt, retry_threshold):
+            logger.info(
+                f"Reproduction attempt ran for less than {retry_threshold} seconds,"
+                " retrying with different configuration.",
+            )
+            continue  # retry, with next configuration
+        else:
+            break  # this last attempt was it
+
+    repro_metadata = repro_attempts[-1]
+    repro_metadata = _populate_retried_results(repro_metadata, repro_attempts[:-1])
+
+    return repro_metadata
+
+
+def _should_retry(
+    retries_enabled: bool, repro_attempt: ReproductionMetadata, retry_threshold: float
+) -> bool:
+    """helper for determining whether we should retry to run reproduce.sh"""
+    execution_time = repro_attempt.repro_execution_time or 0
+    return retries_enabled and execution_time < retry_threshold
+
+
+def _populate_retried_results(
+    repro_metadata: ReproductionMetadata, repro_attempts: list[ReproductionMetadata]
+) -> ReproductionMetadata:
+    """Populates a ReproductionMetadata.retried_results with info from previous attempts"""
+    if len(repro_attempts) >= 1:
+        retried = [
+            ReproScriptRunOutcome(float(m.repro_execution_time or 0), m.timedout, m.repro_log)
+            for m in repro_attempts
+        ]
+        repro_metadata = replace(repro_metadata, retried_results=retried)
+    return repro_metadata

@@ -88,6 +88,3 @@ RUN chmod +x /bin/apply_patch
 
 # for grading on the computer:
 RUN mkdir -p /submission /output
-
-# --- Internal only
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash

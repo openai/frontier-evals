@@ -199,7 +199,6 @@ class PaperBenchDummySolver(PythonCodingSolver):
                             run_id=task.run_id,
                             submission_exists=grade.paperbench_result.submission_exists,
                             skipped_reproduction=task.reproduction.skip_reproduction,
-                            azure_checkpoint_path=None,
                             code_only=task.judge.code_only,
                             resources_provided=task.judge.resources_provided,
                             judge_output=None,

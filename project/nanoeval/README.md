@@ -2,10 +2,6 @@
 
 Simple, ergonomic, and high performance evals.
 
-# Confidentiality note
-
-`nanoeval` and its dependencies are shared with select Tier II contractors. As such, internal dependencies should be
-kept to a minimum as new dependencies require review; this is enforced via tests.
 
 # Principles
 

@@ -21,7 +21,6 @@ from paperbench.solvers.dummy.solver import PaperBenchDummySolver
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", None)
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY", OPENAI_API_KEY)
-DEFAULT_AZURE_VM_SKU = "Standard_D2as_v4"
 
 LOCAL_DUMMY_SOLVER_CONFIG = PaperBenchDummySolver(runtime_config=RuntimeConfig())
 

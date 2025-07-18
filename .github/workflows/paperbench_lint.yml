@@ -23,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
 
     steps:
     - uses: actions/checkout@v4

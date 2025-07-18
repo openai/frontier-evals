@@ -32,7 +32,7 @@ class ComputerTask(ABC, ComputerConfiguration, Task, SerializableBaseModel):
     terminal and optionally a Jupyter kernel environment.
     """
 
-    # Prompt. For internal usage, we translate it into chat.Conversation.
+    # Prompt. For internal usage
     prompt: list[ChatCompletionMessageParam]
 
     # Grader may print out additional information to stdout; this will be logged.

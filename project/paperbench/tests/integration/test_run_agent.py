@@ -43,10 +43,7 @@ load_dotenv(find_dotenv())
 logger = structlog.stdlib.get_logger(component=__name__)
 
 LOCAL_RUNS_DIR = Path(__file__).parent / "runs"
-REMOTE_RUNS_DIR = "az://100paperslogs/testing/"
 GIT_COMMIT_HASH = get_commit_hash()
-AZURE_STORAGE_KEY = os.getenv("AZURE_STORAGE_KEY")
-
 
 @dataclass(frozen=True)
 class Rollout:

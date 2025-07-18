@@ -66,7 +66,6 @@ class PaperBenchResult:
     skipped_reproduction: bool
     code_only: bool
     resources_provided: bool
-    azure_checkpoint_path: str | None = None
     agent_output: AgentOutput | None = None
     judge_output: JudgeOutput | None = None
     reproduction_output: ReproductionOutput | None = None
@@ -77,7 +76,6 @@ class PaperBenchResult:
             "skipped_reproduction": self.skipped_reproduction,
             "code_only": self.code_only,
             "resources_provided": self.resources_provided,
-            "azure_checkpoint_path": self.azure_checkpoint_path,
             "agent_output": None,
             "judge_output": None,
             "reproduction_output": None,

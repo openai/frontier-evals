@@ -161,7 +161,6 @@ def choose_link_if_any(page, link_text, retries=5):
     link.click()
 
 
-# This code is inspired by [Deepak Dhaka's solution](https://openaihumans.slack.com/archives/C07KY1LMXEF/p1728778530617539?thread_ts=1728351675.512379&cid=C07KY1LMXEF) and [the examples here](https://feather.openai.com/campaigns/a63becfe-faa1-4eb7-8439-12e5fc54f4e6?tab=instructions&instruction=3a20d49e-f00b-4958-8242-9711168a177a).
 def login(p: PlaywrightContextManager, user_info, if_phone=False) -> tuple[Browser, Page, str]:
     datetime.now(timezone.utc).replace(second=0, microsecond=0)
     permissions = ["clipboard-read", "clipboard-write"]

@@ -10,9 +10,12 @@ from pathlib import Path
 from typing import Any, Literal, Sequence, cast
 
 import blobfile as bf
-import chz
 import pandas as pd
 import structlog.stdlib
+from openai.types.chat import ChatCompletionMessageParam
+from typing_extensions import TypedDict, override
+
+import chz
 from nanoeval.asyncio_utils import generator_with_cleanup
 from nanoeval.eval import RolloutSystemError
 from nanoeval.metrics.agents import get_summary_error_aware
@@ -26,9 +29,6 @@ from nanoeval.solvers.computer_tasks.steps import (
     FinalResult,
 )
 from nanoeval.solvers.computer_tasks.task import ComputerTask, Grade
-from openai.types.chat import ChatCompletionMessageParam
-from typing_extensions import TypedDict, override
-
 from swelancer.prompts import construct_task_prompt
 from swelancer.utils.custom_logging import get_default_runs_dir, get_timestamp
 from swelancer.utils.general import PATH_TO_SWE_LANCER_TASKS

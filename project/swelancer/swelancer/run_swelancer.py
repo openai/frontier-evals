@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+import structlog
+
 import chz
 import nanoeval
-import structlog
 from nanoeval.eval import EvalSpec, RunnerArgs
 from nanoeval.library_config import LibraryConfig
 from nanoeval.recorder import dummy_recorder
 from nanoeval.setup import nanoeval_entrypoint
-
 from swelancer.eval import SWELancerEval
 from swelancer.utils.custom_logging import (
     setup_logging,

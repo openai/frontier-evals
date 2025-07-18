@@ -3,10 +3,11 @@ from pathlib import Path
 
 import blobfile as bf
 import structlog
-from nanoeval.library_config import LibraryConfig, set_library_config
-from nanoeval.setup import nanoeval_logging
 from structlog.typing import EventDict
 from typing_extensions import override
+
+from nanoeval.library_config import LibraryConfig, set_library_config
+from nanoeval.setup import nanoeval_logging
 
 
 def get_timestamp() -> str:

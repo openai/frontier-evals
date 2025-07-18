@@ -11,6 +11,10 @@ import structlog.stdlib
 from dotenv import load_dotenv
 
 load_dotenv()
+from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
+from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
+from typing_extensions import override
+
 import chz
 from alcatraz.clusters.local import ClusterConfig, LocalConfig
 from nanoeval.eval import RolloutSystemError
@@ -23,10 +27,6 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
 from nanoeval.solvers.computer_tasks.solver import PythonCodingEval, PythonCodingSolver
 from nanoeval.solvers.computer_tasks.steps import FinalResult, Step
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
-from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
-from typing_extensions import override
-
 from paperbench.agents.registry import registry as agent_registry
 from paperbench.agents.run import (
     prepare_computer,

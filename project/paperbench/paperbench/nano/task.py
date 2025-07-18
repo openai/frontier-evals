@@ -17,6 +17,10 @@ from paperbench.monitor.monitor import MonitorResult
 
 load_dotenv()
 import structlog.stdlib
+from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
+from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
+from typing_extensions import override
+
 from alcatraz.clusters.local import LocalConfig
 from nanoeval.recorder import get_recorder
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
@@ -24,10 +28,6 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
     RuntimeConfig,
 )
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
-from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
-from typing_extensions import override
-
 from paperbench.agents.registry import registry as agent_registry
 from paperbench.agents.upload import (
     upload_heavy_logs,

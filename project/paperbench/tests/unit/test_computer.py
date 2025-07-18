@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import AsyncGenerator
 
 import pytest
-from alcatraz.clusters.local import LocalConfig
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 
+from alcatraz.clusters.local import LocalConfig
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.infra.alcatraz import copy_dir_to_computer, walk_dir_with_mtimes_on_computer
 from paperbench.judge.utils import walk_dir_with_mtimes, walk_dir_with_mtimes_locally
 

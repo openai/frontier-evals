@@ -1,0 +1,51 @@
+name: Run linting on preparedness_turn_completer
+
+on:
+  pull_request:
+    paths:
+      - 'project/preparedness_turn_completer/**'
+    branches:
+      - '**'
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_dispatch:
+    inputs:
+      test_branch:
+        description: 'Branch to run the tests on'
+        required: false
+        default: 'main'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 0
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+
+    - name: Install dependencies
+      working-directory: ./project/preparedness_turn_completer
+      env:
+        UV_GIT_LFS: 1
+      run: |
+        uv sync
+
+    - name: run mypy
+      working-directory: ./project/preparedness_turn_completer
+      run: |
+        uv run mypy preparedness_turn_completer
+
+    - name: run ruff-strict
+      working-directory: ./project/preparedness_turn_completer
+      run: |
+        uv run ruff check --output-format=github --no-fix

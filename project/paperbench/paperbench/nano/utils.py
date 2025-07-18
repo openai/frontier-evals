@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 import structlog.stdlib
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from structlog.stdlib import BoundLogger
 
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.constants import SUBMISSION_DIR
 from paperbench.metrics import EvaluationRun, PaperEvaluation
 from paperbench.nano.structs import PaperBenchResult

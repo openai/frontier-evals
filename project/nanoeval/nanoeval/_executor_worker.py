@@ -15,9 +15,11 @@ import aiodebug.hang_inspection
 import aiodebug.log_slow_callbacks
 import blobfile as bf
 import dill
-import nanoeval._db as db
 import psutil
 import structlog.stdlib
+from structlog.contextvars import bound_contextvars
+
+import nanoeval._db as db
 from nanoeval import monitor as monitor
 from nanoeval._aiomonitor import start_aiomonitor
 from nanoeval._db import as_default_db, default_db
@@ -29,7 +31,6 @@ from nanoeval.fs_paths import stacktrace_root_dir
 from nanoeval.library_config import LibraryConfig, get_library_config, set_library_config
 from nanoeval.recorder import RecorderProtocol, set_default_recorder
 from nanoeval.setup import global_exit_stack, nanoeval_logging, properly_closed_thread_pool
-from structlog.contextvars import bound_contextvars
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

@@ -1,8 +1,9 @@
 import asyncio
 from typing import Any
 
-import chz
 import structlog.stdlib
+
+import chz
 from nanoeval._db import open_run_set_db
 from nanoeval.evaluation import run_eval_in_database
 from nanoeval.setup import nanoeval_entrypoint

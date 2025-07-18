@@ -1,17 +1,17 @@
 import re
 from typing import Literal
 
-import nanoeval
 import pytest
+from nanoeval_alcatraz.alcatraz_computer_interface import (
+    AlcatrazComputerRuntime,
+)
+
+import nanoeval
 from alcatraz.clusters.local import LocalConfig
 from nanoeval.evaluation import EvalSpec, RunnerArgs
 from nanoeval.recorder import dummy_recorder
 from nanoeval.setup import global_exit_stack
 from nanoeval.solvers.computer_tasks.code_execution_interface import RuntimeConfig
-from nanoeval_alcatraz.alcatraz_computer_interface import (
-    AlcatrazComputerRuntime,
-)
-
 from swelancer.eval import SWELancerEval
 from swelancer.solvers.dummy.solver import DummySolver
 from swelancer.utils.custom_logging import setup_logging, swelancer_library_config

@@ -9,10 +9,10 @@ from typing import Any
 
 import blobfile as bf
 import structlog.stdlib
-from alcatraz.clusters.local import ClusterConfig
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from structlog.stdlib import BoundLogger
 
+from alcatraz.clusters.local import ClusterConfig
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.agents.registry import get_agents_env_vars, registry
 from paperbench.infra.alcatraz import tar_and_extract_from_computer
 from paperbench.scripts.alcatraz_services import put_submission_in_computer, start_alcatraz_computer

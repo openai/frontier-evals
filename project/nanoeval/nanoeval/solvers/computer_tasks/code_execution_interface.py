@@ -7,11 +7,12 @@ from functools import cached_property
 from pathlib import Path
 from typing import Any, AsyncContextManager, AsyncGenerator, Literal, Sequence
 
-import chz
 import structlog.stdlib
 from IPython.core.inputtransformer2 import TransformerManager
 from pydantic import BaseModel, Field, field_validator
 from typing_extensions import deprecated, final
+
+import chz
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

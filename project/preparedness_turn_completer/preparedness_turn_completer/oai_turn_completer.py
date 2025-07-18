@@ -3,23 +3,23 @@ from __future__ import annotations
 import asyncio
 import functools
 import logging
-from typing import Unpack
+from typing import Any, Unpack
 
 import openai
-import structlog.stdlib
+import structlog
 import tenacity
 import tiktoken
-from openai.types.chat import ChatCompletion, ChatCompletionMessage, ChatCompletionMessageParam
+from openai.types.chat import ChatCompletion
 from openai.types.completion_usage import CompletionUsage
+from preparedness_turn_completer.turn_completer import TurnCompleter
 from pydantic import BaseModel
 
-from preparedness_turn_completer.turn_completer import TurnCompleter
-
 try:
-    from nanoeval.recorder import get_recorder  # type: ignore
+    from nanoeval.recorder import get_recorder
 except ImportError:
+    from nanoeval.recorder_protocol import RecorderProtocol
 
-    def get_recorder():
+    def get_recorder() -> RecorderProtocol:
         raise LookupError("Recorder not available")
 
 
@@ -30,12 +30,13 @@ class OpenAITurnCompleter(TurnCompleter):
     def __init__(self, model: str, reasoning_effort: str | None = None):
         self.model: str = model
         self.reasoning_effort: str | None = reasoning_effort
+        self.encoding_name: str
         try:
-            self.encoding_name: str = tiktoken.encoding_name_for_model(model)
+            self.encoding_name = tiktoken.encoding_name_for_model(model)
         except KeyError:
             # Fallback to o200k_base
             logger.warning(f"Model {model} not found in tiktoken, using o200k_base")
-            self.encoding_name: str = "o200k_base"
+            self.encoding_name = "o200k_base"
         self.n_ctx: int = get_model_context_window_length(model)
 
     class Config(TurnCompleter.Config):
@@ -48,57 +49,52 @@ class OpenAITurnCompleter(TurnCompleter):
                 reasoning_effort=self.reasoning_effort,
             )
 
-    class Params(TurnCompleter.Params):
-        response_format: type[BaseModel] | None = None
+    class Params(TurnCompleter.Params, total=False):
+        response_format: type[BaseModel] | None
 
     class OpenAICompletion(TurnCompleter.Completion):
         usage: CompletionUsage | None = None
 
     @functools.cached_property
-    def _client(self):
+    def _client(self) -> openai.AsyncClient:
         return openai.AsyncClient()
 
-    def _handle_kwargs(self, params: TurnCompleter.Params) -> TurnCompleter.Params:
-        self._check_duplicate_param("model", params)
-        self._check_duplicate_param("reasoning_effort", params)
+    def _handle_kwargs(
+        self, params: OpenAITurnCompleter.Params, conversation: TurnCompleter.RuntimeConversation
+    ) -> dict[str, Any]:
         if "messages" in params:
-            logger.warning("Found `messages` key in params, using `conversation` kwarg instead")
-            del params["messages"]
-        params["model"] = self.model
-        params["reasoning_effort"] = self.reasoning_effort
-        params = self._remove_none_values(params)
-        return params
-
-    def _remove_none_values(self, params: TurnCompleter.Params) -> TurnCompleter.Params:
-        return {k: v for k, v in params.items() if v is not None}
-
-    def _check_duplicate_param(
-        self, param: str, params: TurnCompleter.Params
-    ) -> TurnCompleter.Params:
-        if param in params:
+            logger.warning("Found `messages` key in params, will use `conversation` kwarg instead")
+        if "reasoning_effort" in params:
             logger.warning(
-                f"Found duplicate key between self.{param} and params: {param} -> {params[param]}"
-                f" using self.{param} value -> {getattr(self, param)}",
+                "Found `reasoning_effort` key in params,"
+                f" will use self.reasoning_effort={self.reasoning_effort} instead"
             )
+        if "model" in params:
+            logger.warning(f"Found `model` key in params, will use self.model={self.model} instead")
+        merged_kwargs = {
+            **params,
+            "model": self.model,
+            "reasoning_effort": self.reasoning_effort,
+            "messages": conversation,
+        }
+        return merged_kwargs
 
     def completion(
         self,
         conversation: TurnCompleter.RuntimeConversation,
         **params: Unpack[TurnCompleter.Params],
-    ) -> TurnCompleter.Completion:
+    ) -> OpenAITurnCompleter.OpenAICompletion:
         raise NotImplementedError("Not implemented, use async_completion instead")
 
     async def async_completion(
         self,
-        conversation: TurnCompleter.RuntimeConversation | list[dict],
+        conversation: TurnCompleter.RuntimeConversation,
         **params: Unpack[OpenAITurnCompleter.Params],
     ) -> OpenAITurnCompleter.OpenAICompletion:
-        # override params with self.completion_kwargs if duplicate keys
-        # remove params[`messages`] since we have `conversation`
-        kwargs = self._handle_kwargs(params)
+        # possibly override params such as `model`, `reasoning_effort`, and `messages`
+        kwargs = self._handle_kwargs(params, conversation)
         completion = await oai_chat_completion_create(
             self._client,
-            messages=conversation,
             **kwargs,
         )
         return OpenAITurnCompleter.OpenAICompletion(
@@ -125,7 +121,9 @@ OPENAI_TIMEOUT_EXCEPTIONS = (
     ),
     reraise=True,
 )
-async def oai_chat_completion_create(client: openai.AsyncClient, *args, **kwargs) -> ChatCompletion:
+async def oai_chat_completion_create(
+    client: openai.AsyncClient, *args: Any, **kwargs: Any
+) -> ChatCompletion:
     # This is a bit of a hack. We replace "system" messages with
     # "developer" for models where "system" messages aren't supported.
     if "model" in kwargs and kwargs["model"] == "o1-redteam":
@@ -168,15 +166,8 @@ async def oai_chat_completion_create(client: openai.AsyncClient, *args, **kwargs
     return res
 
 
-async def turn_completer_sample(
-    solver: TurnCompleter, messages: list[ChatCompletionMessageParam] | list[dict]
-) -> ChatCompletionMessage:
-    response = await solver.async_completion(messages)
-    return response.choices[0].message
-
-
 def get_model_context_window_length(model: str | None) -> int:
-    max_context_window_lengths: dict = {
+    max_context_window_lengths: dict[str, int] = {
         "gpt-4o-mini": 128000,
         "gpt-4o-mini-2024-07-18": 128000,
         "gpt-4o": 128000,

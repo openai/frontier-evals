@@ -7,10 +7,10 @@ from typing import Any, Awaitable, Callable
 
 import openai
 import structlog.stdlib
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from structlog import wrap_logger
 from structlog.stdlib import BoundLogger
 
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.judge.graded_task_node import GradedTaskNode, score_from_children
 from paperbench.judge.utils import file_exists, read_file_content, read_file_mtime, reduce_log
 from paperbench.rubric.tasks import TaskNode

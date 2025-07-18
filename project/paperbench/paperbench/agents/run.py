@@ -8,11 +8,11 @@ import tarfile
 import time
 
 import blobfile as bf
+from structlog.stdlib import BoundLogger
+
 from alcatraz.clusters.local import ClusterConfig, VolumesConfig
 from nanoeval.eval import RolloutSystemError
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
-from structlog.stdlib import BoundLogger
-
 from paperbench.agents.registry import Agent
 from paperbench.agents.upload import (
     start_periodic_heavy_log_upload,

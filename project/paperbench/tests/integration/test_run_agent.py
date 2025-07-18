@@ -20,12 +20,12 @@ from configs import (
     LOCAL_REPRODUCTION_WITHOUT_SKIP_CONFIG,
 )
 from dotenv import load_dotenv
+from pytest import fixture
+
 from nanoeval.eval import EvalSpec
 from nanoeval.evaluation import run
 from nanoeval.setup import global_exit_stack
 from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver
-from pytest import fixture
-
 from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.nano.entrypoint import DefaultRunnerArgs
 from paperbench.nano.eval import (

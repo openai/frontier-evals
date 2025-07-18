@@ -1,15 +1,15 @@
 import os
 
 from dotenv import load_dotenv
-from nanoeval.solvers.computer_tasks.code_execution_interface import RuntimeConfig
 
+from nanoeval.solvers.computer_tasks.code_execution_interface import RuntimeConfig
 from paperbench.utils import find_dotenv
 
 load_dotenv(find_dotenv())
 
-from alcatraz.clusters.local import LocalConfig
 from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
 
+from alcatraz.clusters.local import LocalConfig
 from paperbench.nano.eval import (
     ExternalPythonCodingSolver,
 )

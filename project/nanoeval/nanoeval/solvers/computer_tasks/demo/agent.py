@@ -1,7 +1,8 @@
 import os
 
-import chz
 import structlog.stdlib
+
+import chz
 from nanoeval.setup import nanoeval_entrypoint
 from nanoeval.solvers.computer_tasks.demo._demo_task import DemoTask
 from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver

@@ -2,12 +2,12 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 import structlog
-from alcatraz.clusters.local import ClusterConfig
 from dotenv import load_dotenv
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 from structlog.stdlib import BoundLogger
 
+from alcatraz.clusters.local import ClusterConfig
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.infra.alcatraz import put_file_in_computer
 from paperbench.utils import find_dotenv
 

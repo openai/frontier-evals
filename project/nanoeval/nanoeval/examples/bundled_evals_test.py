@@ -1,4 +1,5 @@
 import pytest
+
 from nanoeval.eval import EvalSpec, RunnerArgs
 from nanoeval.examples._gpqa import GPQAEval
 from nanoeval.solvers.mcq import MockSolver

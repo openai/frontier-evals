@@ -4,8 +4,10 @@ import traceback
 from abc import abstractmethod
 from typing import AsyncGenerator
 
-import chz
 import structlog.stdlib
+from typing_extensions import override
+
+import chz
 from nanoeval.eval import RolloutSystemError
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
@@ -17,7 +19,6 @@ from nanoeval.solvers.computer_tasks.steps import (
     Step,
 )
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from typing_extensions import override
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

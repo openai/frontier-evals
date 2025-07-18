@@ -3,8 +3,13 @@ import json
 from pathlib import Path
 from typing import AsyncGenerator
 
-import chz
 import structlog
+from nanoeval_alcatraz.alcatraz_computer_interface import (
+    AlcatrazComputerRuntime,
+)
+from typing_extensions import override
+
+import chz
 from nanoeval.contrib.utils import run_with_startup_timeout
 from nanoeval.eval import RolloutSystemError
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
@@ -18,11 +23,6 @@ from nanoeval.solvers.computer_tasks.steps import (
     Step,
 )
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from nanoeval_alcatraz.alcatraz_computer_interface import (
-    AlcatrazComputerRuntime,
-)
-from typing_extensions import override
-
 from swelancer.eval import SWELancerTask
 
 logger = structlog.stdlib.get_logger(component=__name__)

@@ -10,12 +10,12 @@ from paperbench.monitor.monitor import MonitorResult
 
 load_dotenv()
 import structlog.stdlib
-from alcatraz.clusters.local import LocalConfig
-from nanoeval.solvers.computer_tasks.task import Grade
 from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from pydantic import BaseModel, model_validator
 
+from alcatraz.clusters.local import LocalConfig
+from nanoeval.solvers.computer_tasks.task import Grade
 from paperbench.agents.utils import (
     AgentOutput,
 )

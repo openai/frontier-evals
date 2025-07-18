@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-import chz
 import numpy as np
 import pytest
+
+import chz
 from nanoeval.solvers.mcq import Answer, MCQEval, MCQSolver, MCQTask, Question
 
 

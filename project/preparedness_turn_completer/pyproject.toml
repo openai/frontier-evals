@@ -1,10 +1,55 @@
 [project]
 name = "preparedness_turn_completer"
 version = "0.1.0"
-dependencies = ["openai", "tenacity", "chz", "structlog", "tiktoken"]
+requires-python = ">=3.11"
+dependencies = [
+    "openai",
+    "tenacity",
+    "chz",
+    "nanoeval",
+    "structlog",
+    "tiktoken"
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "poethepoet>=0.34.0",
+    "pre-commit>=4.2.0",
+    "ruff>=0.11.10",
+]
 
 [tool.setuptools]
 packages = ["preparedness_turn_completer"]
+
+[tool.pyright]
+extraPaths = ["../nanoeval"]
+typeCheckingMode = "off"                                   # we use mypy
+
+[tool.uv.sources]
+nanoeval = { path = "../nanoeval", editable = true }
+
+[tool.mypy]
+strict = true
+local_partial_types = true
+# These two make life easier if you use a lot of untyped libraries:
+warn_return_any = false
+allow_untyped_calls = true
+# Do not use `ignore_missing_imports`, instead use:
+disable_error_code = ["import-untyped"]
+# If you don't want to force use of type annotations:
+# allow_incomplete_defs = true
+# allow_untyped_defs = true
+# allow_any_generics = true
+mypy_path = ["../nanoeval",]
+[[tool.mypy.overrides]]
+module = ["nanoeval.*",]
+ignore_errors = true
+warn_unused_ignores = false
+
+[tool.poe.tasks]
+lint = "ruff check --fix"
+typecheck = "mypy preparedness_turn_completer"
 
 [build-system]
 requires = ["setuptools<78.0.0", "wheel"]

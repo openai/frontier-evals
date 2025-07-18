@@ -14,7 +14,6 @@ import tiktoken
 from dotenv import load_dotenv
 
 load_dotenv()
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from openai.types.chat import ParsedChatCompletionMessage
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
@@ -23,6 +22,7 @@ from pydantic import BaseModel
 from structlog.stdlib import BoundLogger
 from typing_extensions import override
 
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.judge.base import Judge
 from paperbench.judge.constants import (
     CRITERION_PROMPT,
@@ -674,7 +674,7 @@ class SimpleJudge(Judge):
             raise ParseError("No response received")
 
         score_instruction = "(either 0 or 1)" if not continuous else "(between 0 and 1)"
-        messages = [
+        messages: list[ChatCompletionMessageParam] = [
             {
                 "role": "system",
                 "content": f"You are given a response output from a judge which should contain a score and an explanation. Please parse the text into a structured object containing `valid_score` (boolean indicating whether the response contains a valid score), the `score` {score_instruction}, and an `explanation` (a short summary of the judge's reasoning). If the response does not contain a valid score, set `valid_score` to False and set the `score` to 0.0.",

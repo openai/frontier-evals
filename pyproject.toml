@@ -103,6 +103,15 @@ unfixable = [
 
 preview = true
 
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"pipes".msg = "pipes will be removed in 3.13, use shlex instead"
+"cgi".msg = "cgi will be removed in 3.13"
+"distutils".msg = "distutils will be removed in 3.12, See https://peps.python.org/pep-0632/#migration-advice"
+"pyzstd".msg = "use zstandard instead"
+"zstd".msg = "use zstandard instead"
+"toml".msg = "use tomllib instead (or tomli_w or tomlkit for writing)"
+"mock".msg = "use unittest.mock instead"
+
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "F403"]
 "rcall_config.py" = ["F821"]
@@ -110,6 +119,7 @@ preview = true
 [tool.ruff.lint.isort]
 # TODO consider enable this, disabled to minimize changes when moving off isort to ruff
 detect-same-package = false
+known-first-party = ["chz", "nanoeval", "alcatraz"]
 known-third-party = ["docker", "openai", "tenacity", "pydantic", "typing_extensions", "jupyter_client", "tqdm"]
 
 

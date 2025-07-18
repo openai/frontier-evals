@@ -1,8 +1,9 @@
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-import nanoeval
 import pytest
+
+import nanoeval
 from nanoeval.eval import EvalSpec, RunnerArgs
 from nanoeval.examples._gpqa import GPQAEval
 from nanoeval.json_recorder import JsonRecorderConfig

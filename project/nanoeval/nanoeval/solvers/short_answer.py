@@ -5,12 +5,13 @@ import itertools
 from abc import ABC, abstractmethod
 from typing import Any
 
-import chz
 import pandas as pd
+from pydantic import BaseModel
+
+import chz
 from nanoeval import Eval
 from nanoeval.eval import Task
 from nanoeval.recorder import get_recorder
-from pydantic import BaseModel
 
 
 class Question(BaseModel):

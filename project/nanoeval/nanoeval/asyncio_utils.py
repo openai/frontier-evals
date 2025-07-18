@@ -7,7 +7,6 @@ from contextlib import asynccontextmanager
 from functools import cached_property
 from types import TracebackType
 
-import chz
 from typing_extensions import (
     Any,
     AsyncContextManager,
@@ -17,6 +16,8 @@ from typing_extensions import (
     Self,
     TypeVar,
 )
+
+import chz
 
 T = TypeVar("T")
 

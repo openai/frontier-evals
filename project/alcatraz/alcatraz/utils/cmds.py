@@ -1,4 +1,5 @@
 import structlog.stdlib
+
 from alcatraz.clusters.interface import ExecutionResult
 from alcatraz.clusters.local import BaseAlcatrazCluster
 

@@ -5,8 +5,8 @@ from typing import AsyncGenerator, Generator
 
 import structlog.stdlib
 from drain3 import TemplateMiner
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.infra.alcatraz import (
     file_exists_on_computer,
     file_is_symlink_on_computer,

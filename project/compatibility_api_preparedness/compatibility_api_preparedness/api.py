@@ -1,5 +1,6 @@
-import chz
 from compatibility_api.api import CompatibilityAPI
+
+import chz
 
 
 @chz.chz

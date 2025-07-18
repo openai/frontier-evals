@@ -38,6 +38,16 @@ import docker.types
 import pydantic
 import tenacity
 import yaml
+from docker import DockerClient
+from docker.errors import APIError, NotFound
+from docker.models.containers import Container, ExecResult
+from docker.models.networks import Network
+from filelock import Timeout as LockTimeout
+from filelock import UnixFileLock
+from jupyter_client.asynchronous.client import AsyncKernelClient
+from jupyter_client.manager import AsyncKernelManager
+from pydantic import BaseModel, ConfigDict, Extra, Field, field_validator
+from typing_extensions import TypedDict, override
 
 # import diskcache as dc
 from alcatraz.clusters._container_proc import ContainerProc
@@ -50,16 +60,6 @@ from alcatraz.clusters.interface import (
     AlcatrazUnexpectedSystemError,
     ExecutionResult,
 )
-from docker import DockerClient
-from docker.errors import APIError, NotFound
-from docker.models.containers import Container, ExecResult
-from docker.models.networks import Network
-from filelock import Timeout as LockTimeout
-from filelock import UnixFileLock
-from jupyter_client.asynchronous.client import AsyncKernelClient
-from jupyter_client.manager import AsyncKernelManager
-from pydantic import BaseModel, ConfigDict, Extra, Field, field_validator
-from typing_extensions import TypedDict, override
 
 logger = logging.getLogger(__name__)
 

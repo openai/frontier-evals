@@ -3,8 +3,12 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-import chz
 import structlog
+from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
+from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
+from typing_extensions import override
+
+import chz
 from alcatraz.clusters.local import LocalConfig
 from nanoeval.eval import RolloutSystemError
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
@@ -14,10 +18,6 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
 from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver
 from nanoeval.solvers.computer_tasks.steps import FinalResult, Step
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
-from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
-from typing_extensions import override
-
 from paperbench.agents.run import prepare_computer
 from paperbench.agents.utils import AgentOutput
 from paperbench.nano.structs import PaperBenchGrade, PaperBenchResult

@@ -5,9 +5,9 @@ import json
 import time
 
 import blobfile as bf
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from structlog.stdlib import BoundLogger
 
+from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.agents.utils import AgentDirConfig
 from paperbench.infra.alcatraz import (
     compute_aisi_basic_agent_runtime,

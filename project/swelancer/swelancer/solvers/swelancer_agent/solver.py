@@ -7,24 +7,11 @@ import shlex
 from textwrap import dedent
 from typing import Any, AsyncGenerator, cast
 
-import chz
 import openai
 import structlog
 import tenacity
 import tiktoken
 from dotenv import load_dotenv
-from nanoeval.contrib.utils import run_with_startup_timeout
-from nanoeval.eval import RolloutSystemError
-from nanoeval.solvers.computer_tasks.code_execution_interface import (
-    ComputerRuntime,
-    RuntimeConfig,
-)
-from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver
-from nanoeval.solvers.computer_tasks.steps import (
-    FinalResult,
-    Step,
-)
-from nanoeval.solvers.computer_tasks.task import ComputerTask
 from nanoeval_alcatraz.alcatraz_computer_interface import (
     AlcatrazComputerRuntime,
 )
@@ -37,6 +24,19 @@ from openai.types.chat import (
 )
 from typing_extensions import override
 
+import chz
+from nanoeval.contrib.utils import run_with_startup_timeout
+from nanoeval.eval import RolloutSystemError
+from nanoeval.solvers.computer_tasks.code_execution_interface import (
+    ComputerRuntime,
+    RuntimeConfig,
+)
+from nanoeval.solvers.computer_tasks.solver import PythonCodingSolver
+from nanoeval.solvers.computer_tasks.steps import (
+    FinalResult,
+    Step,
+)
+from nanoeval.solvers.computer_tasks.task import ComputerTask
 from swelancer.eval import SWELancerTask
 
 logger = structlog.stdlib.get_logger(component=__name__)

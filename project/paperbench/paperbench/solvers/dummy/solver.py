@@ -3,14 +3,14 @@ import time
 from pathlib import Path
 
 import blobfile as bf
-import chz
 import structlog
+from typing_extensions import override
+
+import chz
 from nanoeval.recorder import get_recorder
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
 )
-from typing_extensions import override
-
 from paperbench.agents.utils import AgentOutput
 from paperbench.constants import AGENT_DIR, LOGS_DIR, SUBMISSION_DIR, WORKSPACE_BASE
 from paperbench.nano.task import PBTask

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import random
 
-import chz
 import pandas as pd
-from nanoeval.solvers.mcq import MCQEval, Question
 from typing_extensions import override
+
+import chz
+from nanoeval.solvers.mcq import MCQEval, Question
 
 
 @chz.chz

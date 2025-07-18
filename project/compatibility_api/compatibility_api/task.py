@@ -1,9 +1,10 @@
 from abc import ABC
 from typing import Self
 
+from pydantic import Field, model_validator
+
 from nanoeval.solvers.computer_tasks.code_execution_interface import NetworkMode
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from pydantic import Field, model_validator
 
 
 class CompatibleComputerTask(ComputerTask, ABC):

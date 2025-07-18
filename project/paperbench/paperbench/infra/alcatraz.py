@@ -8,12 +8,12 @@ from typing import AsyncGenerator, TypedDict
 
 import blobfile as bf
 import structlog.stdlib
+from structlog.stdlib import BoundLogger
+
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
     ExecutionResult,
 )
-from structlog.stdlib import BoundLogger
-
 from paperbench.constants import LOGS_DIR
 from paperbench.utils import build_canonical_sub_path
 

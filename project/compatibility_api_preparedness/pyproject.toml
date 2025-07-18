@@ -1,0 +1,30 @@
+[project]
+name = "compatibility_api_preparedness"
+version = "0.1.0"
+dependencies = [
+    "chz", "compatibility_api"
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "ruff>=0.11.7",
+]
+
+[tool.uv.sources]
+chz = { git = "https://github.com/openai/chz.git" }
+compatibility_api = { path = "../compatibility_api", editable = true }
+nanoeval = { path = "../nanoeval", editable = true }
+nanoeval_alcatraz = { path = "../nanoeval_alcatraz", editable = true }
+alcatraz = { path = "../alcatraz", editable = true }
+preparedness-turn-completer = { path = "../preparedness_turn_completer", editable = true }
+
+[tool.setuptools]
+packages = ["compatibility_api_preparedness"]
+
+[build-system]
+requires = ["setuptools<78.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+mypy_path = ["../compatibility_api"]

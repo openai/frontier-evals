@@ -8,7 +8,7 @@ repos:
       # picks up config from [tool.ruff] in pyproject.toml
       - id: ruff-format
         name: ruff-format (black-style)
-        files: (?x)^project/(paperbench|swelancer)/
+        files: (?x)^project/(paperbench|swelancer|compatibility_api|compatibility_api_preparedness)/
 
       # Lenient hook: runs auto‑fix on all files using a lenient config.
       - id: ruff
@@ -25,7 +25,7 @@ repos:
           - --fix
           - --fix-only
           - --exit-non-zero-on-fix
-        files: (?x)^project/(alcatraz|nanoeval|paperbench|swelancer)/
+        files: (?x)^project/(alcatraz|nanoeval|paperbench|swelancer|compatibility_api|compatibility_api_preparedness)/
 
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.

@@ -108,3 +108,19 @@ class AgentRegistry:
 
 
 registry = AgentRegistry()
+
+
+def get_agents_env_vars(registry: AgentRegistry) -> dict[str, str]:
+    """Parses agent.env txt file of KEY=VALUE into a dictionary"""
+    agent_env_path = registry.get_agents_dir() / "agent.env"
+
+    if not agent_env_path.exists():
+        logger.warning(f"agent.env not found in {agent_env_path}")
+        return {}
+    env_vars = {}
+    with open(agent_env_path, "r") as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                key, value = line.strip().split("=", 1)
+                env_vars[key] = value
+    return env_vars

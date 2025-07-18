@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
+from typing import Any, Self
 
 from dotenv import load_dotenv
 
@@ -15,7 +14,7 @@ from alcatraz.clusters.local import LocalConfig
 from nanoeval.solvers.computer_tasks.task import Grade
 from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
 from preparedness_turn_completer.turn_completer import TurnCompleter
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from paperbench.agents.utils import (
     AgentOutput,
@@ -28,38 +27,6 @@ GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_
 logger = structlog.stdlib.get_logger(component=__name__)
 
 
-class ReproductionOutput(BaseModel):
-    executed_submission: Path | str | None = None
-    metadata: ReproductionMetadata | None = None
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> ReproductionOutput:
-        metadata_exists = data.get("metadata") is not None
-
-        if metadata_exists:
-            metadata = ReproductionMetadata.from_dict(data["metadata"])
-        else:
-            metadata = None
-
-        try:
-            return cls(
-                executed_submission=data.get("executed_submission"),
-                metadata=metadata,
-            )
-        except KeyError as e:
-            raise ValueError("Missing required field in reproduction output") from e
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "executed_submission": self.executed_submission,
-            "metadata": self.metadata.to_dict() if self.metadata else None,
-        }
-
-    @property
-    def success(self) -> bool:
-        return self.metadata is not None
-
-
 @dataclass(frozen=False)
 class PaperBenchResult:
     paper_id: str
@@ -70,7 +37,7 @@ class PaperBenchResult:
     resources_provided: bool
     agent_output: AgentOutput | None = None
     judge_output: JudgeOutput | None = None
-    reproduction_output: ReproductionOutput | None = None
+    reproduction_metadata: ReproductionMetadata | None = None
     monitor_result: MonitorResult | None = None
     monitor_ran: bool = False
 
@@ -84,7 +51,7 @@ class PaperBenchResult:
             "resources_provided": self.resources_provided,
             "agent_output": None,
             "judge_output": None,
-            "reproduction_output": None,
+            "reproduction_metadata": None,
             "monitor_result": None,
             "monitor_ran": self.monitor_ran,
         }
@@ -95,8 +62,8 @@ class PaperBenchResult:
         if self.judge_output:
             data["judge_output"] = self.judge_output.to_dict()
 
-        if self.reproduction_output:
-            data["reproduction_output"] = self.reproduction_output.to_dict()
+        if self.reproduction_metadata:
+            data["reproduction_metadata"] = self.reproduction_metadata.to_dict()
 
         if self.monitor_result:
             data["monitor_result"] = self.monitor_result.to_dict()
@@ -106,6 +73,7 @@ class PaperBenchResult:
 
 class ReproductionConfig(BaseModel):
     timeout: int = 100 * 3600
+    # if the reproduce.sh runs for less than this, it will be retried with salvaging fixes
     retry_threshold: float = 600
     overwrite_existing_output: bool = False
     skip_reproduction: bool = False
@@ -113,6 +81,14 @@ class ReproductionConfig(BaseModel):
         image="pb-reproducer:latest",
         pull_from_registry=False,
     )
+
+    @model_validator(mode="after")
+    def _validate_timeout_and_retry_threshold(self) -> Self:
+        if self.retry_threshold >= self.timeout:
+            logger.warning(
+                "ReproductionConfig.retry_threshold >= ReproductionConfig.timeout, so reproduce.sh salvaging is disabled.",
+            )
+        return self
 
 
 class JudgeConfig(BaseModel):

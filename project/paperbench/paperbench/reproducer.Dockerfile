@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y \
         software-properties-common \
-        wget curl unzip \
+        wget curl unzip sudo \
         build-essential git cmake \
         libatlas-base-dev libblas-dev liblapack-dev libopenblas-dev \
         gfortran libsm6 libxext6 libxrender-dev && \

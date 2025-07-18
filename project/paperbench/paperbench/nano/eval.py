@@ -193,7 +193,7 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                             code_only=task.judge.code_only,
                             resources_provided=task.judge.resources_provided,
                             judge_output=None,
-                            reproduction_output=None,
+                            reproduction_metadata=None,
                             monitor_result=grade.paperbench_result.monitor_result,
                             monitor_ran=grade.paperbench_result.monitor_ran,
                         ),
@@ -569,11 +569,7 @@ class PaperBench(PythonCodingEval):
                 [r for r in results_clean if not r.agent_output or not r.submission_exists]
             ),
             "n_reproductions_failed": len(
-                [
-                    r
-                    for r in results_clean
-                    if not r.reproduction_output or not r.reproduction_output.success
-                ]
+                [r for r in results_clean if not r.reproduction_metadata]
             ),
             "n_gradings_failed": len(
                 [r for r in results_clean if not r.judge_output or not r.judge_output.success]
@@ -595,36 +591,32 @@ class PaperBench(PythonCodingEval):
         other_stats = {
             "repro_mean_time": safe_mean(
                 [
-                    r.reproduction_output.metadata.repro_execution_time  # type: ignore
+                    r.reproduction_metadata.repro_execution_time
                     for r in results_clean
-                    if r.reproduction_output and r.reproduction_output.success
+                    if r.reproduction_metadata and r.reproduction_metadata.repro_execution_time
                 ]
             ),
             "n_is_valid_git_repo": len(
                 [
                     r
                     for r in results_clean
-                    if r.reproduction_output
-                    and r.reproduction_output.success
-                    and r.reproduction_output.metadata.is_valid_git_repo  # type: ignore
+                    if r.reproduction_metadata and r.reproduction_metadata.is_valid_git_repo
                 ]
             ),
             "n_nontrivial_git_log": len(
                 [
                     r
                     for r in results_clean
-                    if r.reproduction_output
-                    and r.reproduction_output.success
-                    and len(r.reproduction_output.metadata.git_log.strip().splitlines()) > 1  # type: ignore
+                    if r.reproduction_metadata
+                    and r.reproduction_metadata.git_log is not None
+                    and len(r.reproduction_metadata.git_log.strip().splitlines()) > 1
                 ]
             ),
             "n_repro_script_exists": len(
                 [
                     r
                     for r in results_clean
-                    if r.reproduction_output
-                    and r.reproduction_output.success
-                    and r.reproduction_output.metadata.repro_script_exists  # type: ignore
+                    if r.reproduction_metadata and r.reproduction_metadata.repro_script_exists
                 ]
             ),
         }

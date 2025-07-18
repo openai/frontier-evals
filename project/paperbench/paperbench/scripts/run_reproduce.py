@@ -1,12 +1,21 @@
+from __future__ import annotations
+
 import asyncio
+import json
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+import blobfile as bf
 import structlog.stdlib
+from alcatraz.clusters.local import ClusterConfig
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from structlog.stdlib import BoundLogger
+
+from paperbench.agents.registry import get_agents_env_vars, registry
+from paperbench.infra.alcatraz import tar_and_extract_from_computer
+from paperbench.scripts.alcatraz_services import put_submission_in_computer, start_alcatraz_computer
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -16,28 +25,32 @@ class ReproductionMetadata:
     is_valid_git_repo: bool
     git_log: str
     repro_script_exists: bool
-    repro_execution_time: float
     files_before_reproduce: str
     files_after_reproduce: str
-    git_status_after_reproduce: str
     timedout: bool
     repro_log: str
-    retried_results: list[dict[str, Any]] = field(default_factory=list)
+    retried_results: list[ReproScriptRunOutcome] = field(default_factory=list)
+    repro_execution_time: float | None = None
+    git_status_after_reproduce: str | None = None
+    executed_submission: str | None = None
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "ReproductionMetadata":
+    def from_dict(cls, data: dict[str, Any]) -> ReproductionMetadata:
         try:
+            retried_results = [ReproScriptRunOutcome.from_dict(r) for r in data["retried_results"]]
+
             return cls(
                 is_valid_git_repo=data["is_valid_git_repo"],
                 git_log=data["git_log"],
                 repro_script_exists=data["repro_script_exists"],
-                repro_execution_time=data["repro_execution_time"],
-                repro_log=data["repro_log"],
                 files_before_reproduce=data["files_before_reproduce"],
                 files_after_reproduce=data["files_after_reproduce"],
-                git_status_after_reproduce=data["git_status_after_reproduce"],
                 timedout=data["timedout"],
-                retried_results=data["retried_results"],
+                repro_log=data["repro_log"],
+                retried_results=retried_results,
+                repro_execution_time=data["repro_execution_time"],
+                git_status_after_reproduce=data["git_status_after_reproduce"],
+                executed_submission=data["executed_submission"],
             )
         except KeyError as e:
             raise ValueError("Missing required field in reproduction metadata") from e
@@ -51,6 +64,17 @@ class ReproScriptRunOutcome:
     repro_execution_time: float
     timedout: bool
     repro_log: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ReproScriptRunOutcome:
+        try:
+            return cls(
+                repro_execution_time=data["repro_execution_time"],
+                timedout=data["timedout"],
+                repro_log=data["repro_log"],
+            )
+        except KeyError as e:
+            raise ValueError("Missing required field in reproduction script run outcome") from e
 
 
 async def run_reproduce_script(
@@ -106,7 +130,7 @@ async def reproduce(
     logger: BoundLogger,
     timeout: float | None = None,
     retry_threshold: float = 0,
-) -> dict[str, Any]:
+) -> ReproductionMetadata:
     """
     args:
         computer: ComputerInterface on which the reproduce.sh script will be run
@@ -135,18 +159,14 @@ async def reproduce(
     repro_script_exists = result.exit_code == 0
     logger.info(f"Reproduce script exists at {reproduce_script_path}: {repro_script_exists}")
     if not repro_script_exists:
-        return asdict(
-            ReproductionMetadata(
-                is_valid_git_repo=is_valid_git_repo,
-                git_log=git_log,
-                repro_script_exists=repro_script_exists,
-                repro_execution_time=0,
-                repro_log="reproduce.sh not found",
-                files_before_reproduce=files_before_reproduce,
-                files_after_reproduce=files_before_reproduce,
-                git_status_after_reproduce="",
-                timedout=False,
-            )
+        return ReproductionMetadata(
+            is_valid_git_repo=is_valid_git_repo,
+            git_log=git_log,
+            repro_script_exists=repro_script_exists,
+            repro_log="reproduce.sh not found",
+            files_before_reproduce=files_before_reproduce,
+            files_after_reproduce=files_before_reproduce,
+            timedout=False,
         )
 
     # sometimes git complains about `detected dubious ownership in repository` due to mismatching file ownership
@@ -187,17 +207,82 @@ async def reproduce(
     result = await computer.send_shell_command(f"cd {submission_path} && git status")
     git_status = result.output.decode("utf-8")
 
-    return asdict(
-        ReproductionMetadata(
-            is_valid_git_repo=is_valid_git_repo,
-            git_log=git_log,
-            repro_script_exists=repro_script_exists,
-            repro_execution_time=final_outcome.repro_execution_time,
-            repro_log=final_outcome.repro_log,
-            files_before_reproduce=files_before_reproduce,
-            files_after_reproduce=files_after_reproduce,
-            git_status_after_reproduce=git_status,
-            timedout=final_outcome.timedout,
-            retried_results=[asdict(r) for r in repro_outcomes[:-1]],
-        )
+    return ReproductionMetadata(
+        is_valid_git_repo=is_valid_git_repo,
+        git_log=git_log,
+        repro_script_exists=repro_script_exists,
+        repro_execution_time=final_outcome.repro_execution_time,
+        repro_log=final_outcome.repro_log,
+        files_before_reproduce=files_before_reproduce,
+        files_after_reproduce=files_after_reproduce,
+        git_status_after_reproduce=git_status,
+        timedout=final_outcome.timedout,
+        retried_results=repro_outcomes[:-1],
     )
+
+
+async def reproduce_on_computer(
+    cluster_config: ClusterConfig,  # TODO: don't assume AlcatrazComputerInterface
+    submission_path: str,
+    logger: BoundLogger,
+    run_dir: str,
+    submission_cluster_path: Path = Path("/submission"),
+    output_cluster_path: Path = Path("/output"),
+    timeout: float | None = None,
+    retry_threshold: float = 0,
+) -> ReproductionMetadata | None:
+    """
+    Reproduce a single submission on a computer.
+
+    This script will spin up a pb-reproducer container on the computer to do the following:
+    - Download the submission
+    - Run the reproduction script
+    - Save and return the reproduction results
+    """
+    # we're ensuring the env variables defined in agent.env are set on the computer
+    cluster_config = cluster_config.model_copy(
+        update={"environment": {**cluster_config.environment, **get_agents_env_vars(registry)}}
+    )
+    async with start_alcatraz_computer(cluster_config) as computer:
+        time_start = time.time()
+        repro_metadata: ReproductionMetadata | None = None
+
+        await computer.check_shell_command(
+            f"mkdir -p {output_cluster_path} {submission_cluster_path}"
+        )
+
+        # Step 1: Put submission to /submission
+        await put_submission_in_computer(computer, submission_path, logger)
+
+        # Step 2: Run reproduction
+        repro_metadata = await reproduce(
+            computer=computer,
+            submission_path=submission_cluster_path,
+            logger=logger,
+            timeout=timeout,
+            retry_threshold=retry_threshold,
+        )
+
+        # Step 3: Save metadata
+        path_to_output = submission_path.replace(".tar.gz", "_executed_metadata.json")
+        bf.write_bytes(path_to_output, json.dumps(repro_metadata.to_dict()).encode("utf-8"))
+
+        # Step 4: Save the reproduced submission itself
+        timestamp = Path(submission_path).parts[-2]
+        upload_from = output_cluster_path / "submission_executed.tar.gz"
+        upload_to = bf.join(run_dir, "submissions", timestamp, "submission_executed.tar.gz")
+        await tar_and_extract_from_computer(
+            computer=computer,
+            dir_path_on_computer=submission_cluster_path,
+            tar_path_on_computer=upload_from,
+            tar_path_on_target=upload_to,
+            max_file_size="10M",
+            logger=logger,
+        )
+
+        logger.info(f"Reproduced dir has been written: {upload_to}")
+
+        time_end = time.time()
+        logger.info(f"Reproduction completed in {time_end - time_start:.2f} seconds.")
+
+        return repro_metadata

@@ -5,7 +5,7 @@ import os
 import tempfile
 import time
 from contextlib import asynccontextmanager, nullcontext
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import timedelta
 from pathlib import Path
 from typing import Any, AsyncGenerator
@@ -42,12 +42,10 @@ from paperbench.nano.structs import (
     PaperBenchGrade,
     PaperBenchResult,
     ReproductionConfig,
-    ReproductionOutput,
 )
 from paperbench.nano.utils import get_file_at_duration
 from paperbench.paper_registry import paper_registry
-from paperbench.scripts.alcatraz_services import reproduce_on_computer
-from paperbench.scripts.run_reproduce import ReproductionMetadata
+from paperbench.scripts.run_reproduce import ReproductionMetadata, reproduce_on_computer
 from paperbench.utils import purple
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
@@ -197,7 +195,7 @@ class PBTask(ComputerTask):
                 resources_provided=self.judge.resources_provided,
                 agent_output=None,
                 judge_output=None,
-                reproduction_output=None,
+                reproduction_metadata=None,
                 monitor_result=monitor_result,
                 monitor_ran=monitor_ran,
             ),
@@ -208,12 +206,12 @@ class PBTask(ComputerTask):
         self._save_grade(grade)
         return grade
 
-    def _should_grade(self, reproduction_output: ReproductionOutput | None) -> bool:
+    def _should_grade(self, reproduction_metadata: ReproductionMetadata | None) -> bool:
         """
         We can proceed with grading if reproduction was successful
         OR we are in a reproduction-free setup
         """
-        return (reproduction_output and reproduction_output.success) or (
+        return (reproduction_metadata is not None) or (
             self.reproduction.skip_reproduction or self.judge.code_only
         )
 
@@ -277,17 +275,17 @@ class PBTask(ComputerTask):
                 )
 
         # 3. run reproduction
-        repro_output = None
+        repro_metadata = None
         submission_to_grade_path = path_to_submission
         if self._should_reproduce():
-            repro_output = await self._run_reproduce(path_to_submission)
-            repro_metadata = repro_output.metadata.to_dict() if repro_output.metadata else {}
+            repro_metadata = await self._run_reproduce(path_to_submission)
+            repro_metadata_dict = repro_metadata.to_dict() if repro_metadata else {}
             submission_to_grade_path = path_to_executed_submission
-            self._record_extra({"repro_metadata": repro_metadata})
+            self._record_extra({"repro_metadata": repro_metadata_dict})
 
         # 4. run judge
         judge_output = None
-        if self._should_grade(repro_output):
+        if self._should_grade(repro_metadata):
             judge_output = await self._run_judge(submission_to_grade_path, self.paper_id)
             self._record_extra({"judge_output": judge_output.to_dict() if judge_output else None})
 
@@ -301,7 +299,7 @@ class PBTask(ComputerTask):
                 code_only=self.judge.code_only,
                 resources_provided=self.judge.resources_provided,
                 judge_output=judge_output,
-                reproduction_output=repro_output,
+                reproduction_metadata=repro_metadata,
                 monitor_ran=mon_ran,
                 monitor_result=mon_result,
             ),
@@ -346,7 +344,7 @@ class PBTask(ComputerTask):
         monitor_result = monitor.check_log(log_file_path)
         return monitor_result
 
-    async def _run_reproduce(self, submission: str) -> ReproductionOutput:
+    async def _run_reproduce(self, submission: str) -> ReproductionMetadata | None:
         """Runs the reproduction process for the submission associated with the PBTask."""
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id,
@@ -354,15 +352,14 @@ class PBTask(ComputerTask):
             runs_dir=self.runs_dir,
         )
         ctx_logger.info(
-            f"Starting the reproduction process for `{self.question_id}.{self.attempt_id}`...",
+            f"Starting the reproduction process for `{self.run_id}`...",
             destinations=["group", "run"],
             _print=True,
         )
 
+        metadata: ReproductionMetadata | None = None
         reproduce_output_path = submission.replace(".tar.gz", "_executed.tar.gz")
         repro_metadata_path = submission.replace(".tar.gz", "_executed_metadata.json")
-
-        ctx_logger.info(f"Reproducing submission {reproduce_output_path}...", destinations=["run"])
 
         # If the reproduction output already exists, we can skip reproduction
         if not self.reproduction.overwrite_existing_output:
@@ -374,62 +371,37 @@ class PBTask(ComputerTask):
                     destinations=["run"],
                 )
                 with bf.BlobFile(repro_metadata_path, "r") as f:
-                    data = json.loads(f.read())
-                metadata = ReproductionMetadata.from_dict(data)
-                return ReproductionOutput(
-                    executed_submission=reproduce_output_path,
-                    metadata=metadata,
-                )
+                    metadata = ReproductionMetadata.from_dict(json.loads(f.read()))
+                metadata = replace(metadata, executed_submission=reproduce_output_path)
+                return metadata
 
-        # Reproduce on alcatraz
-        async with self._start_computer(self.reproduction.cluster_config) as computer:
-            await reproduce_on_computer(
-                computer=computer,
+        # Reproduce on alcatraz and collect metadata
+        try:
+            metadata = await reproduce_on_computer(
+                cluster_config=self.reproduction.cluster_config,
                 submission_path=submission,
                 logger=ctx_logger.bind(destinations=["run"]),
                 run_dir=self.run_dir,
                 timeout=self.reproduction.timeout,
                 retry_threshold=self.reproduction.retry_threshold,
             )
+        except Exception as e:
+            logger.exception(f"Reproduction failed with error:\n{str(e)}")
 
-        # Now the result should exist
-        repro_output_exists = bf.exists(reproduce_output_path)
-        repro_metadata_exists = bf.exists(repro_metadata_path)
-        if not repro_output_exists:
-            ctx_logger.exception(
-                f"Reproduction failed to produce output: {reproduce_output_path}",
-                destinations=["group", "run"],
-                _print=True,
-            )
-            return ReproductionOutput(
-                executed_submission=reproduce_output_path,
-                metadata=None,
-            )
-        if not repro_metadata_exists:
+        if metadata is None:
             ctx_logger.exception(
                 f"Reproduction failed to produce metadata: {repro_metadata_path}",
                 destinations=["group", "run"],
                 _print=True,
             )
-            return ReproductionOutput(
-                executed_submission=reproduce_output_path,
-                metadata=None,
-            )
-
-        with bf.BlobFile(repro_metadata_path, "r") as f:
-            data = json.loads(f.read())
-        metadata = ReproductionMetadata.from_dict(data)
 
         ctx_logger.info(
-            f"The reproduction process for {self.question_id}.{self.attempt_id} has finished!",
+            f"The reproduction process for {self.run_id} has finished!",
             destinations=["group", "run"],
             _print=True,
         )
 
-        return ReproductionOutput(
-            executed_submission=reproduce_output_path,
-            metadata=metadata,
-        )
+        return metadata
 
     async def _select_checkpoint(self) -> tuple[str, timedelta] | None:
         """Identifies the submission tarball to use for reproduction/grading."""

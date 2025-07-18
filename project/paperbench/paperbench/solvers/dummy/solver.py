@@ -207,7 +207,7 @@ class PaperBenchDummySolver(PythonCodingSolver):
                             code_only=task.judge.code_only,
                             resources_provided=task.judge.resources_provided,
                             judge_output=None,
-                            reproduction_output=None,
+                            reproduction_metadata=None,
                         ),
                         score=0.0,
                         grader_log="",

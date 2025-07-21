@@ -7,7 +7,9 @@ from paperbench.utils import find_dotenv
 
 load_dotenv(find_dotenv())
 
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.oai_completions_turn_completer import (
+    OpenAICompletionsTurnCompleter,
+)
 
 from alcatraz.clusters.local import LocalConfig
 from paperbench.nano.eval import (
@@ -61,7 +63,7 @@ LOCAL_JUDGE_CONFIG = JudgeConfig(
     grade_id=0,
     overwrite_existing_output=False,
     scaffold="dummy",
-    completer_config=OpenAITurnCompleter.Config(
+    completer_config=OpenAICompletionsTurnCompleter.Config(
         model="gpt-4o-mini",
     ),
     code_only=False,

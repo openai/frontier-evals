@@ -16,7 +16,9 @@ from dotenv import load_dotenv
 load_dotenv()
 from openai.types.chat import ParsedChatCompletionMessage
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.oai_completions_turn_completer import (
+    OpenAICompletionsTurnCompleter,
+)
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from pydantic import BaseModel
 from structlog.stdlib import BoundLogger
@@ -72,7 +74,7 @@ class SimpleJudge(Judge):
         submission_dir: Path,
         paper_md: Path,
         completer_config: TurnCompleter.Config,
-        structured_completer_config: OpenAITurnCompleter.Config | None = None,
+        structured_completer_config: OpenAICompletionsTurnCompleter.Config | None = None,
         log_path: Path | None = None,
         buffer_tokens: int = 10000,  # 10k tokens of buffer
         max_depth: int = 999,
@@ -99,11 +101,13 @@ class SimpleJudge(Judge):
 
         self.structured_completer_config = (
             structured_completer_config
-            or OpenAITurnCompleter.Config(
+            or OpenAICompletionsTurnCompleter.Config(
                 model="gpt-4o-2024-08-06",
             )
         )
-        self.structured_completer: OpenAITurnCompleter = self.structured_completer_config.build()
+        self.structured_completer: OpenAICompletionsTurnCompleter = (
+            self.structured_completer_config.build()
+        )
 
         self.paper_md = paper_md.read_text()
         self.rubric = rubric
@@ -592,8 +596,8 @@ class SimpleJudge(Judge):
                     response: TurnCompleter.Completion = await self.completer.async_completion(
                         conversation=messages
                     )
-                    if isinstance(self.completer, OpenAITurnCompleter) and isinstance(
-                        response, OpenAITurnCompleter.OpenAICompletion
+                    if isinstance(self.completer, OpenAICompletionsTurnCompleter) and isinstance(
+                        response, OpenAICompletionsTurnCompleter.Completion
                     ):
                         judge_token_usage = TokenUsage()
                         judge_token_usage.add_from_completion(self.completer.model, response.usage)

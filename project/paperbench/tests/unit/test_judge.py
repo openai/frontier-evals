@@ -8,7 +8,9 @@ from typing import Callable, Generator
 
 import pytest
 from dotenv import load_dotenv
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.oai_completions_turn_completer import (
+    OpenAICompletionsTurnCompleter,
+)
 
 from paperbench.judge.base import Judge
 from paperbench.judge.dummyrandom import DummyJudge
@@ -127,7 +129,7 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_a_trivial_rubric(
         addendum=None,
         judge_addendum=None,
         submission_dir=gold_submission,
-        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
+        completer_config=OpenAICompletionsTurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -162,7 +164,7 @@ async def test_all_gold_submissions_achieve_a_null_score_on_an_impossible_rubric
         addendum=None,
         judge_addendum=None,
         submission_dir=gold_submission,
-        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
+        completer_config=OpenAICompletionsTurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -197,7 +199,7 @@ async def test_all_gold_submissions_achieve_a_perfect_score_on_their_correspondi
         addendum=None,
         judge_addendum=None,
         submission_dir=gold_submission,
-        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
+        completer_config=OpenAICompletionsTurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -232,7 +234,7 @@ async def test_empty_submission_achieves_a_null_score_on_all_non_trvial_rubrics(
         addendum=None,
         judge_addendum=None,
         submission_dir=empty_submission,
-        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
+        completer_config=OpenAICompletionsTurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -280,7 +282,7 @@ async def test_submission_with_n_missing_files_to_the_hex_flags_task_achieves_a_
         addendum=None,
         judge_addendum=None,
         submission_dir=submission,
-        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
+        completer_config=OpenAICompletionsTurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 
@@ -321,7 +323,7 @@ async def test_nested_context_preserved_in_grading(
         addendum=None,
         judge_addendum=None,
         submission_dir=submission,
-        completer_config=OpenAITurnCompleter.Config(model="gpt-4o"),
+        completer_config=OpenAICompletionsTurnCompleter.Config(model="gpt-4o"),
         paper_md=empty_markdown,
     )
 

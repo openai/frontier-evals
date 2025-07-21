@@ -12,6 +12,7 @@ import tiktoken
 from openai.types.chat import ChatCompletion
 from openai.types.completion_usage import CompletionUsage
 from preparedness_turn_completer.turn_completer import TurnCompleter
+from preparedness_turn_completer.utils import get_model_context_window_length
 from pydantic import BaseModel
 
 try:
@@ -26,7 +27,7 @@ except ImportError:
 logger = structlog.stdlib.get_logger(component=__name__)
 
 
-class OpenAITurnCompleter(TurnCompleter):
+class OpenAICompletionsTurnCompleter(TurnCompleter):
     def __init__(self, model: str, reasoning_effort: str | None = None):
         self.model: str = model
         self.reasoning_effort: str | None = reasoning_effort
@@ -43,16 +44,17 @@ class OpenAITurnCompleter(TurnCompleter):
         model: str
         reasoning_effort: str | None = None
 
-        def build(self) -> OpenAITurnCompleter:
-            return OpenAITurnCompleter(
+        def build(self) -> OpenAICompletionsTurnCompleter:
+            return OpenAICompletionsTurnCompleter(
                 model=self.model,
                 reasoning_effort=self.reasoning_effort,
             )
 
     class Params(TurnCompleter.Params, total=False):
         response_format: type[BaseModel] | None
+        temperature: float | None
 
-    class OpenAICompletion(TurnCompleter.Completion):
+    class Completion(TurnCompleter.Completion):
         usage: CompletionUsage | None = None
 
     @functools.cached_property
@@ -60,7 +62,9 @@ class OpenAITurnCompleter(TurnCompleter):
         return openai.AsyncClient()
 
     def _handle_kwargs(
-        self, params: OpenAITurnCompleter.Params, conversation: TurnCompleter.RuntimeConversation
+        self,
+        params: OpenAICompletionsTurnCompleter.Params,
+        conversation: TurnCompleter.RuntimeConversation,
     ) -> dict[str, Any]:
         if "messages" in params:
             logger.warning("Found `messages` key in params, will use `conversation` kwarg instead")
@@ -74,30 +78,32 @@ class OpenAITurnCompleter(TurnCompleter):
         merged_kwargs = {
             **params,
             "model": self.model,
-            "reasoning_effort": self.reasoning_effort,
             "messages": conversation,
         }
+        if self.reasoning_effort is not None:
+            merged_kwargs["reasoning_effort"] = self.reasoning_effort
         return merged_kwargs
 
     def completion(
         self,
         conversation: TurnCompleter.RuntimeConversation,
-        **params: Unpack[TurnCompleter.Params],
-    ) -> OpenAITurnCompleter.OpenAICompletion:
+        **params: Unpack[OpenAICompletionsTurnCompleter.Params],
+    ) -> OpenAICompletionsTurnCompleter.Completion:
         raise NotImplementedError("Not implemented, use async_completion instead")
 
     async def async_completion(
         self,
         conversation: TurnCompleter.RuntimeConversation,
-        **params: Unpack[OpenAITurnCompleter.Params],
-    ) -> OpenAITurnCompleter.OpenAICompletion:
+        **params: Unpack[OpenAICompletionsTurnCompleter.Params],
+    ) -> OpenAICompletionsTurnCompleter.Completion:
         # possibly override params such as `model`, `reasoning_effort`, and `messages`
         kwargs = self._handle_kwargs(params, conversation)
-        completion = await oai_chat_completion_create(
+        completion = await oai_create(
             self._client,
             **kwargs,
         )
-        return OpenAITurnCompleter.OpenAICompletion(
+        assert isinstance(completion, ChatCompletion)
+        return OpenAICompletionsTurnCompleter.Completion(
             input_conversation=conversation,
             output_messages=[completion.choices[0].message],
             usage=completion.usage,
@@ -112,6 +118,7 @@ OPENAI_TIMEOUT_EXCEPTIONS = (
 )
 
 
+# TODO: make this configurable
 @tenacity.retry(
     wait=tenacity.wait_random_exponential(min=1, max=300),  # Max wait time of 5 minutes
     stop=tenacity.stop_after_delay(3600 * 2),  # Retry for up to 2 hours
@@ -121,24 +128,9 @@ OPENAI_TIMEOUT_EXCEPTIONS = (
     ),
     reraise=True,
 )
-async def oai_chat_completion_create(
-    client: openai.AsyncClient, *args: Any, **kwargs: Any
-) -> ChatCompletion:
-    # This is a bit of a hack. We replace "system" messages with
-    # "developer" for models where "system" messages aren't supported.
-    if "model" in kwargs and kwargs["model"] == "o1-redteam":
-        new_messages = []
-
-        for m in kwargs["messages"]:
-            new_m = m
-            if m["role"] == "system":
-                new_m = {**m, "role": "developer"}
-            new_messages.append(new_m)
-
-        kwargs["messages"] = new_messages
-
+async def oai_create(client: openai.AsyncClient, *args: Any, **kwargs: Any) -> ChatCompletion:
     # TODO: this is messy - in most cases `parse` seems to be a superset of features in `create` so we use that,
-    # but have found aisi-basic-agent with o1 crashing on this when we use `parse`. Something related to tool-use?
+    # but have found basic-agent with o1 crashing on this when we use `parse`. Something related to tool-use?
     try:
         res = await client.beta.chat.completions.parse(*args, **kwargs)
     except ValueError as e:
@@ -164,26 +156,3 @@ async def oai_chat_completion_create(
         pass
 
     return res
-
-
-def get_model_context_window_length(model: str | None) -> int:
-    max_context_window_lengths: dict[str, int] = {
-        "gpt-4o-mini": 128000,
-        "gpt-4o-mini-2024-07-18": 128000,
-        "gpt-4o": 128000,
-        "gpt-4o-2024-08-06": 128000,
-        "o1-mini": 128000,
-        "o1-mini-2024-09-12": 128000,
-        "o1": 200000,
-        "o1-2024-12-17": 200000,
-        "o3": 200000,
-        "o3-mini-2024-12-17": 128000,
-        "o3-mini-2025-01-31": 200000,
-        "o3-mini": 200000,
-        "o4-mini": 200000,
-        "o1-preview": 128000,
-        "gpt-4-turbo": 128000,
-    }
-    if model not in max_context_window_lengths:
-        raise ValueError(f"Model {model} not found in context window lengths")
-    return max_context_window_lengths[model]

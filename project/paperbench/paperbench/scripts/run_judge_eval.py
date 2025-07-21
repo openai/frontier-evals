@@ -9,7 +9,9 @@ from typing import Any
 
 import numpy as np
 import structlog.stdlib
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.oai_completions_turn_completer import (
+    OpenAICompletionsTurnCompleter,
+)
 from preparedness_turn_completer.turn_completer import TurnCompleter
 
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
@@ -179,10 +181,10 @@ async def main(
         output_dir: Directory to write evaluation results to
     """
     model_name = None
-    if isinstance(completer_config, OpenAITurnCompleter.Config):
+    if isinstance(completer_config, OpenAICompletionsTurnCompleter.Config):
         model_name = completer_config.model
     else:
-        raise NotImplementedError("Only OpenAITurnCompleter is supported for now")
+        raise NotImplementedError("Only OpenAICompletionsTurnCompleter is supported for now")
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_dir_prefix = f"{judge_type}_{model_name}" if model_name is not None else judge_type
@@ -310,7 +312,7 @@ if __name__ == "__main__":
 
     completer_config = (
         # TODO: allow user to specify TurnCompleter.Config class
-        OpenAITurnCompleter.Config(
+        OpenAICompletionsTurnCompleter.Config(
             model=args.model,
             reasoning_effort=None if args.reasoning_effort == "none" else args.reasoning_effort,
         )

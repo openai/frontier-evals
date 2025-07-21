@@ -10,7 +10,9 @@ from paperbench.monitor.monitor import MonitorResult
 
 load_dotenv()
 import structlog.stdlib
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.oai_completions_turn_completer import (
+    OpenAICompletionsTurnCompleter,
+)
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from pydantic import BaseModel, model_validator
 
@@ -97,7 +99,7 @@ class JudgeConfig(BaseModel):
     grade_id: int = 0
     overwrite_existing_output: bool = False
     scaffold: str = "simple"
-    completer_config: TurnCompleter.Config = OpenAITurnCompleter.Config(
+    completer_config: TurnCompleter.Config = OpenAICompletionsTurnCompleter.Config(
         model="o3-mini-2025-01-31",
         reasoning_effort="high",
     )

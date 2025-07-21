@@ -4,7 +4,9 @@ import json
 from pathlib import Path
 
 import structlog.stdlib
-from preparedness_turn_completer.oai_turn_completer import OpenAITurnCompleter
+from preparedness_turn_completer.oai_completions_turn_completer import (
+    OpenAICompletionsTurnCompleter,
+)
 from preparedness_turn_completer.turn_completer import TurnCompleter
 
 from paperbench.grade import JudgeOutput, run_judge
@@ -123,7 +125,7 @@ if __name__ == "__main__":
 
     completer_config = (
         # TODO: allow user to specify TurnCompleter.Config class
-        OpenAITurnCompleter.Config(
+        OpenAICompletionsTurnCompleter.Config(
             model=args.model,
             reasoning_effort=None if args.reasoning_effort == "none" else args.reasoning_effort,
         )

@@ -8,7 +8,7 @@ dependencies = [
     "chz",
     "nanoeval",
     "structlog",
-    "tiktoken"
+    "tiktoken",
 ]
 
 [dependency-groups]
@@ -16,6 +16,8 @@ dev = [
     "mypy>=1.15.0",
     "poethepoet>=0.34.0",
     "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-xdist[psutil]>=3.8.0",
     "ruff>=0.11.10",
 ]
 
@@ -54,3 +56,6 @@ typecheck = "mypy preparedness_turn_completer"
 [build-system]
 requires = ["setuptools<78.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

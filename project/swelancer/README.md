@@ -47,8 +47,10 @@ command, below.
 Note, if you do not want to skip pushing the images, then you should remove the
 `--skip-push` argument and provide a `--registry` argument.
 
-Note, we have also already pushed the images to dockerhub,
-[link](https://hub.docker.com/orgs/swelancer/repositories)
+Note, we have also already pushed the images to dockerhub, which can be found
+[here](https://hub.docker.com/orgs/swelancer/repositories).
+
+Note, to run SWE Manager tasks, you must use the "monolith" image. 
 
 ### Environment variables
 
@@ -154,6 +156,32 @@ uv run python swelancer/run_swelancer.py \
   swelancer.solver.computer_runtime.env.pull_from_registry=True \
   swelancer.docker_image_prefix=swelancer/swelancer_x86 \
   swelancer.docker_image_tag=releasev1 \
+  runner.concurrency=4 \
+  runner.experimental_use_multiprocessing=False \
+  runner.enable_slackbot=False \
+  runner.recorder=nanoeval.recorder:dummy_recorder \
+  runner.max_retries=3
+```
+
+To run manager tasks, set `swelancer.task_type=swe_manager`. Currently, 
+swe_manager tasks are only supported using a monolith image, so you must also 
+set `swelancer.use_single_image=True`. Below is an example of how to run 
+`SimpleAgentSolver` on SWE Manager Diamond with gpt-4o for a specific task 
+(e.g. `16921-manager-0`):
+
+```bash
+uv run python swelancer/run_swelancer.py \
+  swelancer.split=diamond \
+  swelancer.task_type=swe_manager \
+  swelancer.taskset="['16921-manager-0']" \
+  swelancer.solver=swelancer.solvers.swelancer_agent.solver:SimpleAgentSolver \
+  swelancer.solver.model=openai/gpt-4o \
+  swelancer.solver.computer_runtime=nanoeval_alcatraz.alcatraz_computer_interface:AlcatrazComputerRuntime \
+  swelancer.solver.computer_runtime.env=alcatraz.clusters.local:LocalConfig \
+  swelancer.solver.computer_runtime.env.pull_from_registry=True \
+  swelancer.docker_image_prefix=swelancer/swelancer_x86 \
+  swelancer.docker_image_tag=releasev1 \
+  swelancer.use_single_image=True \
   runner.concurrency=4 \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \

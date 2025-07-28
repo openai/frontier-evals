@@ -379,7 +379,7 @@ class SWELancerTask(ComputerTask):
 @chz.chz
 class SWELancerEval(PythonCodingEval):
     split: SWELancerSplit = chz.field(default="all", doc="Set of tasks to evaluate on")
-    task_type: SWELancerTaskType = chz.field(default="all", doc="Type of tasks to evaluate on")
+    task_type: SWELancerTaskType = chz.field(default="ic_swe", doc="Type of tasks to evaluate on")
     taskset: list[str] | None = chz.field(default=None)
 
     runs_dir: str = chz.field(default=get_default_runs_dir())
@@ -419,6 +419,30 @@ class SWELancerEval(PythonCodingEval):
         ),
     )
 
+    @chz.validate
+    def _task_type_must_be_specific(self) -> None:
+        """
+        `task_type='all'` was supported in older configs but is now
+        deprecated.  Fail fast so callers see a clear error instead of
+        silently falling back to the default filtering logic.
+        """
+        if self.task_type != "ic_swe" and self.task_type != "swe_manager":
+            raise ValueError("task_type must be either 'ic_swe' or 'swe_manager'.")
+
+    @chz.validate
+    def _manager_requires_single_image(self) -> None:
+        """
+        swe_manager tasks are only supported with the monolith docker
+        image.  Force callers to set `use_single_image=True`; otherwise
+        fail fast with a clear message.
+        """
+        if self.task_type == "swe_manager" and not self.use_single_image:
+            raise ValueError(
+                "SWELancerEval configuration error: "
+                "`use_single_image` must be True when `task_type=='swe_manager'` "
+                "(manager tasks require the monolith image)."
+            )
+
     @override
     def get_name(self) -> str:
         return "SWELancer"
@@ -447,7 +471,7 @@ class SWELancerEval(PythonCodingEval):
         if self.split != "all":
             tasks = tasks[tasks["set"] == self.split]
 
-        if self.task_type != "all":
+        if self.task_type == "ic_swe" or self.task_type == "swe_manager":
             tasks = tasks[tasks["variant"] == self.task_type]
 
         SWEFL_ENV = {

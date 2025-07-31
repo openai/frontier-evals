@@ -22,7 +22,7 @@ you can build task-specific images for each task.
 To build task-specific images (e.g., for issue `28565_1001`):
 
 ```bash
-uv run python scripts/build_images.py 24642_386 --skip-push
+uv run python scripts/build_images.py 28565_1001 --skip-push
 ```
 
 Or omit the issue entirely to build images for all tasks:

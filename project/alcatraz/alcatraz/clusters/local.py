@@ -485,7 +485,7 @@ class BaseAlcatrazCluster(ABC):
         It also removes the INPUT rules done by _ensure_input_block.
         """
         # deletes the FORWARD jump
-        
+
         await async_subprocess_run(
             [
                 "bash",
@@ -1089,9 +1089,9 @@ class BaseAlcatrazCluster(ABC):
             raise RuntimeError(f"No container with id prefix {cid_prefix} in this cluster")
 
         await self._populate_ctr_chain(container)
-        
+
         await self._ensure_input_block(container)
-        
+
         try:
             await self._check_shell_command(
                 "python -c \"import urllib.request; urllib.request.urlopen('http://example.com', timeout=5)\""
@@ -1109,10 +1109,10 @@ class BaseAlcatrazCluster(ABC):
         # The function _remove_firewall_stub currently just clears and deletes this chain entirely, so modifying what happens inside of the chain is okay.
         # If something major is changed, like adding a jump to a new chain, make sure things are properly cleaned up by _remove_firewall_stub.
         await asyncio.to_thread(container.reload)
-        
+
         cid = container.id[:12]
         attrs = container.attrs
-        
+
         ctr_ip = next(iter(container.attrs["NetworkSettings"]["Networks"].values()))["IPAddress"]   # e.g. 172.18.0.2
         net_config = await self.get_container_net_config()
         subnet = net_config["subnet"]

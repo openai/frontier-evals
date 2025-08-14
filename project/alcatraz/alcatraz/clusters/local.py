@@ -434,6 +434,97 @@ class BaseAlcatrazCluster(ABC):
             stack.__exit__(*sys.exc_info())
             raise
 
+    async def _install_firewall_stub(self, container: docker.models.containers.Container) -> None:
+        """
+        On every container installation, we add an initially empty chain (named CTR-<cid>).
+        Then, we add a jump that only sends packets on the forward chain from this specific container to that currently empty chain.
+        This allows us to implement container specific internet blocking rules (if desired) without impacting parallel/future containers.
+        Both are tagged with --comment "alcatraz_block" so we can find/remove them later.
+        Important note: This does NOT change the internet perms of the container, it only allows us to create unique ones later.
+        """
+        # Dont forget to update _remove_firewall_stub when modifying this!!
+        container.reload()
+        cid = container.id[:12]
+        sandbox_key = container.attrs["NetworkSettings"].get("SandboxKey", "")
+        veth = Path(sandbox_key).name
+        ctr_ip = next(iter(container.attrs["NetworkSettings"]["Networks"].values()))["IPAddress"]   # e.g. 172.18.0.2
+        net_info  = next(iter(container.attrs["NetworkSettings"]["Networks"].values()))
+        bridge_id = net_info["NetworkID"][:12]
+        bridge_if = f"br-{bridge_id}"
+
+        # Make a unique chain for the container -- atm silences all errors (such that if chain already exists it gets cleared), but TODO: separate errors
+        await async_subprocess_run(
+            ["bash", "-c", f"iptables -N CTR-{cid} 2>/dev/null || true"]
+        )
+        await async_subprocess_run(["sudo", "iptables", "-F", f"CTR-{cid}"])
+
+        # Insert jump from forward to this new container specific chain
+        await async_subprocess_run(
+            [
+                "bash",
+                "-c",
+                (
+                    f"iptables -C DOCKER-USER -i {bridge_if} -s {ctr_ip} -j CTR-{cid} "
+                    f"-m comment --comment alcatraz_block 2>/dev/null || "
+                    f"iptables -I DOCKER-USER 1 -i {bridge_if} -s {ctr_ip} -j CTR-{cid} "
+                    f"-m comment --comment alcatraz_block"
+                ),
+            ]
+        )
+        logger.info("Added jump for veth %s --> CTR-%s", veth, cid)
+        # remove container specific jumps for host cleanliness
+        self._exit_stack.callback(
+            lambda cid=cid, veth=veth, bridge_if=bridge_if, ctr_ip=ctr_ip: asyncio.create_task(self._remove_firewall_stub(cid, veth, bridge_if, ctr_ip))
+        )
+
+    async def _remove_firewall_stub(self, cid: str, veth: str, bridge_if: str, ctr_ip: str) -> None:
+        """
+        Reverse the work of _install_firewall_stub **and** _ensure_input_block.
+        If either of those change without mirrored updates here, proper cleanup can't happen.
+        This function deletes the FORWARD jump and deletes the container specific chain (both done by _install_firewall_stub)
+        It also removes the INPUT rules done by _ensure_input_block.
+        """
+        # deletes the FORWARD jump
+        
+        await async_subprocess_run(
+            [
+                "bash",
+                "-c",
+                (
+                    f"iptables -D DOCKER-USER -i {bridge_if} -s {ctr_ip} -j CTR-{cid} "
+                    f"-m comment --comment alcatraz_block 2>/dev/null || true"
+                ),
+            ]
+        )
+
+        # clears and deletes the container specific chain
+        await async_subprocess_run(["bash", "-c", f"iptables -F CTR-{cid} 2>/dev/null || true"])
+        await async_subprocess_run(["bash", "-c", f"iptables -X CTR-{cid} 2>/dev/null || true"])
+
+        # deletes the container specific INPUT rules (order independent but exact rule dependent -- must be exactly what is added in _ensure_input_block)
+        await async_subprocess_run(
+            [
+                "bash",
+                "-c",
+                (
+                    f"iptables -D INPUT -i {veth} -m conntrack --ctstate RELATED,ESTABLISHED "
+                    f"-j ACCEPT -m comment --comment alcatraz_block 2>/dev/null || true"
+                ),
+            ]
+        )
+        await async_subprocess_run(
+            [
+                "bash",
+                "-c",
+                (
+                    f"iptables -D INPUT -i {veth} -j REJECT "
+                    f"-m comment --comment alcatraz_block 2>/dev/null || true"
+                ),
+            ]
+        )
+
+        logger.info("Removed firewall stub and INPUT rules for veth %s → CTR-%s", veth, cid)
+
     async def _pull_image(self, i: str) -> None:
         # Ideally, we would only retry if not docker.errors.NotFound, to crash quickly when the image is misspelled.
         # However, since this code is also used by all workers in the cluster, we can overload ACR. This often
@@ -596,6 +687,9 @@ class BaseAlcatrazCluster(ABC):
                 shm_size=self.shm_size if i == 0 else None,
                 mem_limit=self.mem_limit if i == 0 else None,
             )
+
+            await self._install_firewall_stub(ctr)  # this doesn't yet restrict container access, just allows future places to add container specific restrictions
+
             self.containers.append(ctr)
 
         if self.docker_compose_yaml:
@@ -979,6 +1073,105 @@ class BaseAlcatrazCluster(ABC):
             "gateway": gateway,
             "vm_private_ip": vm_private_ip,
         }
+
+    async def add_container_network_block_via_ip_tables(self, cid_prefix: str) -> None:
+        """
+        Instead of the universal blocks added by add_weak_network_block_via_ip_tables, this function distinguishes between containers.
+        Specifically, we add on startup a jump chain from DOCKER-USER to a unqiue container ID chain.
+        Then, we add the same rules added to DOCKER-USER in the below add_weak_network_block_via_ip_tables, but to this specific chain.
+        This way internet blocking rules apply only to this container, and not parallel/future containers.
+        The same logic applies for INPUT-chain rules (instead of jumping to the container specific chain we add container specific rules directly to the INPUT-chain)
+        """
+        # Find the specific container to apply the rules to its chain, and then apply them
+        try:
+            container = next(c for c in self.containers if c.id.startswith(cid_prefix))
+        except StopIteration:
+            raise RuntimeError(f"No container with id prefix {cid_prefix} in this cluster")
+
+        await self._populate_ctr_chain(container)
+        
+        await self._ensure_input_block(container)
+        
+        try:
+            await self._check_shell_command(
+                "python -c \"import urllib.request; urllib.request.urlopen('http://example.com', timeout=5)\""
+            )
+        except Exception:
+            pass
+        else:
+            assert False, "Setting up network block with IP tables failed"
+
+    async def _populate_ctr_chain(self, container: docker.models.containers.Container) -> None:
+        """
+        Add the three rules to the container specific chain.
+        """
+        # Note: even if changed, _remove_firewall_stub does not necessarily need to be updated.
+        # The function _remove_firewall_stub currently just clears and deletes this chain entirely, so modifying what happens inside of the chain is okay.
+        # If something major is changed, like adding a jump to a new chain, make sure things are properly cleaned up by _remove_firewall_stub.
+        await asyncio.to_thread(container.reload)
+        
+        cid = container.id[:12]
+        attrs = container.attrs
+        
+        ctr_ip = next(iter(container.attrs["NetworkSettings"]["Networks"].values()))["IPAddress"]   # e.g. 172.18.0.2
+        net_config = await self.get_container_net_config()
+        subnet = net_config["subnet"]
+
+        # Allow already established connections into the container
+        await async_subprocess_run(
+            ["bash", "-c",
+             f"iptables -C CTR-{cid} -m conntrack --ctstate RELATED,ESTABLISHED "
+             f"-j ACCEPT -m comment --comment alcatraz_block 2>/dev/null || "
+             f"iptables -A CTR-{cid} -m conntrack --ctstate RELATED,ESTABLISHED "
+             f"-j ACCEPT -m comment --comment alcatraz_block"]
+        )
+
+        # Allow container to communicate within the Docker network (ctr -> ctr2)
+        await async_subprocess_run(
+            ["bash", "-c",
+             f"iptables -C CTR-{cid} -s {subnet} -d {subnet} -j ACCEPT "
+             f"-m comment --comment alcatraz_block 2>/dev/null || "
+             f"iptables -A CTR-{cid} -s {subnet} -d {subnet} -j ACCEPT "
+             f"-m comment --comment alcatraz_block"]
+        )
+
+        # Reject all other outgoing connections from the container to the world
+        await async_subprocess_run(
+            ["bash", "-c",
+             f"iptables -C CTR-{cid} -s {ctr_ip} -j REJECT "
+             f"-m comment --comment alcatraz_block 2>/dev/null || "
+             f"iptables -A CTR-{cid} -s {ctr_ip} -j REJECT "
+             f"-m comment --comment alcatraz_block"]
+        )
+
+    async def _ensure_input_block(self, container: docker.models.containers.Container) -> None:
+        """
+        This adds two rules. One allows preexisting connections (ctr --> host okay if host initiated them). This is container specific -- we match by the veth as usual.
+        The second rule is also a container specific rule (matching the veth) which prevents the container from accessing the host.
+        """
+        # Important note: dont forget to update _remove_firewall_stub when modifying this!!
+        # These rules need to be cleaned up on container shutdown, which is handled by _remove_firewall_stub
+        # If the added rules are modified, the cleanup needs to be edited too.
+        cid  = container.id[:12]
+        veth = Path(container.attrs["NetworkSettings"]["SandboxKey"]).name
+
+        # Allow preexisting connections (so ctr -> host comms are allowed if the host initiated them). This is also separated by container.
+        await async_subprocess_run(
+            ["bash", "-c",
+             f"iptables -C INPUT -i {veth} -m conntrack --ctstate RELATED,ESTABLISHED "
+             f"-m comment --comment alcatraz_block -j ACCEPT 2>/dev/null || "
+             f"iptables -I INPUT 1 -i {veth} -m conntrack --ctstate RELATED,ESTABLISHED "
+             f"-m comment --comment alcatraz_block -j ACCEPT"]
+        )
+
+        # Prevent container from accessing host. (INPUT = host input)
+        await async_subprocess_run(
+            ["bash", "-c",
+             f"iptables -C INPUT -i {veth} -j REJECT "
+             f"-m comment --comment alcatraz_block 2>/dev/null || "
+             f"iptables -I INPUT 2 -i {veth} -j REJECT "
+             f"-m comment --comment alcatraz_block"]
+        )
 
     async def add_weak_network_block_via_ip_tables(self) -> None:
         """

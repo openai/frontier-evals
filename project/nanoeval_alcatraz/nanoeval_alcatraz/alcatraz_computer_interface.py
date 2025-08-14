@@ -45,7 +45,10 @@ class BaseAlcatrazComputerInterface(JupyterComputerInterface, ABC):
         pass
 
     async def disable_internet(self) -> None:
-        await self.cluster.add_weak_network_block_via_ip_tables()
+        res = await self.send_shell_command("hostname")
+        cid_prefix = res.output.decode().strip()
+
+        await self.cluster.add_container_network_block_via_ip_tables(cid_prefix)
 
         # Verify
         logger.info("Post-setup network access disabled")

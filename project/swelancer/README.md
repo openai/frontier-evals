@@ -148,7 +148,7 @@ gpt-4o:
 uv run python swelancer/run_swelancer.py \
   swelancer.split=diamond \
   swelancer.task_type=ic_swe \
-  swelancer.taskset="['39848_1045']" \
+  swelancer.taskset="['28565_1001']" \
   swelancer.solver=swelancer.solvers.swelancer_agent.solver:SimpleAgentSolver \
   swelancer.solver.model=openai/gpt-4o \
   swelancer.solver.computer_runtime=nanoeval_alcatraz.alcatraz_computer_interface:AlcatrazComputerRuntime \

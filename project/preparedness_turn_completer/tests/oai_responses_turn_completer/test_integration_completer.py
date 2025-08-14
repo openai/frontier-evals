@@ -30,7 +30,6 @@ def test_async_completion_integration(model: str) -> None:
     )
     # then
     assert completion.output_messages
-    assert isinstance(completion.response_id, str)
     assert completion.usage is not None
     assert completion.output_messages[0].role == "assistant"
 
@@ -48,13 +47,13 @@ def test_structured_output(model: str) -> None:
     will convert it to a strict JSON Schema under the hood. :contentReference[oaicite:0]{index=0}
     """
     # given
-    completer = OpenAIResponsesTurnCompleter(model=model)
+    completer = OpenAIResponsesTurnCompleter(model=model, text_format=FooBarSchema)
     conversation: TurnCompleter.RuntimeConversation = [
         {"role": "user", "content": "Please reply with a valid object"}
     ]
 
     # when
-    completion = asyncio.run(completer.async_completion(conversation, text_format=FooBarSchema))
+    completion = asyncio.run(completer.async_completion(conversation))
 
     # then
     assert completion.output_messages, "no output messages"
@@ -74,17 +73,14 @@ def test_tool_web_search_passes_through(model: str) -> None:
     and still returns an assistant message.
     """
     # given
-    completer = OpenAIResponsesTurnCompleter(model=model)
+    completer = OpenAIResponsesTurnCompleter(
+        model=model, tools=[{"type": "web_search_preview", "search_context_size": "low"}]
+    )
     conversation: TurnCompleter.RuntimeConversation = [
         {"role": "user", "content": "Who won the 2024 Tour de France?"}
     ]
     # when
-    completion = asyncio.run(
-        completer.async_completion(
-            conversation,
-            tools=[{"type": "web_search_preview", "search_context_size": "low"}],
-        )
-    )
+    completion = asyncio.run(completer.async_completion(conversation))
     # then
     assert completion.output_messages, "no messages at all"
     last = completion.output_messages[-1]
@@ -119,35 +115,6 @@ def test_multimodal_image_input(model: str) -> None:
     desc = msgs[0].content
     assert isinstance(desc, str) and len(desc.split()) > 3
     assert "cat" in desc.lower() or "kitten" in desc.lower()
-
-
-@pytest.mark.parametrize("model", MODELS_BASE)
-def test_stateful_prev_response_id(model: str) -> None:
-    """
-    Validate that passing previous_response_id links the calls.
-    """
-    completer = OpenAIResponsesTurnCompleter(model=model)
-    conv_first_turn: TurnCompleter.RuntimeConversation = [
-        {"role": "user", "content": "Tell me a riddle."}
-    ]
-    first_response = asyncio.run(completer.async_completion(conv_first_turn))
-    first_response_id = first_response.response_id
-    assert isinstance(first_response_id, str)
-
-    conv_second_turn = conv_first_turn + [
-        {"role": "assistant", "content": first_response.output_messages[0].content}
-    ]
-    conv_second_turn.append({"role": "user", "content": "Now another one, please."})
-    second_response = asyncio.run(
-        completer.async_completion(
-            conv_second_turn,
-            previous_response_id=first_response_id,
-        )
-    )
-    # second.response_id must differ from first
-    second_response_id = second_response.response_id
-    assert second_response_id != first_response_id
-    assert second_response.output_messages
 
 
 def test_sync_completion_raises() -> None:

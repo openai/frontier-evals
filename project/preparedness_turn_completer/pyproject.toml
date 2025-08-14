@@ -6,7 +6,6 @@ dependencies = [
     "openai",
     "tenacity",
     "chz",
-    "nanoeval",
     "structlog",
     "tiktoken",
 ]
@@ -25,11 +24,7 @@ dev = [
 packages = ["preparedness_turn_completer"]
 
 [tool.pyright]
-extraPaths = ["../nanoeval"]
 typeCheckingMode = "off"                                   # we use mypy
-
-[tool.uv.sources]
-nanoeval = { path = "../nanoeval", editable = true }
 
 [tool.mypy]
 strict = true
@@ -43,11 +38,6 @@ disable_error_code = ["import-untyped"]
 # allow_incomplete_defs = true
 # allow_untyped_defs = true
 # allow_any_generics = true
-mypy_path = ["../nanoeval",]
-[[tool.mypy.overrides]]
-module = ["nanoeval.*",]
-ignore_errors = true
-warn_unused_ignores = false
 
 [tool.poe.tasks]
 lint = "ruff check --fix"

@@ -1,6 +1,7 @@
 import json
+import os
 import uuid
-from typing import Literal
+from typing import Iterable, Literal
 
 import structlog.stdlib
 from openai.types.chat import (
@@ -8,7 +9,9 @@ from openai.types.chat import (
     ChatCompletionMessage,
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCall,
+    ChatCompletionMessageToolCallUnionParam,
 )
+from openai.types.chat.chat_completion_assistant_message_param import ContentArrayOfContentPart
 from openai.types.chat.chat_completion_message import Annotation as CompletionAnnotation
 from openai.types.chat.chat_completion_message import (
     AnnotationURLCitation as CompletionAnnotationURLCitation,
@@ -19,6 +22,7 @@ from openai.types.responses import (
     Response,
     ResponseCodeInterpreterToolCall,
     ResponseComputerToolCall,
+    ResponseCustomToolCallParam,
     ResponseFileSearchToolCall,
     ResponseFunctionToolCall,
     ResponseFunctionToolCallParam,
@@ -53,7 +57,10 @@ from openai.types.responses.response_output_text import (
 from preparedness_turn_completer.oai_responses_turn_completer.type_helpers import (
     ChatCompletionContent,
     is_assistant_message,
+    is_content_array_list,
     is_content_part_list,
+    is_custom_tool_call_param,
+    is_function_tool_call_param,
     is_text_parts_list,
     is_tool_message,
 )
@@ -136,17 +143,17 @@ def _assistant_completion_to_response_input_items(
     content = message["content"]
     role: Literal["assistant"] = "assistant"
     input_items: list[ResponseInputItemParam] = []
-    assert isinstance(content, str) or is_content_part_list(content), (
-        f"Expected content to be str or text‐parts, got {content!r}"
-    )
     assert is_assistant_message(message)
-    input_items.append(
-        EasyInputMessageParam(
-            content=_chat_completion_content_to_response_input_content(content),
-            role=role,
-            type="message",
-        )
+    assert isinstance(content, str) or is_content_array_list(content), (
+        f"Expected content to be str or list of content arrays, got {content!r}"
     )
+    if isinstance(content, str):
+        input_items.append(EasyInputMessageParam(content=content, role=role, type="message"))
+    elif is_content_array_list(content):
+        input_items.extend(_content_array_list_to_response_input_items(content))
+    else:
+        raise ValueError(f"Expected content to be str or list of content arrays, got {content!r}")
+
     refusal = message.get("refusal", None)
     if isinstance(refusal, str):
         input_items.append(
@@ -160,16 +167,59 @@ def _assistant_completion_to_response_input_items(
         )
     if "tool_calls" in message:
         tool_call_input_items = [
-            ResponseFunctionToolCallParam(
-                call_id=tool_call["id"],
-                name=tool_call["function"]["name"],
-                type="function_call",
-                arguments=tool_call["function"]["arguments"],
-            )
+            _message_tool_call_to_response_tool_call(tool_call)
             for tool_call in message["tool_calls"]
         ]
         input_items.extend(tool_call_input_items)
     return input_items
+
+
+def _message_tool_call_to_response_tool_call(
+    message_tool_call: ChatCompletionMessageToolCallUnionParam,
+) -> ResponseFunctionToolCallParam | ResponseCustomToolCallParam:
+    if is_function_tool_call_param(message_tool_call):
+        return ResponseFunctionToolCallParam(
+            call_id=message_tool_call["id"],
+            name=message_tool_call["function"]["name"],
+            type="function_call",
+            arguments=message_tool_call["function"]["arguments"],
+        )
+    elif is_custom_tool_call_param(message_tool_call):
+        return ResponseCustomToolCallParam(
+            call_id=message_tool_call["id"],
+            input=message_tool_call["custom"]["input"],
+            name=message_tool_call["custom"]["name"],
+            type="custom_tool_call",
+        )
+    else:
+        raise ValueError(f"Unknown tool call type: {type(message_tool_call)}")
+
+
+def _content_array_list_to_response_input_items(
+    content_array_list: Iterable[ContentArrayOfContentPart],
+) -> list[ResponseInputItemParam]:
+    response_input_items: list[ResponseInputItemParam] = []
+
+    for array in content_array_list:
+        if array["type"] == "text":
+            response_input_items.append(
+                EasyInputMessageParam(
+                    content=array["text"],
+                    role="assistant",
+                )
+            )
+        elif array["type"] == "refusal":
+            response_input_items.append(
+                ResponseOutputMessageParam(
+                    content=[ResponseOutputRefusalParam(refusal=array["refusal"], type="refusal")],
+                    id=uuid.uuid4().hex,
+                    role="assistant",
+                    status="completed",
+                    type="message",
+                )
+            )
+
+    return response_input_items
 
 
 def _tool_completion_to_response_input_items(
@@ -257,16 +307,7 @@ def convert_response_to_completion_messages(response: Response) -> list[ChatComp
             completion_messages.append(
                 _response_function_tool_call_to_chat_completion_message(response_item)
             )
-        elif isinstance(response_item, ResponseFunctionWebSearch):
-            # We might want to just return the JSON representation of this data (as we were before)
-            # instead of returning a message marked with "<| Web Search tool call: 'query' |>"
-            # In general, we may want to extend the TurnCompleter.Completion class to include a
-            # general tool outputs field to handle such cases.
-            completion_messages.append(
-                _response_function_web_search_to_chat_completion_message(response_item)
-            )
         elif isinstance(response_item, ResponseReasoningItem):
-            # Similar to above, we may want to extend the TurnCompleter.Completion class to include a field for reasoning strings in the case of ResponseReasoningItems.
             completion_messages.append(
                 _response_reasoning_item_to_chat_completion_message(response_item)
             )
@@ -274,6 +315,7 @@ def convert_response_to_completion_messages(response: Response) -> list[ChatComp
             response_item,
             (
                 ResponseFileSearchToolCall,
+                ResponseFunctionWebSearch,
                 ResponseComputerToolCall,
                 ImageGenerationCall,
                 ResponseCodeInterpreterToolCall,
@@ -324,9 +366,12 @@ def _response_annotations_to_completion_annotations(
     completion_annotations = []
     for annotation in response_annotations:
         if not isinstance(annotation, ResponsesAnnotationURLCitation):
-            logger.warning(
-                f"Only Responses AnnotationURLCitation can be ported to Completions API, got {annotation!r}. Skipping"
-            )
+            if os.getenv("TC_DISABLE_CONVERTER_WARNINGS", "false").lower() != "true":
+                logger.warning(
+                    f"Only Responses AnnotationURLCitation can be ported to Completions API, got {annotation!r}. Skipping"
+                    " You may disable this warning by setting the environment variable"
+                    " `TC_DISABLE_CONVERTER_WARNINGS` to `true`."
+                )
             continue
         completion_annotations.append(
             CompletionAnnotation(
@@ -357,29 +402,6 @@ def _response_function_tool_call_to_chat_completion_message(
     )
 
 
-def _response_function_web_search_to_chat_completion_message(
-    response_item: ResponseFunctionWebSearch,
-) -> ChatCompletionMessage:
-    if hasattr(response_item, "action") and response_item.action:
-        if hasattr(response_item.action, "query"):
-            search_query = response_item.action.query
-        elif isinstance(response_item.action, dict):
-            search_query = response_item.action.get("query", "unknown query")
-        else:
-            search_query = "unknown query"
-    elif hasattr(response_item, "query"):
-        search_query = response_item.query
-    else:
-        search_query = "unknown query"
-
-    placeholder_content = f"<| Web Search tool call: '{search_query}' |>"
-
-    return ChatCompletionMessage(
-        role="assistant",
-        content=placeholder_content,
-    )
-
-
 def _response_reasoning_item_to_chat_completion_message(
     response_item: ResponseReasoningItem,
 ) -> ChatCompletionMessage:
@@ -394,6 +416,7 @@ def _response_reasoning_item_to_chat_completion_message(
 def _unsupported_response_to_chat_completion_message(
     response_item: ResponseFileSearchToolCall
     | ResponseComputerToolCall
+    | ResponseFunctionWebSearch
     | ImageGenerationCall
     | ResponseCodeInterpreterToolCall
     | LocalShellCall
@@ -401,10 +424,13 @@ def _unsupported_response_to_chat_completion_message(
     | McpListTools
     | McpApprovalRequest,
 ) -> ChatCompletionMessage:
-    logger.warning(
-        f"Response of type {type(response_item)} is not natively supported in ChatCompletionMessage."
-        " Returning a JSON string representation of the response item in `content`."
-    )
+    if os.getenv("TC_DISABLE_CONVERTER_WARNINGS", "false").lower() != "true":
+        logger.warning(
+            f"Response of type {type(response_item)} is not natively supported in ChatCompletionMessage."
+            " Returning a JSON string representation of the response item in `content`."
+            " You may disable this warning by setting the environment variable"
+            " `TC_DISABLE_CONVERTER_WARNINGS` to `true`."
+        )
     return ChatCompletionMessage(
         content=json.dumps(response_item.model_dump(exclude_none=True)), role="assistant"
     )

@@ -1,37 +1,53 @@
 from __future__ import annotations
 
-import asyncio
 import functools
-import logging
-from typing import Any, Unpack
+from typing import Any, Iterable, Literal, Unpack
 
 import openai
 import structlog
-import tenacity
 import tiktoken
-from openai.types.chat import ChatCompletion
+from openai import NOT_GIVEN, NotGiven
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionToolChoiceOptionParam,
+    ChatCompletionToolParam,
+)
 from openai.types.completion_usage import CompletionUsage
 from preparedness_turn_completer.turn_completer import TurnCompleter
-from preparedness_turn_completer.utils import get_model_context_window_length
-from pydantic import BaseModel
-
-try:
-    from nanoeval.recorder import get_recorder
-except ImportError:
-    from nanoeval.recorder_protocol import RecorderProtocol
-
-    def get_recorder() -> RecorderProtocol:
-        raise LookupError("Recorder not available")
-
+from preparedness_turn_completer.utils import (
+    DEFAULT_RETRY_CONFIG,
+    RetryConfig,
+    get_model_context_window_length,
+    warn_about_non_empty_params,
+)
+from pydantic import BaseModel, ConfigDict, field_validator
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
 
 class OpenAICompletionsTurnCompleter(TurnCompleter):
-    def __init__(self, model: str, reasoning_effort: str | None = None):
-        self.model: str = model
-        self.reasoning_effort: str | None = reasoning_effort
+    def __init__(
+        self,
+        model: str,
+        reasoning_effort: Literal["low", "medium", "high"] | None | NotGiven = NOT_GIVEN,
+        response_format: type[BaseModel] | NotGiven = NOT_GIVEN,
+        temperature: float | None | NotGiven = NOT_GIVEN,
+        max_tokens: int | None | NotGiven = NOT_GIVEN,
+        top_p: float | None | NotGiven = NOT_GIVEN,
+        tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN,
+        tool_choice: ChatCompletionToolChoiceOptionParam | NotGiven = NOT_GIVEN,
+        retry_config: RetryConfig = DEFAULT_RETRY_CONFIG,
+    ):
+        self.model = model
+        self.reasoning_effort = reasoning_effort
+        self.response_format = response_format
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.top_p = top_p
+        self.tools = tools
+        self.tool_choice = tool_choice
         self.encoding_name: str
+        self.retry_config = retry_config
         try:
             self.encoding_name = tiktoken.encoding_name_for_model(model)
         except KeyError:
@@ -41,18 +57,49 @@ class OpenAICompletionsTurnCompleter(TurnCompleter):
         self.n_ctx: int = get_model_context_window_length(model)
 
     class Config(TurnCompleter.Config):
+        """
+        Completion configuration. Non-exhaustive.
+        Add more configuration options as needed, in a backwards-compatible way.
+        """
+
+        # needed for NotGiven type hint
+        model_config = ConfigDict(
+            arbitrary_types_allowed=True,
+            json_encoders={NotGiven: lambda v: "NOT_GIVEN"},
+        )
+
         model: str
-        reasoning_effort: str | None = None
+        reasoning_effort: Literal["low", "medium", "high"] | None | NotGiven = NOT_GIVEN
+        response_format: type[BaseModel] | NotGiven = NOT_GIVEN
+        temperature: float | None | NotGiven = NOT_GIVEN
+        max_tokens: int | None | NotGiven = NOT_GIVEN
+        top_p: float | None | NotGiven = NOT_GIVEN
+        tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN
+        tool_choice: ChatCompletionToolChoiceOptionParam | NotGiven = NOT_GIVEN
+        retry_config: RetryConfig = DEFAULT_RETRY_CONFIG
 
         def build(self) -> OpenAICompletionsTurnCompleter:
             return OpenAICompletionsTurnCompleter(
                 model=self.model,
                 reasoning_effort=self.reasoning_effort,
+                response_format=self.response_format,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                top_p=self.top_p,
+                tools=self.tools,
+                tool_choice=self.tool_choice,
+                retry_config=self.retry_config,
             )
 
-    class Params(TurnCompleter.Params, total=False):
-        response_format: type[BaseModel] | None
-        temperature: float | None
+        @field_validator("*", mode="before")
+        @classmethod
+        def _decode_not_given(cls: type[OpenAICompletionsTurnCompleter.Config], v: Any) -> Any:
+            """
+            Turn the string "NOT_GIVEN" back into our sentinel before validation.
+            """
+            if v == "NOT_GIVEN":
+                return NOT_GIVEN
+            return v
 
     class Completion(TurnCompleter.Completion):
         usage: CompletionUsage | None = None
@@ -61,98 +108,36 @@ class OpenAICompletionsTurnCompleter(TurnCompleter):
     def _client(self) -> openai.AsyncClient:
         return openai.AsyncClient()
 
-    def _handle_kwargs(
-        self,
-        params: OpenAICompletionsTurnCompleter.Params,
-        conversation: TurnCompleter.RuntimeConversation,
-    ) -> dict[str, Any]:
-        if "messages" in params:
-            logger.warning("Found `messages` key in params, will use `conversation` kwarg instead")
-        if "reasoning_effort" in params:
-            logger.warning(
-                "Found `reasoning_effort` key in params,"
-                f" will use self.reasoning_effort={self.reasoning_effort} instead"
-            )
-        if "model" in params:
-            logger.warning(f"Found `model` key in params, will use self.model={self.model} instead")
-        merged_kwargs = {
-            **params,
-            "model": self.model,
-            "messages": conversation,
-        }
-        if self.reasoning_effort is not None:
-            merged_kwargs["reasoning_effort"] = self.reasoning_effort
-        return merged_kwargs
-
     def completion(
         self,
         conversation: TurnCompleter.RuntimeConversation,
-        **params: Unpack[OpenAICompletionsTurnCompleter.Params],
+        **params: Unpack[TurnCompleter.Params],
     ) -> OpenAICompletionsTurnCompleter.Completion:
         raise NotImplementedError("Not implemented, use async_completion instead")
 
     async def async_completion(
         self,
         conversation: TurnCompleter.RuntimeConversation,
-        **params: Unpack[OpenAICompletionsTurnCompleter.Params],
+        **params: Unpack[TurnCompleter.Params],
     ) -> OpenAICompletionsTurnCompleter.Completion:
-        # possibly override params such as `model`, `reasoning_effort`, and `messages`
-        kwargs = self._handle_kwargs(params, conversation)
-        completion = await oai_create(
-            self._client,
-            **kwargs,
-        )
+        warn_about_non_empty_params(self, **params)
+
+        async for attempt in self.retry_config.build():
+            with attempt:
+                completion = await self._client.chat.completions.parse(
+                    model=self.model,
+                    messages=conversation,
+                    reasoning_effort=self.reasoning_effort,
+                    response_format=self.response_format,
+                    temperature=self.temperature,
+                    max_tokens=self.max_tokens,
+                    top_p=self.top_p,
+                    tools=self.tools,
+                    tool_choice=self.tool_choice,
+                )
         assert isinstance(completion, ChatCompletion)
         return OpenAICompletionsTurnCompleter.Completion(
             input_conversation=conversation,
             output_messages=[completion.choices[0].message],
             usage=completion.usage,
         )
-
-
-OPENAI_TIMEOUT_EXCEPTIONS = (
-    openai.RateLimitError,
-    openai.APIConnectionError,
-    openai.APITimeoutError,
-    openai.InternalServerError,
-)
-
-
-# TODO: make this configurable
-@tenacity.retry(
-    wait=tenacity.wait_random_exponential(min=1, max=300),  # Max wait time of 5 minutes
-    stop=tenacity.stop_after_delay(3600 * 2),  # Retry for up to 2 hours
-    retry=tenacity.retry_if_exception_type(OPENAI_TIMEOUT_EXCEPTIONS),
-    before_sleep=(
-        tenacity.before_sleep_log(logger._logger, logging.WARNING) if logger._logger else None
-    ),
-    reraise=True,
-)
-async def oai_create(client: openai.AsyncClient, *args: Any, **kwargs: Any) -> ChatCompletion:
-    # TODO: this is messy - in most cases `parse` seems to be a superset of features in `create` so we use that,
-    # but have found basic-agent with o1 crashing on this when we use `parse`. Something related to tool-use?
-    try:
-        res = await client.beta.chat.completions.parse(*args, **kwargs)
-    except ValueError as e:
-        # can't fallback to `create` if we're using a BaseModel for response_format
-        response_format_kwarg = kwargs.get("response_format", None)
-        if (
-            response_format_kwarg is not None
-            and isinstance(response_format_kwarg, type)
-            and issubclass(response_format_kwarg, BaseModel)
-        ):
-            raise e
-        res = await client.chat.completions.create(*args, **kwargs)
-
-    try:
-        # Attempt to record the sampling
-        await asyncio.to_thread(
-            get_recorder().record_sampling,
-            prompt=kwargs["messages"],
-            sampled=res.to_dict(),
-        )
-    except LookupError:
-        # Recorder context variable is not set, skip recording
-        pass
-
-    return res

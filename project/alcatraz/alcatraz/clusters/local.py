@@ -436,11 +436,11 @@ class BaseAlcatrazCluster(ABC):
 
     async def _install_firewall_stub(self, container: docker.models.containers.Container) -> None:
         """
-        On every container installation, we add an initially empty chain (named CTR-<cid>).
+        When we call disable_internet, we add an initially empty chain (named CTR-<cid>).
         Then, we add a jump that only sends packets on the forward chain from this specific container to that currently empty chain.
         This allows us to implement container specific internet blocking rules (if desired) without impacting parallel/future containers.
         Both are tagged with --comment "alcatraz_block" so we can find/remove them later.
-        Important note: This does NOT change the internet perms of the container, it only allows us to create unique ones later.
+        Important note: This function does NOT change the internet perms of the container, it only allows us to create unique ones later.
         """
         # Dont forget to update _remove_firewall_stub when modifying this!!
         container.reload()
@@ -688,7 +688,6 @@ class BaseAlcatrazCluster(ABC):
                 mem_limit=self.mem_limit if i == 0 else None,
             )
 
-            await self._install_firewall_stub(ctr)  # this doesn't yet restrict container access, just allows future places to add container specific restrictions
 
             self.containers.append(ctr)
 
@@ -772,6 +771,15 @@ class BaseAlcatrazCluster(ABC):
             return [str(c.name) for c in self.containers]
         except AttributeError:  # self.containers not set since __aenter__ hasn't happened yet.
             return []
+
+    async def get_container_by_id_prefix(self, cid_prefix: str) -> Container:
+        """Where `cid_prefix` is the first 12 characters of the container ID."""
+        try:
+            container = next(c for c in self.containers if c.id.startswith(cid_prefix))
+        except StopIteration:
+            raise RuntimeError(f"No container with id prefix {cid_prefix} in this cluster")
+
+        return container
 
     async def send_shell_command(
         self,
@@ -1077,16 +1085,15 @@ class BaseAlcatrazCluster(ABC):
     async def add_container_network_block_via_ip_tables(self, cid_prefix: str) -> None:
         """
         Instead of the universal blocks added by add_weak_network_block_via_ip_tables, this function distinguishes between containers.
-        Specifically, we add on startup a jump chain from DOCKER-USER to a unqiue container ID chain.
+        Specifically, we add a jump chain from DOCKER-USER to a unqiue container ID chain.
         Then, we add the same rules added to DOCKER-USER in the below add_weak_network_block_via_ip_tables, but to this specific chain.
         This way internet blocking rules apply only to this container, and not parallel/future containers.
         The same logic applies for INPUT-chain rules (instead of jumping to the container specific chain we add container specific rules directly to the INPUT-chain)
         """
         # Find the specific container to apply the rules to its chain, and then apply them
-        try:
-            container = next(c for c in self.containers if c.id.startswith(cid_prefix))
-        except StopIteration:
-            raise RuntimeError(f"No container with id prefix {cid_prefix} in this cluster")
+        container = await self.get_container_by_id_prefix(cid_prefix)
+        assert await self.is_user_root(), "You must run as root to disable internet"
+        await self._install_firewall_stub(container)
 
         await self._populate_ctr_chain(container)
 
@@ -1100,6 +1107,12 @@ class BaseAlcatrazCluster(ABC):
             pass
         else:
             assert False, "Setting up network block with IP tables failed"
+
+    async def is_user_root(self) -> bool:
+        geteuid = getattr(os, "geteuid", None)
+        if callable(geteuid):
+            return await asyncio.to_thread(lambda: geteuid() == 0)
+        return False
 
     async def _populate_ctr_chain(self, container: docker.models.containers.Container) -> None:
         """

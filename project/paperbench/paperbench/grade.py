@@ -45,7 +45,7 @@ class JudgeOutput:
             "num_invalid_leaf_nodes": self.num_invalid_leaf_nodes,
             "graded_at": self.graded_at,
             "graded_task_tree": self.graded_task_tree.to_dict(),
-            "completer_config": self.completer_config.model_dump()
+            "completer_config": self.completer_config.model_dump(mode="json")
             if self.completer_config
             else None,
             "token_usage": self.token_usage.to_dict() if self.token_usage else None,

@@ -37,7 +37,7 @@ def make_judge_kwargs_serializable(judge_kwargs: dict[str, Any]) -> dict[str, An
     serializable_judge_kwargs = judge_kwargs.copy()
     if serializable_judge_kwargs["completer_config"] is not None:
         completer_config: TurnCompleter.Config = serializable_judge_kwargs["completer_config"]
-        serializable_judge_kwargs["completer_config"] = completer_config.model_dump()
+        serializable_judge_kwargs["completer_config"] = completer_config.model_dump(mode="json")
     return serializable_judge_kwargs
 
 

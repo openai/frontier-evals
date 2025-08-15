@@ -14,7 +14,7 @@ import tiktoken
 from dotenv import load_dotenv
 
 load_dotenv()
-from openai.types.chat import ParsedChatCompletionMessage
+from openai.types import CompletionUsage
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from preparedness_turn_completer.oai_completions_turn_completer import (
     OpenAICompletionsTurnCompleter,
@@ -74,7 +74,8 @@ class SimpleJudge(Judge):
         submission_dir: Path,
         paper_md: Path,
         completer_config: TurnCompleter.Config,
-        structured_completer_config: OpenAICompletionsTurnCompleter.Config | None = None,
+        int_completer_config: OpenAICompletionsTurnCompleter.Config | None = None,
+        float_completer_config: OpenAICompletionsTurnCompleter.Config | None = None,
         log_path: Path | None = None,
         buffer_tokens: int = 10000,  # 10k tokens of buffer
         max_depth: int = 999,
@@ -99,14 +100,11 @@ class SimpleJudge(Judge):
         self.completer = completer_config.build()
         self.token_encoder = tiktoken.get_encoding(self.completer.encoding_name)
 
-        self.structured_completer_config = (
-            structured_completer_config
-            or OpenAICompletionsTurnCompleter.Config(
-                model="gpt-4o-2024-08-06",
-            )
+        self.float_completer_conf, self.float_completer = self._init_structured_completer(
+            float_completer_config, ParsedJudgeResponseFloat
         )
-        self.structured_completer: OpenAICompletionsTurnCompleter = (
-            self.structured_completer_config.build()
+        self.int_completer_conf, self.int_completer = self._init_structured_completer(
+            int_completer_config, ParsedJudgeResponseInt
         )
 
         self.paper_md = paper_md.read_text()
@@ -120,6 +118,20 @@ class SimpleJudge(Judge):
             self.joined_addendum = "(NO ADDENDUM GIVEN)"
         self.reproduce_touched_files = True  # by default assume reproduce was functional
         self.max_file_depth = max_file_depth
+
+    def _init_structured_completer(
+        self, config: TurnCompleter.Config | None, response_format: type[BaseModel]
+    ) -> tuple[TurnCompleter.Config, TurnCompleter]:
+        """
+        if `config` is provided, it is assumed that it will use `response_format` internally.
+        If `config` is not provided,
+        we fallback to a default OpenAICompletionsStructuredCompleter config
+        """
+        cfg = config or OpenAICompletionsTurnCompleter.Config(
+            model="gpt-4o-2024-08-06",
+            response_format=response_format,
+        )
+        return cfg, cfg.build()
 
     async def process_file_content(self) -> None:
         """
@@ -596,23 +608,27 @@ class SimpleJudge(Judge):
                     response: TurnCompleter.Completion = await self.completer.async_completion(
                         conversation=messages
                     )
-                    if isinstance(self.completer, OpenAICompletionsTurnCompleter) and isinstance(
-                        response, OpenAICompletionsTurnCompleter.Completion
-                    ):
-                        judge_token_usage = TokenUsage()
-                        judge_token_usage.add_from_completion(self.completer.model, response.usage)
+
+                    response_usage = response.usage if hasattr(response, "usage") else None
+                    judge_token_usage = self._handle_usage(
+                        self.completer, judge_token_usage, response_usage
+                    )
+
                     model_response = response.output_messages[0].content
                     messages += [{"role": "assistant", "content": model_response}]
 
                     leaf_logger.info(f"model response: {model_response}")
+
+                    continuous = task.task_category == "Subtree"
                     score_response, parse_usage = await self._parse_model_response(
-                        model_response, continuous=(task.task_category == "Subtree")
+                        model_response, continuous=continuous
                     )
-                    if judge_token_usage is None:
-                        judge_token_usage = TokenUsage()
-                    judge_token_usage.add_from_completion(
-                        self.structured_completer.model, parse_usage
+
+                    parse_completer = self.float_completer if continuous else self.int_completer
+                    judge_token_usage = self._handle_usage(
+                        parse_completer, judge_token_usage, parse_usage
                     )
+
                     graded_task_node = GradedTaskNode.from_task(
                         task,
                         score=score_response.score,
@@ -620,7 +636,9 @@ class SimpleJudge(Judge):
                         explanation=score_response.explanation,
                         judge_metadata={
                             "full_judge_response": model_response,
-                            "token_usage": judge_token_usage.to_dict(),
+                            "token_usage": judge_token_usage.to_dict()
+                            if judge_token_usage
+                            else None,
                         },
                     )
 
@@ -644,6 +662,19 @@ class SimpleJudge(Judge):
                     for handler in leaf_std_logger.handlers:
                         handler.close()
                         leaf_std_logger.removeHandler(handler)
+
+    def _handle_usage(
+        self,
+        completer: TurnCompleter,
+        existing_usage: TokenUsage | None,
+        incoming_usage: CompletionUsage | None,
+    ) -> TokenUsage | None:
+        if isinstance(completer, OpenAICompletionsTurnCompleter):
+            if existing_usage is None:
+                existing_usage = TokenUsage()
+            existing_usage.add_from_completion(completer.model, incoming_usage)
+
+        return existing_usage
 
     @override
     async def grade_subtree(self, task: TaskNode) -> GradedTaskNode:
@@ -690,19 +721,26 @@ class SimpleJudge(Judge):
         ]
 
         try:
-            response_format = ParsedJudgeResponseInt if not continuous else ParsedJudgeResponseFloat
-            completion = await self.structured_completer.async_completion(
-                conversation=messages, response_format=response_format
+            ParsedJudgeResponse = (
+                ParsedJudgeResponseInt if not continuous else ParsedJudgeResponseFloat
             )
-            usage = completion.usage
-            score_response = completion.output_messages[0]
-            if isinstance(score_response, ParsedChatCompletionMessage) and score_response.parsed:
-                # check if score is between 0 and 1
-                if not (0 <= score_response.parsed.score <= 1):
-                    raise ParseError(f"Score is not between 0 and 1: {score_response.parsed.score}")
-                return score_response.parsed, usage
-            raise ParseError(
-                f"Unexpected error - Response neither parsed nor refused: {score_response}"
-            )
+            completer = self.int_completer if not continuous else self.float_completer
+            completion = await completer.async_completion(conversation=messages)
+
+            usage = None
+            if isinstance(completer, OpenAICompletionsTurnCompleter) and isinstance(
+                completion, OpenAICompletionsTurnCompleter.Completion
+            ):
+                usage = completion.usage
+
+            content = completion.output_messages[0].content
+            judge_response = ParsedJudgeResponse.model_validate_json(content) if content else None
+
+            if judge_response is None:
+                raise ParseError(f"Response could not be parsed: {content}")
+            elif not (0 <= judge_response.score <= 1):
+                raise ParseError(f"Score is not between 0 and 1: {judge_response.score}")
+
+            return judge_response, usage
         except Exception as e:
             raise ParseError(e) from e

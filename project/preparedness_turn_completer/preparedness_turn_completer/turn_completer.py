@@ -6,10 +6,13 @@ from typing import TypeAlias, TypedDict, Unpack
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessage,
+    ChatCompletionMessageCustomToolCallParam,
+    ChatCompletionMessageFunctionToolCall,
+    ChatCompletionMessageFunctionToolCallParam,
     ChatCompletionMessageParam,
-    ChatCompletionMessageToolCallParam,
 )
 from openai.types.chat.chat_completion_assistant_message_param import Audio
+from openai.types.chat.chat_completion_message_custom_tool_call_param import Custom
 from openai.types.chat.chat_completion_message_tool_call_param import Function
 from pydantic import BaseModel
 
@@ -41,13 +44,18 @@ class TurnCompleter(ABC):
                     content=msg.content,
                     refusal=msg.refusal,
                     tool_calls=[
-                        ChatCompletionMessageToolCallParam(
+                        ChatCompletionMessageFunctionToolCallParam(
                             id=tool_call.id,
                             function=Function(
-                                arguments=tool_call.function.arguments,
-                                name=tool_call.function.name,
+                                arguments=tool_call.function.arguments, name=tool_call.function.name
                             ),
                             type="function",
+                        )
+                        if isinstance(tool_call, ChatCompletionMessageFunctionToolCall)
+                        else ChatCompletionMessageCustomToolCallParam(
+                            id=tool_call.id,
+                            custom=Custom(input=tool_call.custom.input, name=tool_call.custom.name),
+                            type="custom",
                         )
                         for tool_call in msg.tool_calls
                     ]

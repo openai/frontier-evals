@@ -2,7 +2,12 @@ name: Run PaperBench Tests
 
 on:
   pull_request:
-    paths: [ 'project/paperbench/**']
+    paths: 
+      - 'project/paperbench/**'
+      - 'project/alcatraz/**'
+      - 'project/nanoeval/**'
+      - 'project/nanoeval_alcatraz/**'
+      - 'project/preparedness_turn_completer/**'
     branches: [ '**' ]
     types: [opened, synchronize, reopened, ready_for_review]
 

@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'project/paperbench/**'
+      - 'project/alcatraz/**'
+      - 'project/nanoeval/**'
+      - 'project/nanoeval_alcatraz/**'
+      - 'project/preparedness_turn_completer/**'
     branches:
       - '**'
     types:

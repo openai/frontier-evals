@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'project/compatibility_api_preparedness/**'
+      - 'project/compatibility_api/**'
     branches:
       - '**'
     types:

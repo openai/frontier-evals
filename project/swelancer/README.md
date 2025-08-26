@@ -1,7 +1,12 @@
 # SWE-Lancer
 
-This repo contains the dataset and code for the paper "SWE-Lancer: Can Frontier
-LLMs Earn \$1 Million from Real-World Freelance Software Engineering?".
+This repo contains the dataset and code for the paper ["SWE-Lancer: Can Frontier
+LLMs Earn \$1 Million from Real-World Freelance Software Engineering?"](https://arxiv.org/pdf/2502.12115).
+
+> Note: as of 2025/07/17, this repo contains a subset of the original 237
+> problems mentioned in the SWE-Lancer paper. Specifically, this repo has 198 tasks
+> that were adjusted and verified to run successfully offline. We have dropped the
+> remaining 39 problems.
 
 ## Setup
 
@@ -48,9 +53,9 @@ Note, if you do not want to skip pushing the images, then you should remove the
 `--skip-push` argument and provide a `--registry` argument.
 
 Note, we have also already pushed the images to dockerhub, which can be found
-[here](https://hub.docker.com/orgs/swelancer/repositories).
+[here](https://hub.docker.com/u/swelancer).
 
-Note, to run SWE Manager tasks, you must use the "monolith" image. 
+Note, to run SWE Manager tasks, you must use the "monolith" image.
 
 ### Environment variables
 
@@ -61,8 +66,12 @@ contains template environment variables needed for the application:
 
 ```plaintext
 # sample.env contents example:
+OPENAI_API_KEY=
+OPENROUTER_API_KEY=
+
 USE_WEB_PROXY=false
-# ... other variables
+EXPENSIFY_URL=https://www.expensify.com/
+NEW_EXPENSIFY_URL=https://new.expensify.com/
 ```
 
 Create a new file named `.env` and copy the contents from `sample.env`, setting
@@ -73,10 +82,16 @@ the application. Usually you just need to set `OPENAI_API_KEY` or
 ## Running SWELancer
 
 > Note: SWELancer is designed to run with internet disabled. At the moment,
-> this is only supported on Linux systems, as it relies on `iptables`. To run
-> SWELancer on MacOS, you will need to enable internet access. Simply add the
-> `swelancer.disable_internet=False` argument to any of the run commands below.
-> Note that running swelancer with internet enabled is not well tested.
+> this is only supported on Linux systems, as it relies on `iptables`. It is
+> possible to run on MacOS by adding the `swelancer.disable_internet=False`
+> argument to any run commands. However, note that we have observed that some
+> tasks behave abnormally when run with internet enabled, and we only consider
+> rollouts run with internet disabled to be valid. Finally, while disabling
+> internet should not have undesired side effects on the host machine,
+> because of the nature of running iptables commands, we recommend running
+> swelancer on an ephemeral VM. If you notice any weird effects, try running
+> `sudo iptables -S`, and delete any rules that have the comment
+> `alcatraz_block`.
 
 We've implemented a [DummySolver](swelancer/solvers/dummy/solver.py) which can
 be used to verify that the evaluation works as intended:

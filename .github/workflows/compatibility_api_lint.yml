@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'project/compatibility_api/**'
+      - 'project/nanoeval/**'
     branches:
       - '**'
     types:

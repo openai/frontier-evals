@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'project/swelancer/**'
+      - 'project/nanoeval/**'
+      - 'project/nanoeval_alcatraz/**'
+      - 'project/alcatraz/**'
     branches:
       - '**'
     types:

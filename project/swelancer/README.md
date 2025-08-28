@@ -122,7 +122,7 @@ uv run python swelancer/run_swelancer.py \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \
   runner.recorder=nanoeval.recorder:dummy_recorder \
-  runner.max_retries=3
+  runner.max_retries=2
 ```
 
 Same as above but for a single issue (e.g., `28565_1001`):
@@ -144,7 +144,7 @@ uv run python swelancer/run_swelancer.py \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \
   runner.recorder=nanoeval.recorder:dummy_recorder \
-  runner.max_retries=3
+  runner.max_retries=2
 ```
 
 We've implemented a
@@ -175,7 +175,7 @@ uv run python swelancer/run_swelancer.py \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \
   runner.recorder=nanoeval.recorder:dummy_recorder \
-  runner.max_retries=3
+  runner.max_retries=2
 ```
 
 To run manager tasks, set `swelancer.task_type=swe_manager`. Currently, 
@@ -201,7 +201,7 @@ uv run python swelancer/run_swelancer.py \
   runner.experimental_use_multiprocessing=False \
   runner.enable_slackbot=False \
   runner.recorder=nanoeval.recorder:dummy_recorder \
-  runner.max_retries=3
+  runner.max_retries=2
 ```
 
 ### Logging

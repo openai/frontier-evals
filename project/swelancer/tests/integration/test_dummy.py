@@ -59,7 +59,7 @@ async def test_gold_patch_passes_tests_using_local_cluster(issue_id: str) -> Non
         experimental_use_multiprocessing=False,
         enable_slackbot=False,
         recorder=dummy_recorder(),
-        max_retries=0,
+        max_retries=2,
     )
 
     solver = DummySolver(

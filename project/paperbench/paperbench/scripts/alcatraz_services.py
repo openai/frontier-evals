@@ -4,7 +4,6 @@ from typing import AsyncGenerator
 import structlog
 from dotenv import load_dotenv
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
-from structlog.stdlib import BoundLogger
 
 from alcatraz.clusters.local import ClusterConfig
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
@@ -18,20 +17,27 @@ load_dotenv(find_dotenv())
 async def put_submission_in_computer(
     computer: ComputerInterface,
     submission_path: str,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
 ) -> None:
-    logger.info(f"Placing submission in computer from: {submission_path}")
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
+    ctx_logger.info(f"Placing submission in computer from: {submission_path}")
     # Put the tar.gz to the container
     await put_file_in_computer(
         computer=computer,
         blobfile_path=submission_path,
         dest_path="/tmp/logs.tar.gz",
-        logger=logger,
+        run_group_id=run_group_id,
+        runs_dir=runs_dir,
+        run_id=run_id,
     )
 
     # Extract tar.gz
     cmd = "tar -xzf /tmp/logs.tar.gz -C /tmp"
-    logger.info(f"Extracting submission: {cmd}")
+    ctx_logger.info(f"Extracting submission: {cmd}")
     result = await computer.check_shell_command(cmd)
 
     # Move submission subdir to /submission
@@ -41,12 +47,12 @@ async def put_submission_in_computer(
     # the submission dir and move it to /submission. We should fix this by always uploading
     # `submission` at the top level in the tar
     cmd = "find /tmp/ -type d -name submission -print0 | xargs -0 -I{} mv {} /"
-    logger.info(f"Moving submission to /submission: {cmd}")
+    ctx_logger.info(f"Moving submission to /submission: {cmd}")
     result = await computer.check_shell_command(cmd)
 
     # list files in /submission
     result = await computer.check_shell_command("ls -la /submission")
-    logger.info(f"Files in /submission: {result.output.decode('utf-8')}")
+    ctx_logger.info(f"Files in /submission: {result.output.decode('utf-8')}")
 
 
 @asynccontextmanager

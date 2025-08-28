@@ -8,7 +8,6 @@ from typing import AsyncGenerator, TypedDict
 
 import blobfile as bf
 import structlog.stdlib
-from structlog.stdlib import BoundLogger
 
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
@@ -24,7 +23,9 @@ async def extract_file_from_computer(
     computer: ComputerInterface,
     path_on_computer: Path,
     extract_to: str,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
 ) -> None:
     """
     Extracts a file from the computer.
@@ -35,21 +36,29 @@ async def extract_file_from_computer(
         extract_to: the path to upload the file to
     """
 
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
+
     result = await computer.send_shell_command(f"ls -l {path_on_computer}")
     if result.exit_code != 0:
-        logger.warning(f"File {path_on_computer} does not exist on the computer.")
+        ctx_logger.warning(f"File {path_on_computer} does not exist on the computer.")
         return
 
     files_tar = await computer.download(path_on_computer.as_posix())
     bf.write_bytes(str(extract_to), files_tar)
-    logger.info(f"Extracted {path_on_computer} to {extract_to} with exit code {result.exit_code}")
+    ctx_logger.info(
+        f"Extracted {path_on_computer} to {extract_to} with exit code {result.exit_code}"
+    )
 
 
 async def put_file_in_computer(
     computer: ComputerInterface,
     blobfile_path: str,
     dest_path: str | Path,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
 ) -> None:
     """
     Puts a file on a computer
@@ -59,13 +68,17 @@ async def put_file_in_computer(
         blobfile_path: the path to the file, compatible with blobfile
         dest_path: the path in the cluster to download the file to
     """
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
+
     result = await computer.send_shell_command(f"mkdir -p {Path(dest_path).parent}")
     if result.exit_code != 0:
-        logger.warning(f"Failed to create directory {Path(dest_path).parent} on the cluster.")
+        ctx_logger.warning(f"Failed to create directory {Path(dest_path).parent} on the cluster.")
         return
 
     # Place the file in the computer
-    logger.info(f"Placing file in computer: {blobfile_path}")
+    ctx_logger.info(f"Placing file in computer: {blobfile_path}")
     submission_tar = bf.read_bytes(str(blobfile_path))
     await computer.upload(submission_tar, str(dest_path))
 
@@ -97,7 +110,9 @@ async def upload_sources(
     computer: ComputerInterface,
     sources: list[str],
     run_dir: Path | str,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     timestamp: str | None = None,
 ) -> None:
     """
@@ -114,7 +129,10 @@ async def upload_sources(
     if not fpath.startswith("az://"):
         Path(fpath).parent.mkdir(parents=True, exist_ok=True)
 
-    logger.info(f"Creating tar for {sources} and uploading to {fpath}")
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
+    ctx_logger.info(f"Creating tar for {sources} and uploading to {fpath}")
     await computer.check_shell_command(f"mkdir -p {container_tmp_dir}")
 
     for source in sources:
@@ -126,7 +144,7 @@ async def upload_sources(
     excluded = await populate_exclude_list(computer, container_tmp_dir, "10M")
 
     for path in excluded.output.decode("utf-8").strip().splitlines():
-        logger.info(f"Excluding file from submission zip (> 10MB): {path}")
+        ctx_logger.info(f"Excluding file from submission zip (> 10MB): {path}")
 
     cmds = [
         f"ARCHIVE_PATH={container_tar_path}",
@@ -140,7 +158,9 @@ async def upload_sources(
         computer=computer,
         path_on_computer=container_tar_path,
         extract_to=fpath,
-        logger=logger,
+        run_group_id=run_group_id,
+        runs_dir=runs_dir,
+        run_id=run_id,
     )
 
     # cleanup tmp dirs
@@ -185,7 +205,9 @@ async def tar_and_extract_from_computer(
     dir_path_on_computer: Path,
     tar_path_on_computer: Path,
     tar_path_on_target: str,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     max_file_size: str | None = None,
 ) -> None:
     """
@@ -208,7 +230,9 @@ async def tar_and_extract_from_computer(
         computer=computer,
         path_on_computer=tar_path_on_computer,
         extract_to=tar_path_on_target,
-        logger=logger,
+        run_group_id=run_group_id,
+        runs_dir=runs_dir,
+        run_id=run_id,
     )
 
 

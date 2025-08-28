@@ -21,7 +21,6 @@ from preparedness_turn_completer.oai_completions_turn_completer import (
 )
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from pydantic import BaseModel
-from structlog.stdlib import BoundLogger
 from typing_extensions import override
 
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
@@ -408,9 +407,9 @@ class SimpleJudge(Judge):
     async def _prepare_relevant_files(
         self,
         task: TaskNode,
-        leaf_logger: BoundLogger,
         max_files: int | None = 10,
     ) -> str:
+        leaf_logger = self.get_logger(task)
         """
         Returns the relevant files for judging the task.
         For everything except results analysis nodes:
@@ -510,9 +509,9 @@ class SimpleJudge(Judge):
         return self.token_encoder.decode(selected_files_tokens).rsplit("\n", 1)[0]
 
     async def _construct_grade_leaf_messages(
-        self, task: TaskNode, leaf_logger: BoundLogger
+        self, task: TaskNode
     ) -> list[ChatCompletionMessageParam]:
-        relevant_files = await self._prepare_relevant_files(task, leaf_logger)
+        relevant_files = await self._prepare_relevant_files(task)
         relevant_files_prompt = (
             f"Here are the most relevant files included in the submission attempt, concatenated:\n<files>\n{relevant_files}\n</files>"
             if task.task_category != "Result Analysis"
@@ -604,7 +603,7 @@ class SimpleJudge(Judge):
                     )
                 else:
                     judge_token_usage = None
-                    messages = await self._construct_grade_leaf_messages(task, leaf_logger)
+                    messages = await self._construct_grade_leaf_messages(task)
                     response: TurnCompleter.Completion = await self.completer.async_completion(
                         conversation=messages
                     )

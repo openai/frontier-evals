@@ -317,7 +317,6 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
                 paper=paper,
                 agent=agent,
                 run_dir=task.run_dir,
-                logger=ctx_logger.bind(destinations=["run"]),
                 agent_dir_config=self.agent_dir_config,
                 timeout=self.timeout,
                 upload_interval_messages=self.upload_interval_messages,

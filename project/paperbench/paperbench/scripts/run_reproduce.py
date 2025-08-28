@@ -9,7 +9,6 @@ from typing import Any
 
 import blobfile as bf
 import structlog.stdlib
-from structlog.stdlib import BoundLogger
 
 from alcatraz.clusters.local import ClusterConfig
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
@@ -79,8 +78,10 @@ class ReproScriptRunOutcome:
 
 async def run_reproduce_script(
     computer: ComputerInterface,
-    logger: BoundLogger,
     submission_path: Path,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     timeout: float | None,
     use_py3_11: bool = False,  # defaults to 3.12
     make_venv: bool = False,
@@ -90,6 +91,9 @@ async def run_reproduce_script(
     Optionally sets python3 to python3.11 and/or creates a virtual environment.
     """
 
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
     # log rough start time of reproduction to a file
     await computer.check_shell_command(f"date +%s > {submission_path}/reproduce.log.creation_time")
 
@@ -107,7 +111,7 @@ async def run_reproduce_script(
     timedout = False
     try:
         result = await asyncio.wait_for(computer.send_shell_command(cmd_str), timeout=timeout)
-        logger.info(f"Reproduction script output: {result.output.decode('utf-8')}")
+        ctx_logger.info(f"Reproduction script output: {result.output.decode('utf-8')}")
     except asyncio.TimeoutError:
         timedout = True
     repro_end_time = time.time()
@@ -127,7 +131,9 @@ async def run_reproduce_script(
 async def reproduce(
     computer: ComputerInterface,
     submission_path: Path,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     timeout: float | None = None,
     use_py3_11: bool = False,
     make_venv: bool = False,
@@ -136,11 +142,13 @@ async def reproduce(
     args:
         computer: ComputerInterface on which the reproduce.sh script will be run
         submission_path: Path to the submission directory
-        logger: Logger object to log messages
         timeout: (optional) Timeout for the reproduce.sh script
         use_py3_11: (optional) Whether to switch python3 to python3.11 before running
         make_venv: (optional) Whether to create and use a virtualenv before running
     """
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
     # get git history for interest
     cmd_str = f"bash -c 'cd {submission_path} && git --no-pager log'"
     result = await computer.send_shell_command(cmd_str)
@@ -158,7 +166,7 @@ async def reproduce(
     reproduce_script_path = submission_path / "reproduce.sh"
     result = await computer.send_shell_command(f"ls {reproduce_script_path}")
     repro_script_exists = result.exit_code == 0
-    logger.info(f"Reproduce script exists at {reproduce_script_path}: {repro_script_exists}")
+    ctx_logger.info(f"Reproduce script exists at {reproduce_script_path}: {repro_script_exists}")
     if not repro_script_exists:
         return ReproductionMetadata(
             is_valid_git_repo=is_valid_git_repo,
@@ -176,8 +184,10 @@ async def reproduce(
 
     repro_outcome = await run_reproduce_script(
         computer=computer,
-        logger=logger,
         submission_path=submission_path,
+        run_group_id=run_group_id,
+        runs_dir=runs_dir,
+        run_id=run_id,
         timeout=timeout,
         use_py3_11=use_py3_11,
         make_venv=make_venv,
@@ -206,7 +216,9 @@ async def reproduce(
 async def reproduce_on_computer(
     cluster_config: ClusterConfig,  # TODO: don't assume AlcatrazComputerInterface
     submission_path: str,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     run_dir: str,
     submission_cluster_path: Path = Path("/submission"),
     output_cluster_path: Path = Path("/output"),
@@ -226,6 +238,9 @@ async def reproduce_on_computer(
     cluster_config = cluster_config.model_copy(
         update={"environment": {**cluster_config.environment, **get_agents_env_vars(registry)}}
     )
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
     async with start_alcatraz_computer(cluster_config) as computer:
         time_start = time.time()
 
@@ -234,13 +249,21 @@ async def reproduce_on_computer(
         )
 
         # Step 1: Put submission to /submission
-        await put_submission_in_computer(computer, submission_path, logger)
+        await put_submission_in_computer(
+            computer,
+            submission_path,
+            run_group_id,
+            runs_dir,
+            run_id,
+        )
 
         # Step 2: Run reproduction
         repro_metadata = await reproduce(
             computer=computer,
             submission_path=submission_cluster_path,
-            logger=logger,
+            run_group_id=run_group_id,
+            runs_dir=runs_dir,
+            run_id=run_id,
             timeout=timeout,
             use_py3_11=use_py3_11,
             make_venv=make_venv,
@@ -259,14 +282,16 @@ async def reproduce_on_computer(
             dir_path_on_computer=submission_cluster_path,
             tar_path_on_computer=upload_from,
             tar_path_on_target=upload_to,
+            run_group_id=run_group_id,
+            runs_dir=runs_dir,
+            run_id=run_id,
             max_file_size="10M",
-            logger=logger,
         )
 
-        logger.info(f"Reproduced dir has been written: {upload_to}")
+        ctx_logger.info(f"Reproduced dir has been written: {upload_to}")
 
         time_end = time.time()
-        logger.info(f"Reproduction completed in {time_end - time_start:.2f} seconds.")
+        ctx_logger.info(f"Reproduction completed in {time_end - time_start:.2f} seconds.")
 
         return repro_metadata
 
@@ -274,7 +299,9 @@ async def reproduce_on_computer(
 async def reproduce_on_computer_with_salvaging(
     cluster_config: ClusterConfig,
     submission_path: str,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     run_dir: str,
     submission_cluster_path: Path = Path("/submission"),
     output_cluster_path: Path = Path("/output"),
@@ -300,15 +327,21 @@ async def reproduce_on_computer_with_salvaging(
 
     repro_attempts: list[ReproductionMetadata] = []
 
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
+
     for opts in retry_options:
-        logger.info(
+        ctx_logger.info(
             f"Executing reproduce.sh with py3_11={opts['use_py3_11']}"
             f" and make_venv={opts['make_venv']}"
         )
         repro_attempt = await reproduce_on_computer(
             cluster_config=cluster_config,
             submission_path=submission_path,
-            logger=logger,
+            run_group_id=run_group_id,
+            runs_dir=runs_dir,
+            run_id=run_id,
             run_dir=run_dir,
             submission_cluster_path=submission_cluster_path,
             output_cluster_path=output_cluster_path,
@@ -318,9 +351,9 @@ async def reproduce_on_computer_with_salvaging(
         )
         repro_attempts.append(repro_attempt)
         if _should_retry(retries_enabled, repro_attempt, retry_threshold):
-            logger.info(
+            ctx_logger.info(
                 f"Reproduction attempt ran for less than {retry_threshold} seconds,"
-                " retrying with different configuration.",
+                " retrying with different configuration."
             )
             continue  # retry, with next configuration
         else:

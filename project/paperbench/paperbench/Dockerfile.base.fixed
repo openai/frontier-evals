@@ -1,0 +1,102 @@
+FROM ubuntu:24.04
+
+# Do not modify the following block of arg-env pairs. The evaluation infrastructure will
+# periodically download the contents of these directories for logging purposes.
+ENV WORKSPACE_BASE=/home
+ENV SUBMISSION_DIR=/home/submission
+ENV LOGS_DIR=/home/logs
+ENV CODE_DIR=/home/code
+ENV AGENT_DIR=/home/agent
+
+ENV CONDA_ENV_NAME=agent
+ENV REQUIREMENTS=/home/agent/requirements.txt
+ENV PYTHON_VERSION=3.12
+
+RUN mkdir -p ${LOGS_DIR} ${AGENT_DIR} ${CODE_DIR} ${SUBMISSION_DIR}
+RUN mkdir -p ${WORKSPACE_BASE}/paper
+
+RUN mkdir ${WORKSPACE_BASE}/.vscode
+COPY agents/launch.json ${WORKSPACE_BASE}/.vscode/launch.json
+
+# Avoid interactive dialog from apt-get and other packages requiring configuration
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Configure apt to use mirrors and increase timeout
+RUN echo 'Acquire::http::Timeout "30";' > /etc/apt/apt.conf.d/99timeout && \
+    echo 'Acquire::ftp::Timeout "30";' >> /etc/apt/apt.conf.d/99timeout && \
+    echo 'Acquire::Retries "3";' >> /etc/apt/apt.conf.d/99timeout
+
+# Use alternative Ubuntu mirrors if needed
+# RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list.d/ubuntu.sources
+
+# Install basic packages with retry logic
+RUN apt-get update --fix-missing && apt-get install -y \
+    curl \
+    wget \
+    git \
+    vim \
+    nano \
+    unzip \
+    zip \
+    p7zip-full \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    python-is-python3 \
+    build-essential \
+    openssh-server \
+    tmux \
+    gettext \
+    sudo \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    && rm -rf /var/lib/apt/lists/* # removes cache
+
+RUN apt update && apt install -y jupyter
+
+# Install Miniconda
+ENV MINICONDA_VERSION=latest
+ENV CONDA_DIR=/opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -O miniconda.sh && \
+    /bin/bash miniconda.sh -b -p ${CONDA_DIR} && \
+    rm miniconda.sh && \
+    echo "export PATH=${CONDA_DIR}/bin:$PATH" > /etc/environment
+
+ENV PATH=${CONDA_DIR}/bin:$PATH
+
+# Create conda environment with Python 3.12
+RUN conda create -n ${CONDA_ENV_NAME} python=${PYTHON_VERSION} -y
+
+# Make RUN commands use the new environment:
+# Note: SHELL must be set before RUN commands to affect them
+SHELL ["conda", "run", "-n", "agent", "/bin/bash", "-c"]
+
+# Install common Python packages
+RUN conda install -n ${CONDA_ENV_NAME} -y \
+    numpy \
+    scipy \
+    matplotlib \
+    pandas \
+    scikit-learn \
+    jupyter \
+    ipython
+
+# Install pip packages
+RUN pip install --no-cache-dir \
+    torch \
+    torchvision \
+    transformers \
+    datasets \
+    wandb \
+    tensorboard
+
+# Set up environment activation
+RUN echo "conda activate ${CONDA_ENV_NAME}" >> ~/.bashrc
+
+ENV CONDA_DEFAULT_ENV=${CONDA_ENV_NAME}
+ENV CONDA_PREFIX=${CONDA_DIR}/envs/${CONDA_ENV_NAME}
+ENV PATH=${CONDA_PREFIX}/bin:${CONDA_DIR}/bin:$PATH
+
+WORKDIR ${WORKSPACE_BASE}

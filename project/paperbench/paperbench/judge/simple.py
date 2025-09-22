@@ -19,6 +19,9 @@ from openai.types.chat.chat_completion_message_param import ChatCompletionMessag
 from preparedness_turn_completer.oai_completions_turn_completer import (
     OpenAICompletionsTurnCompleter,
 )
+from preparedness_turn_completer.google_completions_turn_completer import (
+    GoogleCompletionsTurnCompleter,
+)
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from pydantic import BaseModel
 from structlog.stdlib import BoundLogger
@@ -123,14 +126,24 @@ class SimpleJudge(Judge):
         self, config: TurnCompleter.Config | None, response_format: type[BaseModel]
     ) -> tuple[TurnCompleter.Config, TurnCompleter]:
         """
-        if `config` is provided, it is assumed that it will use `response_format` internally.
-        If `config` is not provided,
-        we fallback to a default OpenAICompletionsStructuredCompleter config
+        初始化解析用的completer：
+        - 若显式提供`config`，直接使用（假定其内部已处理结构化输出）。
+        - 若未提供：
+          * 若主`completer_config`是OpenAI类型，则使用OpenAI并传入`response_format`保证严格JSON。
+          * 否则（如Gemini），复用主`completer_config`（Google），并在解析逻辑中加强提示与JSON提取fallback。
+        这样在仅有Gemini API Key时也可工作。
         """
-        cfg = config or OpenAICompletionsTurnCompleter.Config(
-            model="gpt-4o-2024-08-06",
-            response_format=response_format,
-        )
+        if config is not None:
+            cfg = config
+        else:
+            if isinstance(self.completer_config, OpenAICompletionsTurnCompleter.Config):
+                cfg = OpenAICompletionsTurnCompleter.Config(
+                    model="gpt-4o-2024-08-06",
+                    response_format=response_format,
+                )
+            else:
+                # 复用当前主completer_config（例如Google/Gemini）
+                cfg = self.completer_config
         return cfg, cfg.build()
 
     async def process_file_content(self) -> None:
@@ -709,10 +722,15 @@ class SimpleJudge(Judge):
             raise ParseError("No response received")
 
         score_instruction = "(either 0 or 1)" if not continuous else "(between 0 and 1)"
+        # 强化系统提示，要求输出严格JSON（兼容OpenAI/Google）。
         messages: list[ChatCompletionMessageParam] = [
             {
                 "role": "system",
-                "content": f"You are given a response output from a judge which should contain a score and an explanation. Please parse the text into a structured object containing `valid_score` (boolean indicating whether the response contains a valid score), the `score` {score_instruction}, and an `explanation` (a short summary of the judge's reasoning). If the response does not contain a valid score, set `valid_score` to False and set the `score` to 0.0.",
+                "content": (
+                    "You will be given a judge response. Parse it and RETURN ONLY a strict JSON object with keys: "
+                    "`valid_score` (boolean), `score` {score_instruction}, and `explanation` (string). "
+                    "Do not include any extra text, preamble, or markdown. No code fences. JSON only."
+                ),
             },
             {
                 "role": "user",
@@ -734,7 +752,17 @@ class SimpleJudge(Judge):
                 usage = completion.usage
 
             content = completion.output_messages[0].content
-            judge_response = ParsedJudgeResponse.model_validate_json(content) if content else None
+
+            # 解析：优先直接作为JSON；失败则从文本中提取JSON片段再解析
+            judge_response = None
+            if content:
+                try:
+                    judge_response = ParsedJudgeResponse.model_validate_json(content)
+                except Exception:
+                    # 回退：尝试从文本中提取JSON对象再解析
+                    json_str = self._extract_json_object(content)
+                    if json_str:
+                        judge_response = ParsedJudgeResponse.model_validate_json(json_str)
 
             if judge_response is None:
                 raise ParseError(f"Response could not be parsed: {content}")
@@ -744,3 +772,47 @@ class SimpleJudge(Judge):
             return judge_response, usage
         except Exception as e:
             raise ParseError(e) from e
+
+    def _extract_json_object(self, text: str) -> str | None:
+        """
+        从自由文本中提取第一个JSON对象子串。处理常见形式：
+        - 原始纯JSON
+        - ```json ... ``` 代码块
+        - 前后有解释性文本包裹
+        保守实现：寻找第一个'{'并进行括号配对。
+        """
+        if not text:
+            return None
+        # 快速路径：三引号json代码块
+        import re
+        m = re.search(r"```json\s*(.*?)\s*```", text, re.DOTALL | re.IGNORECASE)
+        if m:
+            candidate = m.group(1).strip()
+            return candidate if candidate else None
+        # 一般路径：第一个'{'开始的匹配括号
+        start = text.find("{")
+        if start == -1:
+            return None
+        depth = 0
+        in_str = False
+        esc = False
+        for i in range(start, len(text)):
+            ch = text[i]
+            if esc:
+                esc = False
+                continue
+            if ch == "\\":
+                esc = True
+                continue
+            if ch == '"':
+                in_str = not in_str
+                continue
+            if in_str:
+                continue
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[start : i + 1]
+        return None

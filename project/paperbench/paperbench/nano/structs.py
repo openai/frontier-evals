@@ -13,6 +13,9 @@ import structlog.stdlib
 from preparedness_turn_completer.oai_completions_turn_completer import (
     OpenAICompletionsTurnCompleter,
 )
+from preparedness_turn_completer.google_completions_turn_completer import (
+    GoogleCompletionsTurnCompleter,
+)
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from pydantic import BaseModel, model_validator
 
@@ -25,6 +28,7 @@ from paperbench.grade import JudgeOutput
 from paperbench.scripts.run_reproduce import ReproductionMetadata
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+GRADER_GOOGLE_API_KEY = os.getenv("GRADER_GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -110,6 +114,38 @@ class JudgeConfig(BaseModel):
         pull_from_registry=False,
         environment={"OPENAI_API_KEY": GRADER_OPENAI_API_KEY},
     )
+
+    # New fields for Gemini support
+    use_gemini: bool = False
+    gemini_api_key: str | None = None
+
+    @model_validator(mode="after")
+    def setup_gemini_if_needed(self) -> Self:
+        if self.use_gemini:
+            # Get API key
+            if not self.gemini_api_key:
+                self.gemini_api_key = GRADER_GOOGLE_API_KEY
+                if not self.gemini_api_key:
+                    raise ValueError("GOOGLE_API_KEY or GRADER_GOOGLE_API_KEY required when use_gemini=True")
+
+            # Replace completer config with Gemini configuration
+            self.completer_config = GoogleCompletionsTurnCompleter.Config(
+                model="gemini-2.5-pro",
+                api_key=self.gemini_api_key,
+                temperature=0.1,
+            )
+
+            # Update Docker environment to include Google API key
+            new_env = self.cluster_config.environment.copy()
+            new_env["GOOGLE_API_KEY"] = self.gemini_api_key
+
+            # Create new cluster config with updated environment
+            self.cluster_config = LocalConfig(
+                image=self.cluster_config.image,
+                pull_from_registry=self.cluster_config.pull_from_registry,
+                environment=new_env,
+            )
+        return self
 
 
 class PaperBenchGrade(Grade):

@@ -31,6 +31,7 @@ dependencies = [
     "alcatraz",
     "preparedness-turn-completer",
     "pandas-stubs>=2.3.0.250703",
+    "google-generativeai>=0.5.0",  # For Gemini 2.5 Pro support
 ]
 
 [tool.setuptools]

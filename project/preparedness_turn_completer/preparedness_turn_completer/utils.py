@@ -34,6 +34,14 @@ CONTEXT_WINDOW_LENGTHS: dict[str, int] = {
     "gpt-4.1": 1_047_576,
     "o1-preview": 128_000,
     "gpt-4-turbo": 128_000,
+    # Google/Gemini models
+    "gemini-2.5-pro": 2_000_000,
+    "gemini-1.5-pro": 1_000_000,
+    "gemini-1.5-pro-002": 1_000_000,
+    "gemini-1.5-flash": 1_000_000,
+    "gemini-2.0-flash": 1_000_000,
+    "gemini-pro": 30_720,
+    "gemini-pro-vision": 30_720,
 }
 
 

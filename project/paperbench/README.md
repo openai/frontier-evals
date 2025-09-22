@@ -1,5 +1,84 @@
 # PaperBench
 
+> 新增：Gemini 评测适配与本地（无 Docker）运行说明（gemini_dev 分支）
+
+本分支在不改变评分规则的前提下，完成了以下适配与增强：
+
+- 新增 Google Gemini 评测支持（默认 `gemini-2.5-pro`），通过适配器 `GoogleCompletionsTurnCompleter` 接入；
+- 仅在“解析步骤”启用 JSON Schema（`response_mime_type=application/json` + Pydantic schema），评分对话保持自然语言，不改判定逻辑；
+- 提供解析容错（提取 ```json```、非法转义修复、结构整形）以接近 OpenAI response_format 的稳定度；
+- 增强产出：
+  - `grader_output.json` 新增 `time_cost`（起止时间/总耗时）与 `progress`（rubric 覆盖统计）；
+  - 目录下持续写入 `progress.json`（快照：总叶子、已完成、百分比、ETA）。
+- 精简日志：默认不再生成叶子级 `.log` 和 `messages.jsonl`，仅保留上述必要产出（可通过环境变量定制）。
+
+快速开始（本地无 Docker）
+
+1) 安装依赖（在本项目目录）
+
+```bash
+cd preparedness/project/paperbench
+uv sync  # 或 python -m pip install -e .
+```
+
+2) 设置环境变量（Gemini 路径）
+
+```bash
+export GOOGLE_API_KEY="<你的 Google 密钥>"
+# 建议的稳态限流/并发（避免 429）：
+export PB_LEAF_CONCURRENCY=2            # 单篇论文内叶子并发（默认 100，建议 2~4）
+export PB_PARSE_SCHEMA=true             # 解析步启用 JSON Schema（默认开启）
+export PB_PARSE_MODEL=gemini-2.0-flash  # 解析步用轻量模型；评分仍用 2.5 Pro
+export PB_PARSE_FORMAT_HINT=true        # 仅附加“格式提醒”，不改规则
+# 精简日志：
+export PB_DISABLE_LEAF_EVENTS=true      # 默认已禁用，不输出 progress.leaves.jsonl
+# 叶子 .log 与 messages.jsonl 已默认不写，无需额外开关
+```
+
+3) 运行本地评分脚本（无需 Docker）
+
+```bash
+uv run python paperbench/scripts/grade_local_no_docker.py \
+  --submissions-dir /abs/path/to/paperbench_submissions \
+  --out-dir /abs/path/to/grader_outputs \
+  --code-only \
+  --max-concurrency 1 \
+  --sleep-between 60
+```
+
+目录结构与产出
+
+- `<out-dir>/<paper_id>_<UTC>/progress.json`：快照（JSON 覆盖写）
+  - `total_leaves`、`completed_leaves`、`progress_pct`、`elapsed_seconds`、`eta_seconds`、`last_leaf_id`
+- `<out-dir>/<paper_id>_<UTC>/grader_output.json`：最终结果
+  - `time_cost`: `{start_time, end_time, total_time}`
+  - `progress`: `{total, completed, invalid, coverage_pct, elapsed_seconds}`
+
+关键参数与环境变量
+
+- 脚本参数：
+  - `--submissions-dir` 提交根目录（结构：`<paper_id>/<submission_folder>`）
+  - `--out-dir` 评分输出目录
+  - `--code-only` 仅代码评分模式
+  - `--max-concurrency` 论文级并发（建议 1）
+  - `--sleep-between` 任务间隔（秒，建议 45~60）
+- 环境变量：
+  - `GOOGLE_API_KEY`：必需（或 `GEMINI_API_KEY`）
+  - `PB_LEAF_CONCURRENCY`：叶子级并发（默认 100；建议 2~4）
+  - `PB_PARSE_SCHEMA`：解析步 JSON Schema 开/关（默认开启）
+  - `PB_PARSE_MODEL`：解析步模型（如 `gemini-2.0-flash`）
+  - `PB_PARSE_FORMAT_HINT`：解析提示附“格式提醒”（默认关闭）
+  - `PB_DISABLE_LEAF_EVENTS`：禁用 progress.leaves.jsonl（默认 true）
+
+注意事项
+
+- 429/配额：Gemini 有每分钟输入 token 限额。若日志出现大量 `quota hit; backing off ...`，请进一步：
+  - 降低 `PB_LEAF_CONCURRENCY`（如降至 2）
+  - 增大 `--sleep-between`（如 90）
+  - 确保仅解析步使用 `gemini-2.0-flash`（减少解析成本）
+- OpenAI 对比：此前 OpenAI 的 `response_format` 提供强约束；本分支用“解析步 Schema + 多层容错”达到类似稳定度，且不改变评分规则与自然语言输出。
+
+
 This repo contains the dataset and code for the paper "PaperBench: Evaluating AI's Ability to Replicate AI Research".
 
 ## Leaderboard

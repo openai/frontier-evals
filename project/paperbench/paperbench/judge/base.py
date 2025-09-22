@@ -182,7 +182,6 @@ class Judge(ABC):
     def get_logger(self, task: TaskNode) -> BoundLogger:
         """Creates a logger for a specific task.
 
-        已按需精简：不再生成任何 .log 文件，统一返回空 logger。
         若未来需要恢复文件日志，可在此处改为创建 FileHandler。
         """
 

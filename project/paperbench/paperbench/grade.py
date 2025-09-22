@@ -36,6 +36,9 @@ class JudgeOutput:
     graded_task_tree: GradedTaskNode
     completer_config: TurnCompleter.Config | None = None
     token_usage: TokenUsage | None = None
+    # 新增：记录评分耗时信息
+    # start_time / end_time 为 ISO 字符串，total_time 为秒（float）
+    time_cost: dict[str, object] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -49,6 +52,7 @@ class JudgeOutput:
             if self.completer_config
             else None,
             "token_usage": self.token_usage.to_dict() if self.token_usage else None,
+            "time_cost": self.time_cost if self.time_cost else None,
         }
 
     @classmethod
@@ -72,6 +76,7 @@ class JudgeOutput:
                 if data.get("completer_config")
                 else None,
                 token_usage=token_usage,
+                time_cost=data.get("time_cost"),
             )
         except KeyError as e:
             raise ValueError(f"Missing key {e} in judge output data!") from e
@@ -152,6 +157,7 @@ async def grade_submission(
     """
 
     time_start = time.time()
+    start_ts = get_timestamp()
     logger.info(f"Grading {submission_path} for paper {paper_id}")
 
     judge_output = None
@@ -188,6 +194,8 @@ async def grade_submission(
 
             logger.info(f"Graded {paper_id} at {submission_path}")
 
+            time_end = time.time()
+            end_ts = get_timestamp()
             judge_output = JudgeOutput(
                 judge_type=judge_type,
                 completer_config=completer_config,
@@ -201,6 +209,11 @@ async def grade_submission(
                 graded_at=get_timestamp(),
                 graded_task_tree=graded_task_tree,
                 token_usage=token_usage,
+                time_cost={
+                    "start_time": start_ts,
+                    "end_time": end_ts,
+                    "total_time": float(time_end - time_start),
+                },
             )
 
             # Step 3: serialize the JudgeOutput

@@ -725,14 +725,15 @@ class SimpleJudge(Judge):
             raise ParseError("No response received")
 
         score_instruction = "(either 0 or 1)" if not continuous else "(between 0 and 1)"
-        # 强化系统提示，要求输出严格JSON（兼容OpenAI/Google）。
+        # 使用原有规则提示，不改变判定与产出规则（仅解析，不强制“仅 JSON”）
         messages: list[ChatCompletionMessageParam] = [
             {
                 "role": "system",
                 "content": (
-                    "You will be given a judge response. Parse it and RETURN ONLY a strict JSON object with keys: "
-                    "`valid_score` (boolean), `score` {score_instruction}, and `explanation` (string). "
-                    "Do not include any extra text, preamble, or markdown. No code fences. JSON only."
+                    f"You are given a response output from a judge which should contain a score and an explanation. "
+                    f"Please parse the text into a structured object containing `valid_score` (boolean indicating whether the response contains a valid score), "
+                    f"the `score` {score_instruction}, and an `explanation` (a short summary of the judge's reasoning). "
+                    f"If the response does not contain a valid score, set `valid_score` to False and set the `score` to 0.0."
                 ),
             },
             {

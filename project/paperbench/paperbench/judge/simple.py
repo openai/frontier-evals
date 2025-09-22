@@ -777,7 +777,8 @@ class SimpleJudge(Judge):
                                 # 最后尝试：先 json.loads，再用 pydantic 校验
                                 try:
                                     obj = json.loads(fixed)
-                                    judge_response = ParsedJudgeResponse.model_validate(obj)
+                                    coerced = self._coerce_parsed_obj(obj, continuous)
+                                    judge_response = ParsedJudgeResponse.model_validate(coerced)
                                 except Exception:
                                     judge_response = None
 
@@ -845,3 +846,73 @@ class SimpleJudge(Judge):
         # 只处理字符串整体的非法反斜杠：(?<!\\)\\(?![\\/\"bfnrtu])
         s = re.sub(r"(?<!\\)\\(?![\\/\"bfnrtu])", r"\\\\", s)
         return s
+
+    def _coerce_parsed_obj(self, obj: object, continuous: bool) -> dict[str, object]:
+        """
+        将模型返回的宽松结构整形为 {valid_score: bool, score: number, explanation: str}
+        - 兼容 `score` 为对象的情况（例如 {"score": 1, "max_score": 1}）
+        - 兼容 `score` 为字符串或布尔
+        - 兼容 `explanation` 为列表/对象
+        - 对非连续评分（0/1）进行钳制；连续评分则限制在 [0,1]
+        """
+        if not isinstance(obj, dict):
+            return {"valid_score": False, "score": 0 if not continuous else 0.0, "explanation": str(obj)}
+
+        out: dict[str, object] = {}
+        # valid_score
+        valid = obj.get("valid_score")
+        if isinstance(valid, str):
+            valid = valid.strip().lower() in {"true", "1", "yes"}
+        elif not isinstance(valid, bool):
+            valid = True  # 默认认为有分数即可有效
+        out["valid_score"] = valid
+
+        # score
+        score_val = obj.get("score")
+        if isinstance(score_val, dict):
+            # 常见变体：{"score": 1, "max_score": 1}
+            inner = None
+            for k in ("score", "value", "val"):
+                if k in score_val and isinstance(score_val[k], (int, float, str)):
+                    inner = score_val[k]
+                    break
+            max_score = score_val.get("max_score") if isinstance(score_val.get("max_score"), (int, float)) else None
+            # 取 inner
+            try:
+                inner_num = float(inner) if inner is not None else 0.0
+            except Exception:
+                inner_num = 0.0
+            if continuous:
+                if max_score and float(max_score) > 0:
+                    score_num = inner_num / float(max_score)
+                else:
+                    score_num = inner_num
+                score_num = max(0.0, min(1.0, score_num))
+            else:
+                # 非连续：任何 >= 0.5 视为 1
+                score_num = 1.0 if inner_num >= 0.5 else 0.0
+        else:
+            # 标量或字符串
+            try:
+                score_num = float(score_val)
+            except Exception:
+                score_num = 0.0
+            if continuous:
+                score_num = max(0.0, min(1.0, score_num))
+            else:
+                score_num = 1.0 if score_num >= 0.5 else 0.0
+        out["score"] = score_num if continuous else int(score_num)
+
+        # explanation
+        expl = obj.get("explanation")
+        if isinstance(expl, list):
+            expl_str = "\n".join(str(x) for x in expl)
+        elif isinstance(expl, (dict, set, tuple)):
+            try:
+                expl_str = json.dumps(expl, ensure_ascii=False)
+            except Exception:
+                expl_str = str(expl)
+        else:
+            expl_str = str(expl) if expl is not None else ""
+        out["explanation"] = expl_str
+        return out

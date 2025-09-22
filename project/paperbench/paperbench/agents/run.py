@@ -8,7 +8,7 @@ import tarfile
 import time
 
 import blobfile as bf
-from structlog.stdlib import BoundLogger
+import structlog.stdlib
 
 from alcatraz.clusters.local import ClusterConfig, VolumesConfig
 from nanoeval.eval import RolloutSystemError
@@ -24,6 +24,8 @@ from paperbench.nano.task import PBTask
 from paperbench.paper_registry import Paper
 from paperbench.utils import purple
 
+logger = structlog.stdlib.get_logger(component=__name__)
+
 
 async def run_agent_in_computer(
     computer: ComputerInterface,
@@ -31,15 +33,20 @@ async def run_agent_in_computer(
     paper: Paper,
     agent: Agent,
     run_dir: str,
-    logger: BoundLogger,
     agent_dir_config: AgentDirConfig,
     timeout: int,
     upload_interval_seconds: int = 1800,
     upload_interval_messages: int | None = None,
     save_cluster_output_to_host: bool = True,
 ) -> AgentOutput:
+    ctx_logger = logger.bind(
+        run_group_id=task.run_group_id,
+        runs_dir=task.runs_dir,
+        run_id=task.run_id,
+        destinations=["run"],
+    )
     start = time.time()
-    logger.info(purple(f"Run for `{agent.id}` agent attempting `{paper.id}`: {run_dir}"))
+    ctx_logger.info(purple(f"Run for `{agent.id}` agent attempting `{paper.id}`: {run_dir}"))
 
     error: Exception | None = None
 
@@ -50,26 +57,33 @@ async def run_agent_in_computer(
             agent_dir_config=agent_dir_config,
             run_dir=run_dir,
             timeout=timeout,
-            logger=logger,
+            run_group_id=task.run_group_id,
+            runs_dir=task.runs_dir,
+            run_id=task.run_id,
             upload_interval_seconds=upload_interval_seconds,
             upload_interval_messages=upload_interval_messages,
         )
-        logger.info("Done running agent in cluster")
+        ctx_logger.info("Done running agent in cluster")
 
         if save_cluster_output_to_host:
             await save_computer_output(
-                computer, run_dir, agent_dir_config.directories_to_save, logger=logger
+                computer,
+                run_dir,
+                agent_dir_config.directories_to_save,
+                task.run_group_id,
+                task.runs_dir,
+                task.run_id,
             )
     except Exception as e:
         error = e
-        logger.exception(f"Run failed with error:\n{str(error)}")
+        ctx_logger.exception(f"Run failed with error:\n{str(error)}")
     finally:
         # re-raise retryable errors
         if isinstance(error, RolloutSystemError):
             raise error
 
         end = time.time()
-        logger.info(f"Run completed in {end - start:.2f} seconds.")
+        ctx_logger.info(f"Run completed in {end - start:.2f} seconds.")
 
         status_exists = bf.exists(bf.join(run_dir, "status.json"))
 
@@ -131,13 +145,18 @@ async def execute_agent_in_computer(
     agent_dir_config: AgentDirConfig,
     run_dir: str,
     timeout: int,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     upload_interval_seconds: int | None = 1800,
     upload_interval_messages: int | None = None,
 ) -> None:
     """Initiates the agent via its start script inside the cluster container."""
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
     cmd_str = build_agent_command(agent, agent_dir_config.agent_dir)
-    logger.info(f"Running agent with command: {cmd_str}")
+    ctx_logger.info(f"Running agent with command: {cmd_str}")
 
     heavy_periodic_upload_task: asyncio.Task[None] | None = None
     light_periodic_upload_task: asyncio.Task[None] | None = None
@@ -153,25 +172,31 @@ async def execute_agent_in_computer(
                 agent_start_time=agent_start_time,
                 agent_dir_config=agent_dir_config,
                 run_dir=run_dir,
-                logger=logger,
+                run_group_id=run_group_id,
+                runs_dir=runs_dir,
+                run_id=run_id,
             )
             light_periodic_upload_task = await start_periodic_light_log_upload(
                 agent_start_time=agent_start_time,
                 run_dir=run_dir,
-                logger=logger,
+                run_group_id=run_group_id,
+                runs_dir=runs_dir,
+                run_id=run_id,
             )
             heavy_periodic_upload_task = await start_periodic_heavy_log_upload(
                 computer=computer,
                 agent_dir_config=agent_dir_config,
                 agent_start_time=agent_start_time,
                 run_dir=run_dir,
+                run_group_id=run_group_id,
+                runs_dir=runs_dir,
+                run_id=run_id,
                 upload_interval_messages=upload_interval_messages,
                 upload_interval_seconds=upload_interval_seconds,
-                logger=logger,
             )
 
             while not agent_task.done():
-                logger.info("Waiting for agent to finish...")
+                ctx_logger.info("Waiting for agent to finish...")
                 for task in [
                     initial_upload_task,
                     heavy_periodic_upload_task,
@@ -189,13 +214,13 @@ async def execute_agent_in_computer(
                 raise Exception(
                     f"Agent exited with code: {output.exit_code}, output: \n{decoded_result}"
                 )
-            logger.info(f"Agent done! exit_code: {output.exit_code}")
+            ctx_logger.info(f"Agent done! exit_code: {output.exit_code}")
         except asyncio.TimeoutError as e:
-            logger.warning(
+            ctx_logger.warning(
                 f"Agent run timed out after {time.time() - agent_start_time} second (timeout: {timeout}): {e}"
             )
         except asyncio.CancelledError as e:
-            logger.warning(
+            ctx_logger.warning(
                 f"Agent run cancelled after {time.time() - agent_start_time} seconds: {e}"
             )
         finally:
@@ -214,7 +239,7 @@ async def execute_agent_in_computer(
                         await upload_task
                     except (asyncio.CancelledError, Exception) as e:
                         if not isinstance(e, asyncio.CancelledError):
-                            logger.exception(f"Task failed with error: {e}")
+                            ctx_logger.exception(f"Task failed with error: {e}")
 
 
 def build_agent_command(agent: Agent, agent_dir: str) -> str:
@@ -236,7 +261,9 @@ async def save_computer_output(
     computer: ComputerInterface,
     save_dir: str,
     directories_to_save: list[str],
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
 ) -> None:
     """
     Extracts the submission, logs, and code directories from the cluster container to the host
@@ -248,14 +275,18 @@ async def save_computer_output(
         directories_to_save: The directories to save from the container.
     """
     for dir_to_save in directories_to_save:
-        await extract_dir_from_computer(computer, dir_to_save, save_dir, logger=logger)
+        await extract_dir_from_computer(
+            computer, dir_to_save, save_dir, run_group_id, runs_dir, run_id
+        )
 
 
 async def extract_dir_from_computer(
     computer: ComputerInterface,
     path_on_cluster: str,
     save_dir: str,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
 ) -> None:
     """
     Extracts a directory from a computer to a specified local directory.
@@ -265,9 +296,12 @@ async def extract_dir_from_computer(
         path_on_cluster: The path to the directory on the computer.
         save_dir: The local directory where the file or directory will be saved.
     """
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
     res = await computer.send_shell_command(f"ls -l {path_on_cluster}")
     if res.exit_code != 0:
-        logger.exception(
+        ctx_logger.exception(
             f"Directory {path_on_cluster} does not exist\n{res.output.decode('utf-8')}"
         )
         return
@@ -287,9 +321,9 @@ async def extract_dir_from_computer(
     try:
         with tarfile.open(fileobj=tar_stream, mode="r") as tar:
             tar.extractall(path=save_dir)
-        logger.info(f"Extracted contents to: {save_dir}/")
+        ctx_logger.info(f"Extracted contents to: {save_dir}/")
     except tarfile.TarError as e:
-        logger.exception(f"Error extracting tar file: {e}")
+        ctx_logger.exception(f"Error extracting tar file: {e}")
         return
     finally:
         # cleanup

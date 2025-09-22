@@ -90,17 +90,6 @@
       args:
         chdir: /app/expensify
     
-    - name: Create .env file with the environment variables
-      lineinfile:
-        path: /app/expensify/.env
-        line: '{{ item.key }}={{ item.value }}'
-        create: yes
-      with_dict:
-        PUSHER_APP_KEY: "{{ lookup('env', 'PUSHER_APP_KEY') }}"
-        USE_WEB_PROXY: "{{ lookup('env', 'USE_WEB_PROXY') }}"
-        EXPENSIFY_URL: "{{ lookup('env', 'EXPENSIFY_URL') }}"
-        NEW_EXPENSIFY_URL: "{{ lookup('env', 'NEW_EXPENSIFY_URL') }}"
-
     - name: Remove node_modules folder
       file:
         path: /app/expensify/node_modules

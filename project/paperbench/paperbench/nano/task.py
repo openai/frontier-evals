@@ -107,7 +107,10 @@ class PBTask(ComputerTask):
         Specifically, sets up the files and folders necessary for attempting the PBTask.
         """
         ctx_logger = logger.bind(
-            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir
+            run_group_id=self.run_group_id,
+            runs_dir=self.runs_dir,
+            run_id=self.run_id,
+            destinations=["run"],
         )
 
         paper = paper_registry.get_paper(self.paper_id)
@@ -168,7 +171,9 @@ class PBTask(ComputerTask):
                     agent_start_time=int(time.time()),
                     agent_dir_config=prepare_agent_dir_config(),
                     run_dir=self.run_dir,
-                    logger=ctx_logger.bind(destinations=["run"]),
+                    run_group_id=self.run_group_id,
+                    runs_dir=self.runs_dir,
+                    run_id=self.run_id,
                 )
                 await upload_status(
                     start_time=int(time.time()),
@@ -383,7 +388,9 @@ class PBTask(ComputerTask):
             metadata = await reproduce_on_computer_with_salvaging(
                 cluster_config=self.reproduction.cluster_config,
                 submission_path=submission,
-                logger=ctx_logger.bind(destinations=["run"]),
+                run_group_id=self.run_group_id,
+                runs_dir=self.runs_dir,
+                run_id=self.run_id,
                 run_dir=self.run_dir,
                 timeout=self.reproduction.timeout,
                 retry_threshold=self.reproduction.retry_threshold,
@@ -494,7 +501,9 @@ class PBTask(ComputerTask):
                 paper_id=paper_id,
                 judge_type=self.judge.scaffold,
                 completer_config=self.judge.completer_config,
-                logger=ctx_logger.bind(destinations=["run"]),
+                run_group_id=self.run_group_id,
+                runs_dir=self.runs_dir,
+                run_id=self.run_id,
                 code_only=self.judge.code_only,
                 computer=computer,
                 resources_provided=self.judge.resources_provided,

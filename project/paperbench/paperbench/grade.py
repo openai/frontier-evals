@@ -12,7 +12,6 @@ from typing import Any
 import blobfile as bf
 import structlog.stdlib
 from preparedness_turn_completer.turn_completer import TurnCompleter
-from structlog.stdlib import BoundLogger
 
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.judge.create_judge import create_judge, handle_judge_kwargs
@@ -148,7 +147,9 @@ async def grade_submission(
     paper_id: str,
     judge_type: str,
     completer_config: TurnCompleter.Config,
-    logger: BoundLogger,
+    run_group_id: str,
+    runs_dir: str,
+    run_id: str,
     code_only: bool = False,
     resources_provided: bool = False,
     computer: ComputerInterface | None = None,
@@ -162,7 +163,12 @@ async def grade_submission(
     - Upload the judge results
     """
 
+    ctx_logger = logger.bind(
+        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
+    )
+
     time_start = time.time()
+
     start_ts = get_timestamp()
     logger.info(f"Grading {submission_path} for paper {paper_id}")
 
@@ -178,12 +184,14 @@ async def grade_submission(
 
             # Step 1: Unzip submission from submission_path to tmp dir
             if computer:
-                await put_submission_in_computer(computer, submission_path, logger)
+                await put_submission_in_computer(
+                    computer, submission_path, run_group_id, runs_dir, run_id
+                )
             else:
                 with bf.BlobFile(submission_path, "rb") as f:
                     with tarfile.open(fileobj=f, mode="r") as tar:
                         tar.extractall(path=submission_dir)
-            logger.info(f"Unzipped submission for judge to {submission_dir}")
+            ctx_logger.info(f"Unzipped submission for judge to {submission_dir}")
 
             # Step 2: Run the judge
             graded_task_tree = await run_judge(
@@ -199,7 +207,7 @@ async def grade_submission(
             if judge_type == "simple":
                 token_usage = get_total_token_usage(graded_task_tree)
 
-            logger.info(f"Graded {paper_id} at {submission_path}")
+            ctx_logger.info(f"Graded {paper_id} at {submission_path}")
 
             time_end = time.time()
             end_ts = get_timestamp()
@@ -241,12 +249,12 @@ async def grade_submission(
                 grader_upload_path,
                 json.dumps(judge_output.to_dict(), indent=4).encode("utf-8"),
             )
-            logger.info(f"Grading results have been written to file: {grader_upload_path}")
+            ctx_logger.info(f"Grading results have been written to file: {grader_upload_path}")
     except Exception as e:
         error_msg = str(e)
-        logger.exception(f"Grading failed with error:\n{error_msg}")
+        ctx_logger.exception(f"Grading failed with error:\n{error_msg}")
     finally:
         time_end = time.time()
-        logger.info(f"Grading completed in {time_end - time_start:.2f} seconds.")
+        ctx_logger.info(f"Grading completed in {time_end - time_start:.2f} seconds.")
 
     return judge_output

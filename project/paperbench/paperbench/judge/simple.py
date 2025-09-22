@@ -5,6 +5,7 @@ import json
 import re
 import logging
 from dataclasses import dataclass
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TypeAlias
@@ -116,12 +117,32 @@ class SimpleJudge(Judge):
         self.prompt = build_judge_task_prompt(code_only)
         self.buffer_tokens = buffer_tokens
         self.joined_addendum = f"{self.addendum if self.addendum else ''}\n{self.judge_addendum if self.judge_addendum else ''}".strip()
-        self.leaf_semaphore = asyncio.Semaphore(100)
+        # 允许通过环境变量降低叶子并发，缓解配额与峰值
+        try:
+            import os as _os
+            _leaf_limit = int(_os.getenv("PB_LEAF_CONCURRENCY", "100"))
+        except Exception:
+            _leaf_limit = 100
+        self.leaf_semaphore = asyncio.Semaphore(max(1, _leaf_limit))
         self.max_prior_nodes = max_prior_nodes
         if self.joined_addendum == "":
             self.joined_addendum = "(NO ADDENDUM GIVEN)"
         self.reproduce_touched_files = True  # by default assume reproduce was functional
         self.max_file_depth = max_file_depth
+
+        # ---- Progress tracking (rubric coverage & ETA) ----
+        self._progress_lock = asyncio.Lock()
+        self._completed_leaves: int = 0
+        self._total_leaves: int = self._count_total_leaves(self.rubric)
+        self._grading_start_time: float = time.time()
+        try:
+            # 初始快照（completed=0）
+            awaitable = self._save_progress_snapshot()
+            if asyncio.get_event_loop().is_running():
+                # fire-and-forget，避免阻塞构造
+                asyncio.create_task(awaitable)
+        except Exception:
+            pass
 
     def _init_structured_completer(
         self, config: TurnCompleter.Config | None, response_format: type[BaseModel]
@@ -143,8 +164,36 @@ class SimpleJudge(Judge):
                     response_format=response_format,
                 )
             else:
-                # 复用当前主completer_config（例如Google/Gemini）
-                cfg = self.completer_config
+                # 如果主 completer 为 Google，可选择在解析步骤启用/关闭 JSON schema（由 PB_PARSE_SCHEMA 控制）
+                try:
+                    from preparedness_turn_completer.google_completions_turn_completer import (
+                        GoogleCompletionsTurnCompleter,
+                    )
+                    if isinstance(self.completer_config, GoogleCompletionsTurnCompleter.Config):
+                        parse_model = _os.getenv("PB_PARSE_MODEL", self.completer_config.model)
+                        use_schema = _os.getenv("PB_PARSE_SCHEMA", "true").lower() != "false"
+                        if use_schema:
+                            cfg = GoogleCompletionsTurnCompleter.Config(
+                                model=parse_model,
+                                api_key=getattr(self.completer_config, "api_key", None),
+                                temperature=self.completer_config.temperature,
+                                max_tokens=self.completer_config.max_tokens,
+                                top_p=self.completer_config.top_p,
+                                response_mime_type="application/json",
+                                response_schema_model=response_format,
+                            )
+                        else:
+                            cfg = GoogleCompletionsTurnCompleter.Config(
+                                model=parse_model,
+                                api_key=getattr(self.completer_config, "api_key", None),
+                                temperature=self.completer_config.temperature,
+                                max_tokens=self.completer_config.max_tokens,
+                                top_p=self.completer_config.top_p,
+                            )
+                    else:
+                        cfg = self.completer_config
+                except Exception:
+                    cfg = self.completer_config
         return cfg, cfg.build()
 
     async def process_file_content(self) -> None:
@@ -603,6 +652,11 @@ class SimpleJudge(Judge):
             leaf_logger = self.get_logger(task)
             leaf_std_logger = leaf_logger._logger
             try:
+                # 记录叶子开始事件
+                try:
+                    await self._append_leaf_event(task, event="leaf_start")
+                except Exception:
+                    pass
                 leaf_logger.info(f"Grading leaf: {task.requirements}")
                 if task.task_category == "Result Analysis" and not self.reproduce_touched_files:
                     leaf_logger.info(
@@ -656,20 +710,21 @@ class SimpleJudge(Judge):
                         },
                     )
 
-                    # Dump full messages
-                    if (
-                        self.log_path
-                        and leaf_std_logger is not None
-                        and leaf_std_logger.handlers
-                        and isinstance(leaf_std_logger.handlers[0], logging.FileHandler)
-                    ):
-                        log_file_path = leaf_std_logger.handlers[0].baseFilename
-                        with open(
-                            Path(log_file_path).parent / f"{task.id}_messages.jsonl", "w"
-                        ) as f:
-                            for message in messages:
-                                f.write(json.dumps(message) + "\n")
+                    # 更新进度（已完成叶子数 +1）
+                    try:
+                        async with self._progress_lock:
+                            self._completed_leaves += 1
+                        await self._save_progress_snapshot(last_leaf_id=task.id)
+                    except Exception:
+                        pass
 
+                    #（已按需精简：不再写入每个叶子的 messages.jsonl）
+
+                # 记录叶子完成事件
+                try:
+                    await self._append_leaf_event(task, event="leaf_done")
+                except Exception:
+                    pass
                 return graded_task_node
             finally:
                 if leaf_std_logger is not None:
@@ -715,6 +770,78 @@ class SimpleJudge(Judge):
         graded_leaf_shim = await self.grade_leaf(leaf_shim)
         return graded_leaf_shim
 
+    def _count_total_leaves(self, node: TaskNode) -> int:
+        """递归统计 rubric 中叶子节点数量（以 TaskNode 无子任务为叶）。"""
+        try:
+            if not getattr(node, "sub_tasks", None):
+                return 1
+            return sum(self._count_total_leaves(ch) for ch in node.sub_tasks)
+        except Exception:
+            # 容错：无法解析则退回 0
+            return 0
+
+    async def _save_progress_snapshot(self, last_leaf_id: str | None = None) -> None:
+        """将当前进度快照写入 log_path/progress.json，包含已评测叶子、总叶子、百分比、ETA 等。"""
+        if not self.log_path:
+            return
+        try:
+            completed = self._completed_leaves
+            total = max(1, self._total_leaves)
+            pct = completed / total
+            elapsed = max(0.0, time.time() - self._grading_start_time)
+            remaining = max(total - completed, 0)
+            # 简单 ETA：用平均单叶耗时 * 剩余叶子数
+            avg = (elapsed / completed) if completed > 0 else 0.0
+            eta = avg * remaining
+
+            payload = {
+                "total_leaves": self._total_leaves,
+                "completed_leaves": completed,
+                "progress_pct": round(pct, 4),
+                "elapsed_seconds": round(elapsed, 2),
+                "eta_seconds": round(eta, 2),
+                "last_leaf_id": last_leaf_id,
+            }
+            out_path = Path(self.log_path) / "progress.json"
+            with open(out_path, "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
+    async def _append_leaf_event(self, task: TaskNode, event: str) -> None:
+        """追加叶子级事件到 progress.leaves.jsonl，包含当前总体进度。"""
+        if not self.log_path:
+            return
+        try:
+            # 允许通过环境变量禁用叶子事件明细输出（默认禁用，避免产生大量文件）
+            import os as _os
+            if _os.getenv("PB_DISABLE_LEAF_EVENTS", "true").lower() == "true":
+                return
+            # 生成 ISO 简单时间戳
+            from datetime import datetime, timezone
+            ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            async with self._progress_lock:
+                completed = self._completed_leaves
+                total = max(1, self._total_leaves)
+                elapsed = max(0.0, time.time() - self._grading_start_time)
+                pct = completed / total
+                line = {
+                    "ts": ts,
+                    "event": event,
+                    "leaf_id": task.id,
+                    "task_category": task.task_category,
+                    "requirements": task.requirements,
+                    "completed": completed,
+                    "total": total,
+                    "progress_pct": round(pct, 4),
+                    "elapsed_seconds": round(elapsed, 2),
+                }
+                out_path = Path(self.log_path) / "progress.leaves.jsonl"
+                with open(out_path, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(line, ensure_ascii=False) + "\n")
+        except Exception:
+            pass
+
     async def _parse_model_response(
         self, response: str | None, continuous: bool = False
     ) -> tuple[
@@ -725,16 +852,21 @@ class SimpleJudge(Judge):
             raise ParseError("No response received")
 
         score_instruction = "(either 0 or 1)" if not continuous else "(between 0 and 1)"
-        # 使用原有规则提示，不改变判定与产出规则（仅解析，不强制“仅 JSON”）
+        # 使用原有规则提示，不改变判定与产出规则（可选附加格式提醒）
+        import os as _os
+        _sys_content = (
+            f"You are given a response output from a judge which should contain a score and an explanation. "
+            f"Please parse the text into a structured object containing `valid_score` (boolean indicating whether the response contains a valid score), "
+            f"the `score` {score_instruction}, and an `explanation` (a short summary of the judge's reasoning). "
+            f"If the response does not contain a valid score, set `valid_score` to False and set the `score` to 0.0."
+        )
+        if _os.getenv("PB_PARSE_FORMAT_HINT", "false").lower() == "true":
+            _sys_content += "\nFormat reminder: return a single JSON object; avoid extra text or code fences. This is a format preference and does not alter scoring rules."
+
         messages: list[ChatCompletionMessageParam] = [
             {
                 "role": "system",
-                "content": (
-                    f"You are given a response output from a judge which should contain a score and an explanation. "
-                    f"Please parse the text into a structured object containing `valid_score` (boolean indicating whether the response contains a valid score), "
-                    f"the `score` {score_instruction}, and an `explanation` (a short summary of the judge's reasoning). "
-                    f"If the response does not contain a valid score, set `valid_score` to False and set the `score` to 0.0."
-                ),
+                "content": _sys_content,
             },
             {
                 "role": "user",
@@ -803,9 +935,15 @@ class SimpleJudge(Judge):
             return None
         # 快速路径：三引号json代码块
         import re
+        # 优先 ```json ... ```
         m = re.search(r"```json\s*(.*?)\s*```", text, re.DOTALL | re.IGNORECASE)
         if m:
             candidate = m.group(1).strip()
+            return candidate if candidate else None
+        # 兼容无语言标注的 ``` ... ```
+        m2 = re.search(r"```\s*(.*?)\s*```", text, re.DOTALL)
+        if m2:
+            candidate = m2.group(1).strip()
             return candidate if candidate else None
         # 一般路径：第一个'{'开始的匹配括号
         start = text.find("{")

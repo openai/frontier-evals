@@ -99,6 +99,11 @@ class GoogleCompletionsTurnCompleter(TurnCompleter):
         temperature: float | None | NotGiven = NOT_GIVEN
         max_tokens: int | None | NotGiven = NOT_GIVEN
         top_p: float | None | NotGiven = NOT_GIVEN
+        # JSON schema 支持（仅在解析步骤使用，可选）
+        response_mime_type: str | None = None
+        # 直接提供 JSON Schema dict，或提供 Pydantic 模型类用于自动生成 schema
+        response_json_schema: dict[str, Any] | None = None
+        response_schema_model: type[BaseModel] | None = None
         retry_config: RetryConfig = DEFAULT_RETRY_CONFIG
 
         def build(self) -> GoogleCompletionsTurnCompleter:
@@ -109,6 +114,9 @@ class GoogleCompletionsTurnCompleter(TurnCompleter):
                 max_tokens=self.max_tokens,
                 top_p=self.top_p,
                 retry_config=self.retry_config,
+                response_mime_type=self.response_mime_type,
+                response_json_schema=self.response_json_schema,
+                response_schema_model=self.response_schema_model,
             )
 
         @field_validator("*", mode="before")
@@ -140,13 +148,29 @@ class GoogleCompletionsTurnCompleter(TurnCompleter):
         google_prompt = self._convert_to_google_format(conversation)
 
         # Prepare generation config
-        generation_config = {}
+        generation_config: dict[str, Any] = {}
         if self.temperature is not NOT_GIVEN and self.temperature is not None:
             generation_config["temperature"] = self.temperature
         if self.max_tokens is not NOT_GIVEN and self.max_tokens is not None:
             generation_config["max_output_tokens"] = self.max_tokens
         if self.top_p is not NOT_GIVEN and self.top_p is not None:
             generation_config["top_p"] = self.top_p
+        # JSON schema（如果配置提供，则启用）
+        try:
+            schema_dict: dict[str, Any] | None = None
+            if getattr(self, "response_json_schema", None):
+                schema_dict = self.response_json_schema  # type: ignore[attr-defined]
+            elif getattr(self, "response_schema_model", None):
+                model_cls = self.response_schema_model  # type: ignore[attr-defined]
+                if model_cls is not None and hasattr(model_cls, "model_json_schema"):
+                    # 使用 Pydantic v2 生成 JSON Schema
+                    schema_dict = model_cls.model_json_schema()  # type: ignore
+            if schema_dict:
+                generation_config["response_mime_type"] = getattr(self, "response_mime_type", None) or "application/json"
+                generation_config["response_schema"] = schema_dict
+        except Exception:
+            # schema 构造失败时忽略，继续走无 schema 的生成
+            pass
 
         # Call Google API with backoff handling for Google quota / 429 errors
         response = await self._call_with_google_backoff(

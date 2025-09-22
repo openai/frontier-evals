@@ -180,17 +180,12 @@ class Judge(ABC):
         raise NotImplementedError()
 
     def get_logger(self, task: TaskNode) -> BoundLogger:
-        """Creates a logger for a specific task."""
+        """Creates a logger for a specific task.
 
-        if not self.log_path:
-            _logger = logging.getLogger("null_logger")
-            _logger.addHandler(logging.NullHandler())
-            return wrap_logger(_logger)
+        已按需精简：不再生成任何 .log 文件，统一返回空 logger。
+        若未来需要恢复文件日志，可在此处改为创建 FileHandler。
+        """
 
-        run_logger = logging.getLogger(task.id)
-        run_logger.setLevel(logging.DEBUG)
-        log_file_handler = logging.FileHandler(self.log_path / f"{task.id}.log")
-        run_logger.addHandler(log_file_handler)
-        run_logger.propagate = False
-
-        return wrap_logger(run_logger)
+        _logger = logging.getLogger("null_logger")
+        _logger.addHandler(logging.NullHandler())
+        return wrap_logger(_logger)

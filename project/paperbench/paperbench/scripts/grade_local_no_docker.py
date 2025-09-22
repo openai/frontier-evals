@@ -87,17 +87,33 @@ async def _grade_one(
     tar_path = _make_submission_tar(submission_dir)
     try:
         _append_progress(paper_run_dir, paper_id, "judging_start", archive=tar_path)
-        result = await grade_submission(
-            submission_path=tar_path,
-            grader_upload_path=str(out_json),
-            paper_id=paper_id,
-            judge_type="simple",
-            completer_config=cfg,
-            logger=logger,
-            code_only=code_only,
-            resources_provided=resources_provided,
-            computer=None,  # 关键：无需 Docker，本地评分
-        )
+        try:
+            # 传入 out_dir，让 SimpleJudge 能写叶子级进度文件 progress.json / progress.leaves.jsonl
+            result = await grade_submission(
+                submission_path=tar_path,
+                grader_upload_path=str(out_json),
+                paper_id=paper_id,
+                judge_type="simple",
+                completer_config=cfg,
+                logger=logger,
+                code_only=code_only,
+                resources_provided=resources_provided,
+                computer=None,
+                out_dir=paper_run_dir,
+            )
+        except TypeError:
+            # 兼容旧签名：无 out_dir 参数时退化为原调用
+            result = await grade_submission(
+                submission_path=tar_path,
+                grader_upload_path=str(out_json),
+                paper_id=paper_id,
+                judge_type="simple",
+                completer_config=cfg,
+                logger=logger,
+                code_only=code_only,
+                resources_provided=resources_provided,
+                computer=None,
+            )
         ok = result is not None
         logger.info(
             "graded",

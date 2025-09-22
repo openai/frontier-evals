@@ -39,6 +39,9 @@ class JudgeOutput:
     # 新增：记录评分耗时信息
     # start_time / end_time 为 ISO 字符串，total_time 为秒（float）
     time_cost: dict[str, object] | None = None
+    # 新增：rubric 覆盖统计（最终汇总）
+    # total: 叶子总数, completed: 有效叶子数, invalid: 无效叶子数, coverage_pct: 完成占比, elapsed_seconds: 总耗时秒
+    progress: dict[str, object] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -53,6 +56,7 @@ class JudgeOutput:
             else None,
             "token_usage": self.token_usage.to_dict() if self.token_usage else None,
             "time_cost": self.time_cost if self.time_cost else None,
+            "progress": self.progress if self.progress else None,
         }
 
     @classmethod
@@ -77,6 +81,7 @@ class JudgeOutput:
                 else None,
                 token_usage=token_usage,
                 time_cost=data.get("time_cost"),
+                progress=data.get("progress"),
             )
         except KeyError as e:
             raise ValueError(f"Missing key {e} in judge output data!") from e
@@ -147,6 +152,7 @@ async def grade_submission(
     code_only: bool = False,
     resources_provided: bool = False,
     computer: ComputerInterface | None = None,
+    out_dir: Path | None = None,
 ) -> JudgeOutput | None:
     """
     Grade a single submission. If a computer is provided, the submission will be graded on the computer.
@@ -188,6 +194,7 @@ async def grade_submission(
                 code_only=code_only,
                 resources_provided=resources_provided,
                 computer=computer,
+                out_dir=out_dir,
             )
             if judge_type == "simple":
                 token_usage = get_total_token_usage(graded_task_tree)
@@ -196,6 +203,12 @@ async def grade_submission(
 
             time_end = time.time()
             end_ts = get_timestamp()
+            # 计算覆盖进度
+            total_leaves = len(graded_task_tree.get_leaf_nodes())
+            invalid_leaves = len([node for node in graded_task_tree.get_leaf_nodes() if not node.valid_score])
+            completed_leaves = max(total_leaves - invalid_leaves, 0)
+            elapsed_seconds = float(time_end - time_start)
+            coverage_pct = (completed_leaves / total_leaves) if total_leaves > 0 else 0.0
             judge_output = JudgeOutput(
                 judge_type=judge_type,
                 completer_config=completer_config,
@@ -212,7 +225,14 @@ async def grade_submission(
                 time_cost={
                     "start_time": start_ts,
                     "end_time": end_ts,
-                    "total_time": float(time_end - time_start),
+                    "total_time": elapsed_seconds,
+                },
+                progress={
+                    "total": total_leaves,
+                    "completed": completed_leaves,
+                    "invalid": invalid_leaves,
+                    "coverage_pct": round(coverage_pct, 4),
+                    "elapsed_seconds": round(elapsed_seconds, 2),
                 },
             )
 

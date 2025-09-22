@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -682,10 +683,12 @@ class SimpleJudge(Judge):
         existing_usage: TokenUsage | None,
         incoming_usage: CompletionUsage | None,
     ) -> TokenUsage | None:
-        if isinstance(completer, OpenAICompletionsTurnCompleter):
+        # 兼容任意 completer：只要提供了 usage 就计入（OpenAI / Google 均可）
+        if incoming_usage is not None:
             if existing_usage is None:
                 existing_usage = TokenUsage()
-            existing_usage.add_from_completion(completer.model, incoming_usage)
+            model_name = getattr(completer, "model", "unknown")
+            existing_usage.add_from_completion(model_name, incoming_usage)
 
         return existing_usage
 
@@ -753,7 +756,7 @@ class SimpleJudge(Judge):
 
             content = completion.output_messages[0].content
 
-            # 解析：优先直接作为JSON；失败则从文本中提取JSON片段再解析
+            # 解析：优先直接作为JSON；失败则从文本中提取JSON片段再解析；仍失败则进行转义修复
             judge_response = None
             if content:
                 try:
@@ -762,7 +765,20 @@ class SimpleJudge(Judge):
                     # 回退：尝试从文本中提取JSON对象再解析
                     json_str = self._extract_json_object(content)
                     if json_str:
-                        judge_response = ParsedJudgeResponse.model_validate_json(json_str)
+                        try:
+                            judge_response = ParsedJudgeResponse.model_validate_json(json_str)
+                        except Exception:
+                            # 二次回退：修复非法转义（如 LaTeX 的 \ell 等）后再解析
+                            fixed = self._sanitize_json_str(json_str)
+                            try:
+                                judge_response = ParsedJudgeResponse.model_validate_json(fixed)
+                            except Exception:
+                                # 最后尝试：先 json.loads，再用 pydantic 校验
+                                try:
+                                    obj = json.loads(fixed)
+                                    judge_response = ParsedJudgeResponse.model_validate(obj)
+                                except Exception:
+                                    judge_response = None
 
             if judge_response is None:
                 raise ParseError(f"Response could not be parsed: {content}")
@@ -816,3 +832,15 @@ class SimpleJudge(Judge):
                 if depth == 0:
                     return text[start : i + 1]
         return None
+
+    def _sanitize_json_str(self, s: str) -> str:
+        """
+        尝试修复常见的JSON非法转义问题：
+        - 将不在合法集合 [\, /, \\, b, f, n, r, t, u, "] 之后的单个反斜杠进行转义。
+        - 该修复主要应对 LaTeX 片段（如 \ell, \alpha）或路径中的反斜杠导致的解析失败。
+        """
+        # 先去掉可能残留的代码块标记
+        s = re.sub(r"^```json\s*|```\s*$", "", s.strip(), flags=re.IGNORECASE)
+        # 只处理字符串整体的非法反斜杠：(?<!\\)\\(?![\\/\"bfnrtu])
+        s = re.sub(r"(?<!\\)\\(?![\\/\"bfnrtu])", r"\\\\", s)
+        return s

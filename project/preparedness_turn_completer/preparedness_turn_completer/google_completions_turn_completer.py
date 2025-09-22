@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import functools
 import os
+import re
 from typing import Any, Iterable, Literal, Unpack
 
 import structlog
@@ -146,13 +148,11 @@ class GoogleCompletionsTurnCompleter(TurnCompleter):
         if self.top_p is not NOT_GIVEN and self.top_p is not None:
             generation_config["top_p"] = self.top_p
 
-        # Call Google API with retry logic
-        async for attempt in self.retry_config.build():
-            with attempt:
-                response = await self._client.generate_content_async(
-                    google_prompt,
-                    generation_config=genai.GenerationConfig(**generation_config) if generation_config else None,
-                )
+        # Call Google API with backoff handling for Google quota / 429 errors
+        response = await self._call_with_google_backoff(
+            google_prompt,
+            genai.GenerationConfig(**generation_config) if generation_config else None,
+        )
 
         # Convert response back to OpenAI format
         openai_message = self._convert_google_response_to_openai(response)
@@ -165,6 +165,78 @@ class GoogleCompletionsTurnCompleter(TurnCompleter):
             output_messages=[openai_message],
             usage=usage,
         )
+
+    async def _call_with_google_backoff(self, prompt: str | list[dict[str, Any]], generation_config: Any) -> Any:
+        """
+        调用 google API，并对 429/配额类错误进行指数退避。
+        - 优先解析异常中的 retry_delay；若不可用，采用指数退避（5s起，封顶120s）。
+        - 最大重试次数遵循 self.retry_config.stop_after 的时间窗口（保守起见限制为 ~10 次）。
+        """
+        max_attempts = 10
+        delay = 5.0
+        attempt = 0
+        while True:
+            try:
+                return await self._client.generate_content_async(prompt, generation_config=generation_config)
+            except Exception as e:  # noqa: BLE001 - 我们会筛选是否为可重试错误
+                attempt += 1
+                # 判断是否为可重试（429/ResourceExhausted）
+                msg = str(e)
+                is_quota = (
+                    "429" in msg
+                    or "ResourceExhausted" in msg
+                    or "rate limit" in msg.lower()
+                    or "quota" in msg.lower()
+                )
+                if not is_quota or attempt >= max_attempts:
+                    raise
+
+                # 解析 retry_delay（优先）
+                parsed = self._parse_retry_delay_seconds(e)
+                if parsed is not None:
+                    delay = float(parsed)
+                else:
+                    # 指数退避
+                    delay = min(delay * 1.8, 120.0)
+
+                logger.warning(
+                    "Google API quota hit; backing off",
+                    attempt=attempt,
+                    delay_seconds=delay,
+                )
+                await asyncio.sleep(delay)
+
+    def _parse_retry_delay_seconds(self, exc: Exception) -> float | None:
+        """尽力从异常对象或消息中提取推荐的重试秒数。"""
+        # 直接属性（google-genai 可能提供 retry_delay）
+        retry_delay = getattr(exc, "retry_delay", None)
+        if retry_delay is not None:
+            # 可能是 timedelta-like 或对象带 seconds 字段
+            total = getattr(retry_delay, "total_seconds", None)
+            if callable(total):
+                try:
+                    return float(total())
+                except Exception:  # noqa: BLE001
+                    pass
+            sec = getattr(retry_delay, "seconds", None)
+            if isinstance(sec, (int, float)):
+                return float(sec)
+
+        # 从消息解析："Please retry in 38.39s" 或 "seconds: 38"
+        msg = str(exc)
+        m = re.search(r"Please retry in\s+([0-9]+(?:\.[0-9]+)?)s", msg)
+        if m:
+            try:
+                return float(m.group(1))
+            except Exception:  # noqa: BLE001
+                pass
+        m2 = re.search(r"seconds:\s*([0-9]+)", msg)
+        if m2:
+            try:
+                return float(m2.group(1))
+            except Exception:  # noqa: BLE001
+                pass
+        return None
 
     def _convert_to_google_format(self, messages: list) -> str:
         """Convert OpenAI message format to Google format"""

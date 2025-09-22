@@ -46,9 +46,16 @@ def _get_leaf_node_token_usages(task: GradedTaskNode) -> list[TokenUsage]:
     if task.is_leaf():
         # need this check because judge_metadata may be malformed in case of node errors
         if task.judge_metadata is not None and "token_usage" in task.judge_metadata:
-            return [TokenUsage.from_dict(task.judge_metadata["token_usage"])]
-        else:
+            data = task.judge_metadata.get("token_usage")
+            # 兼容 None / 空字典：Gemini 路径可能不提供精确 usage，此时不计入
+            if data:
+                try:
+                    return [TokenUsage.from_dict(data)]
+                except Exception:
+                    # 容错：若结构异常，则忽略该叶子的 usage
+                    return []
             return []
+        return []
 
     token_usages = []
 

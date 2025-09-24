@@ -1,25 +1,24 @@
 # This is a ruff configuration that only automatically fixes things that are
-# likely to be correct and unlikely to be controversial
-# Please do not change this without talking to @shantanu
+# likely to be correct and unlikely to be controversial.
 
 lint.select = [
     # "F401",  # unused-import
     # "F541",  # f-string-missing-placeholders
-    "F632",  # is-literal
-    "F901",  # raise-not-implemented
-    "E703",  # useless-semicolon
+    "F632", # is-literal
+    "F901", # raise-not-implemented
+    "E703", # useless-semicolon
     # "E711",  # none-comparison
     # "E712",  # true-false-comparison
     # "E713",  # not-in-test
     # "E714",  # not-is-test
     # "W291",  # trailing-whitespace
-    "W292",  # missing-newline-at-end-of-file
-    "W293",  # blank-line-with-whitespace
-    "W605",  # invalid-escape-sequence
+    "W292", # missing-newline-at-end-of-file
+    "W293", # blank-line-with-whitespace
+    "W605", # invalid-escape-sequence
     # "B009",  # get-attr-with-constant
     # "B010",  # set-attr-with-constant
-    "B013",  # redundant-tuple-in-exception-handler
-    "B014",  # duplicate-handler-exception
+    "B013", # redundant-tuple-in-exception-handler
+    "B014", # duplicate-handler-exception
     # "C400",  # unnecessary-generator-list
     # "C401",  # unnecessary-generator-set
     # "C402",  # unnecessary-generator-dict
@@ -40,7 +39,7 @@ lint.select = [
     # "COM819",  # prohibited-trailing-comma
 ]
 lint.ignore = [
-    "C408",  # unnecessary-collection-call
+    "C408", # unnecessary-collection-call
 ]
 fix = true
 target-version = "py311"

@@ -14,7 +14,7 @@ repos:
       - id: ruff
         name: ruff-lenient (auto-fix)
         args:
-          - --config=./common/tooling/ruff_autofix_minimal.toml
+          - --config=project/common/tooling/ruff_autofix_minimal.toml
           - --unsafe-fixes
           - --exit-non-zero-on-fix
       

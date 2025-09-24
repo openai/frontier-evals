@@ -6,24 +6,24 @@ This repo contains the dataset and code for the paper "PaperBench: Evaluating AI
 
 ### PaperBench Results
 
-| Agent                                   | Score (%)  | # runs | Date       |
-|-----------------------------------------|------------|--------|------------|
-| IterativeAgent o1-high (36h limit)      | 26.0 ± 0.3 |   3    | 2025-04-02 |
-| IterativeAgent o1-high (24h limit)      | 24.4 ± 0.7 |   3    | 2025-04-02 |
-| BasicAgent claude-3.5-sonnet            | 21.0 ± 0.8 |   3    | 2025-04-02 |
-| IterativeAgent claude-3.5-sonnet        | 16.1 ± 0.1 |   3    | 2025-04-02 |
-| BasicAgent o1-high                      | 13.2 ± 0.3 |   3    | 2025-04-02 |
-| IterativeAgent o3-mini-high             | 8.5 ± 0.8  |   3    | 2025-04-02 |
-| BasicAgent deepseek-r1                  | 6.0 ± 0.3  |   3    | 2025-04-02 |
-| BasicAgent gpt-4o                       | 4.1 ± 0.1  |   3    | 2025-04-02 |
-| BasicAgent gemini-2.0-flash             | 3.2 ± 0.2  |   3    | 2025-04-02 |
-| BasicAgent o3-mini-high                 | 2.6 ± 0.2  |   3    | 2025-04-02 |
+| Agent                              | Score (%)  | # runs | Date       |
+| ---------------------------------- | ---------- | ------ | ---------- |
+| IterativeAgent o1-high (36h limit) | 26.0 ± 0.3 | 3      | 2025-04-02 |
+| IterativeAgent o1-high (24h limit) | 24.4 ± 0.7 | 3      | 2025-04-02 |
+| BasicAgent claude-3.5-sonnet       | 21.0 ± 0.8 | 3      | 2025-04-02 |
+| IterativeAgent claude-3.5-sonnet   | 16.1 ± 0.1 | 3      | 2025-04-02 |
+| BasicAgent o1-high                 | 13.2 ± 0.3 | 3      | 2025-04-02 |
+| IterativeAgent o3-mini-high        | 8.5 ± 0.8  | 3      | 2025-04-02 |
+| BasicAgent deepseek-r1             | 6.0 ± 0.3  | 3      | 2025-04-02 |
+| BasicAgent gpt-4o                  | 4.1 ± 0.1  | 3      | 2025-04-02 |
+| BasicAgent gemini-2.0-flash        | 3.2 ± 0.2  | 3      | 2025-04-02 |
+| BasicAgent o3-mini-high            | 2.6 ± 0.2  | 3      | 2025-04-02 |
 
 ### PaperBench Code-Dev Results
 
-| Agent                       | Score (%)  | # runs | Date       |
-|-----------------------------|------------|--------|------------|
-| IterativeAgent o1-high      | 43.4 ± 0.8 |   3    | 2025-04-02 |
+| Agent                  | Score (%)  | # runs | Date       |
+| ---------------------- | ---------- | ------ | ---------- |
+| IterativeAgent o1-high | 43.4 ± 0.8 | 3      | 2025-04-02 |
 
 ## Introduction
 
@@ -49,7 +49,8 @@ Install PaperBench with [uv](https://docs.astral.sh/uv/)[^1]
 UV_GIT_LFS=1 uv sync
 ```
 
-[^1]: If you get an LFS error here, try cleaning your uv cache: `uv cache clean` and then re-running the command. See
+[^1]:
+    If you get an LFS error here, try cleaning your uv cache: `uv cache clean` and then re-running the command. See
     [this issue comment](https://github.com/astral-sh/uv/issues/12938#issuecomment-2816186433)
 
 ### Get the data
@@ -81,14 +82,14 @@ The HuggingFace token can be obtained through the website after making an accoun
 
 For convenience, the table below lists which papers require a HuggingFace token or OpenAI API key for it to be fully replicated:
 
-| **Paper ID**                   | **HF Token Needed?**          | **OpenAI API Needed?**                                |
-|-------------------------------|--------------------------------|-------------------------------------------------------|
-| **lca‑on‑the‑line**           | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))                 | No                                                    |
-| **stochastic‑interpolants**   | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))                 | No                                                    |
-| **test‑time‑model‑adaptation**| Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))              | No                                                    |
-| **robust‑clip**               | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k))                 | No                                                    |
-| **bbox** | No                             | Yes (`gpt‑3.5‑turbo` / `gpt-4`)                 |
-| **semantic‑self‑consistency** (dev set) | No                             | Yes (`gpt‑3.5‑turbo` / `gpt‑4o‑mini`)                 |
+| **Paper ID**                            | **HF Token Needed?**                                                 | **OpenAI API Needed?**                |
+| --------------------------------------- | -------------------------------------------------------------------- | ------------------------------------- |
+| **lca‑on‑the‑line**                     | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k)) | No                                    |
+| **stochastic‑interpolants**             | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k)) | No                                    |
+| **test‑time‑model‑adaptation**          | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k)) | No                                    |
+| **robust‑clip**                         | Yes ([ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k)) | No                                    |
+| **bbox**                                | No                                                                   | Yes (`gpt‑3.5‑turbo` / `gpt-4`)       |
+| **semantic‑self‑consistency** (dev set) | No                                                                   | Yes (`gpt‑3.5‑turbo` / `gpt‑4o‑mini`) |
 
 ### Build Docker images
 
@@ -125,6 +126,7 @@ uv run python -m paperbench.nano.entrypoint --help
 ```
 
 To use our default solver (`ExternalPythonCodingSolver`), you must set:
+
 - `paperbench.solver=paperbench.nano.eval:ExternalPythonCodingSolver`, specifying to use the `ExternalPythonCodingSolver` solver.
 - `paperbench.solver.agent_id` to the id of the agent you want to run.
 - `paperbench.solver.cluster_config` to `alcatraz.clusters.local:LocalConfig`, to use LocalCluster for managing the agent's container.
@@ -132,7 +134,7 @@ To use our default solver (`ExternalPythonCodingSolver`), you must set:
 - `paperbench.solver.is_nvidia_gpu_env=True` if you have a local available NVIDIA gpu and would like the agent to have access to it.
 - `runner.recorder` to `nanoeval.json_recorder:json_recorder` to save the results of the nanoeval run to a JSON file.
 
-To test that things are set up correctly, run the dummy agent with the dummy judge (`paperbench.judge.scaffold=dummy`) on the debug split. Note this dummy agent is different to the [default nanoeval "dummy" agent](../nanoeval/nanoeval/solvers/computer_tasks/solver.py); our dummy agent tests several aspects of the infrastructure and makes a toy submission.
+To test that things are set up correctly, run the dummy agent with the dummy judge (`paperbench.judge.scaffold=dummy`) on the debug split. Note this dummy agent is different to the [default nanoeval "dummy" agent](../common/nanoeval/nanoeval/solvers/computer_tasks/solver.py); our dummy agent tests several aspects of the infrastructure and makes a toy submission.
 
 ```bash
 uv run python -m paperbench.nano.entrypoint \
@@ -172,7 +174,7 @@ foo/
         submission/
         other_submission/
         ...
-        (i.e. multiple submissions for the same paper (intended for when paperbench.n_tries > 1). 
+        (i.e. multiple submissions for the same paper (intended for when paperbench.n_tries > 1).
         Single submission is also fine. Missing submissions for a try will just
         be graded as scoring 0 for that try)
     ...
@@ -200,22 +202,24 @@ A run group is created for each launch of PaperBench. A run group contains multi
 In each run group directory, there is a `group.log` file that contains the logs for that run group.
 
 In each run directory there is:
+
 - `run.log`: The log for that run.
 - `status.json`: The status of that run.
 - `metadata.json`: Metadata for that run.
 - `grade.json`: The grading result for that run.
 - `agent.log`: (optional) Rollout log from the solver. If present, the monitoring step will run and the run's grade will be marked with `"monitor_ran": true`.
 - A submissions directory, containing multiple timestamped submission directories (e.g., `2025-03-28T10-34-35-UTC`), each with:
-    - `log.json`: Logs from this submission attempt
-    - `submission.tar.gz`: The archived submission files
-    - If the submission was executed/graded, the directory may also contain:
-        - `submission_executed_grader_output_0.json`: Output from the grader.
-        - `submission_executed_metadata.json`: Metadata about the execution.
-        - `submission_executed.tar.gz`: The archived files after execution.
+  - `log.json`: Logs from this submission attempt
+  - `submission.tar.gz`: The archived submission files
+  - If the submission was executed/graded, the directory may also contain:
+    - `submission_executed_grader_output_0.json`: Output from the grader.
+    - `submission_executed_metadata.json`: Metadata about the execution.
+    - `submission_executed.tar.gz`: The archived files after execution.
 
 Snapshots from the agent rollout are also stored in the run directory. An initial snapshot is created when the agent starts, and a final snapshot is created when the agent finishes. Intermediate snapshots are created throughout the agent rollout and can be set via `paperbench.solver.upload_interval_messages` or `paperbench.solver.upload_interval_seconds`.
 
 `runs` directory structure:
+
 ```
 runs/
 ├── <run_group_id>/
@@ -259,6 +263,7 @@ paperbench.judge.code_only=True
 ## Dataset
 
 The PaperBench dataset is stored in the [papers](data/papers) directory. Each paper has its own directory, which contains:
+
 - The paper in PDF and Markdown format.
 - `addendum.md` containing information from the author that is helpful for replication.
 - `assets` directory, containing necessary resources for replication. For example, images from the paper are includes in this directory.
@@ -286,6 +291,7 @@ uv run python paperbench/gui/app.py --path-to-paper <PAPER_DIR> --rubric-file-na
 We've created an auxiliary evaluation, [JudgeEval](paperbench/judge/judge_eval), to evaluate the accuracy of judges. See the JudgeEval [README](paperbench/judge/judge_eval/README.md) for more information.
 
 ## Authors
+
 Giulio Starace, Oliver Jaffe, Dane Sherburn, James Aung, Chan Jun Shern, Leon Maksin, Rachel Dias, Evan Mays, Benjamin Kinsella, Wyatt Thompson, Johannes Heidecke, Amelia Glaese, Tejal Patwardhan
 
 ## Citation
@@ -294,12 +300,12 @@ Please cite using the following BibTeX entry:
 
 ```
 @misc{starace2025paperbenchevaluatingaisability,
-      title={PaperBench: Evaluating AI's Ability to Replicate AI Research}, 
+      title={PaperBench: Evaluating AI's Ability to Replicate AI Research},
       author={Giulio Starace and Oliver Jaffe and Dane Sherburn and James Aung and Jun Shern Chan and Leon Maksin and Rachel Dias and Evan Mays and Benjamin Kinsella and Wyatt Thompson and Johannes Heidecke and Amelia Glaese and Tejal Patwardhan},
       year={2025},
       eprint={2504.01848},
       archivePrefix={arXiv},
       primaryClass={cs.AI},
-      url={https://arxiv.org/abs/2504.01848}, 
+      url={https://arxiv.org/abs/2504.01848},
 }
 ```

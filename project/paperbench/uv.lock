@@ -141,7 +141,7 @@ wheels = [
 [[package]]
 name = "alcatraz"
 version = "0.1.0"
-source = { editable = "../alcatraz" }
+source = { editable = "../common/alcatraz" }
 dependencies = [
     { name = "async-lru" },
     { name = "asyncvnc" },
@@ -1925,7 +1925,7 @@ wheels = [
 [[package]]
 name = "nanoeval"
 version = "0.1.0"
-source = { editable = "../nanoeval" }
+source = { editable = "../common/nanoeval" }
 dependencies = [
     { name = "aiodebug" },
     { name = "aiomonitor" },
@@ -1986,7 +1986,7 @@ requires-dist = [
 [[package]]
 name = "nanoeval-alcatraz"
 version = "0.1.0"
-source = { editable = "../nanoeval_alcatraz" }
+source = { editable = "../common/nanoeval_alcatraz" }
 dependencies = [
     { name = "async-lru" },
     { name = "structlog" },
@@ -2233,19 +2233,19 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "alcatraz", editable = "../alcatraz" },
+    { name = "alcatraz", editable = "../common/alcatraz" },
     { name = "blobfile", specifier = ">=3.0.0" },
     { name = "chz", git = "https://github.com/openai/chz.git" },
     { name = "docker", specifier = ">=7.1.0" },
     { name = "drain3", specifier = ">=0.9.11" },
     { name = "flask", specifier = ">=3.0.3" },
-    { name = "nanoeval", editable = "../nanoeval" },
-    { name = "nanoeval-alcatraz", editable = "../nanoeval_alcatraz" },
+    { name = "nanoeval", editable = "../common/nanoeval" },
+    { name = "nanoeval-alcatraz", editable = "../common/nanoeval_alcatraz" },
     { name = "openai", specifier = ">=1.44.1" },
     { name = "openai", specifier = ">=1.54.3" },
     { name = "pandas-stubs", specifier = ">=2.3.0.250703" },
     { name = "pre-commit", specifier = ">=4.1.0" },
-    { name = "preparedness-turn-completer", editable = "../preparedness_turn_completer" },
+    { name = "preparedness-turn-completer", editable = "../common/preparedness_turn_completer" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },
     { name = "pytest-html", specifier = ">=4.1.1" },
     { name = "python-dateutil", specifier = ">=2.9.0" },
@@ -2452,7 +2452,7 @@ wheels = [
 [[package]]
 name = "preparedness-turn-completer"
 version = "0.1.0"
-source = { editable = "../preparedness_turn_completer" }
+source = { editable = "../common/preparedness_turn_completer" }
 dependencies = [
     { name = "chz" },
     { name = "openai" },

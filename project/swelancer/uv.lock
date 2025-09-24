@@ -137,7 +137,7 @@ wheels = [
 [[package]]
 name = "alcatraz"
 version = "0.1.0"
-source = { editable = "../alcatraz" }
+source = { editable = "../common/alcatraz" }
 dependencies = [
     { name = "async-lru" },
     { name = "asyncvnc" },
@@ -1769,7 +1769,7 @@ wheels = [
 [[package]]
 name = "nanoeval"
 version = "0.1.0"
-source = { editable = "../nanoeval" }
+source = { editable = "../common/nanoeval" }
 dependencies = [
     { name = "aiodebug" },
     { name = "aiomonitor" },
@@ -1830,7 +1830,7 @@ requires-dist = [
 [[package]]
 name = "nanoeval-alcatraz"
 version = "0.1.0"
-source = { editable = "../nanoeval_alcatraz" }
+source = { editable = "../common/nanoeval_alcatraz" }
 dependencies = [
     { name = "async-lru" },
     { name = "structlog" },
@@ -2978,10 +2978,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "alcatraz", editable = "../alcatraz" },
+    { name = "alcatraz", editable = "../common/alcatraz" },
     { name = "flask", specifier = ">=3.1.1" },
-    { name = "nanoeval", editable = "../nanoeval" },
-    { name = "nanoeval-alcatraz", editable = "../nanoeval_alcatraz" },
+    { name = "nanoeval", editable = "../common/nanoeval" },
+    { name = "nanoeval-alcatraz", editable = "../common/nanoeval_alcatraz" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "tiktoken" },
 ]

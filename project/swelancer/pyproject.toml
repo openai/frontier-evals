@@ -19,13 +19,18 @@ requires-python = ">=3.11"
 packages = { find = { include = ["swelancer", "swelancer.*"] } }
 
 [tool.uv.sources]
-nanoeval = { path = "../nanoeval", editable = true }
-alcatraz = { path = "../alcatraz", editable = true }
-nanoeval-alcatraz = { path = "../nanoeval_alcatraz", editable = true }
+nanoeval = { path = "../common/nanoeval", editable = true }
+alcatraz = { path = "../common/alcatraz", editable = true }
+nanoeval-alcatraz = { path = "../common/nanoeval_alcatraz", editable = true }
 
 [tool.pyright]
-extraPaths = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
-typeCheckingMode = "off"  # we use mypy
+extraPaths = [
+    "../common/alcatraz",
+    "../common/preparedness_turn_completer",
+    "../common/nanoeval",
+    "../common/nanoeval_alcatraz",
+]
+typeCheckingMode = "off" # we use mypy
 
 [dependency-groups]
 dev = [
@@ -54,9 +59,19 @@ disable_error_code = ["import-untyped"]
 # allow_untyped_defs = true
 # allow_any_generics = true
 exclude = "^(issues|runtime_utils|runtime_scripts)(/|$)"
-mypy_path = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
+mypy_path = [
+    "../common/alcatraz",
+    "../common/preparedness_turn_completer",
+    "../common/nanoeval",
+    "../common/nanoeval_alcatraz",
+]
 [[tool.mypy.overrides]]
-module = ["alcatraz.*", "preparedness_turn_completer.*", "nanoeval.*", "nanoeval_alcatraz.*"]
+module = [
+    "alcatraz.*",
+    "preparedness_turn_completer.*",
+    "nanoeval.*",
+    "nanoeval_alcatraz.*",
+]
 ignore_errors = true
 warn_unused_ignores = false
 

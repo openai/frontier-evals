@@ -37,8 +37,13 @@ dependencies = [
 packages = { find = { include = ["paperbench", "paperbench.*"] } }
 
 [tool.pyright]
-extraPaths = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
-typeCheckingMode = "off"                                   # we use mypy
+extraPaths = [
+    "../common/alcatraz",
+    "../common/preparedness_turn_completer",
+    "../common/nanoeval",
+    "../common/nanoeval_alcatraz",
+]
+typeCheckingMode = "off" # we use mypy
 
 [dependency-groups]
 dev = [
@@ -53,10 +58,10 @@ dev = [
 
 [tool.uv.sources]
 chz = { git = "https://github.com/openai/chz.git" }
-nanoeval = { path = "../nanoeval", editable = true }
-nanoeval_alcatraz = { path = "../nanoeval_alcatraz", editable = true }
-alcatraz = { path = "../alcatraz", editable = true }
-preparedness-turn-completer = { path = "../preparedness_turn_completer", editable = true }
+nanoeval = { path = "../common/nanoeval", editable = true }
+nanoeval_alcatraz = { path = "../common/nanoeval_alcatraz", editable = true }
+alcatraz = { path = "../common/alcatraz", editable = true }
+preparedness-turn-completer = { path = "../common/preparedness_turn_completer", editable = true }
 
 [tool.ruff]
 extend = "../../pyproject.toml"
@@ -75,9 +80,19 @@ disable_error_code = ["import-untyped"]
 # allow_untyped_defs = true
 # allow_any_generics = true
 exclude = "^(paperbench/agents/aisi-basic-agent|tests/integration/runs)(/|$)"
-mypy_path = ["../alcatraz", "../preparedness_turn_completer", "../nanoeval", "../nanoeval_alcatraz"]
+mypy_path = [
+    "../common/alcatraz",
+    "../common/preparedness_turn_completer",
+    "../common/nanoeval",
+    "../common/nanoeval_alcatraz",
+]
 [[tool.mypy.overrides]]
-module = ["alcatraz.*", "preparedness_turn_completer.*", "nanoeval.*", "nanoeval_alcatraz.*"]
+module = [
+    "alcatraz.*",
+    "preparedness_turn_completer.*",
+    "nanoeval.*",
+    "nanoeval_alcatraz.*",
+]
 ignore_errors = true
 warn_unused_ignores = false
 

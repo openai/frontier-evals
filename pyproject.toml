@@ -1,5 +1,5 @@
 # =============================================================
-# Ruff Configuration
+# Common configuration for ruff, etc
 # =============================================================
 [tool.ruff]
 target-version = "py311"

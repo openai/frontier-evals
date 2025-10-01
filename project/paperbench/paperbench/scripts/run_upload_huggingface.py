@@ -11,7 +11,7 @@ from pathlib import Path
 import structlog.stdlib
 import yaml
 from datasets import Dataset, load_dataset
-from huggingface_hub import HfApi, create_repo, upload_file
+from huggingface_hub import HfApi, create_repo, login, upload_file
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PAPERS_DIR = PROJECT_ROOT / "data" / "papers"
@@ -43,7 +43,9 @@ def extract_paper_metadata(paper_dir: Path, repo_id: str) -> dict:
         ]
 
     with open(paper_dir / "rubric.json") as f:
-        row["num_rubric_tasks"] = count_rubric_tasks(json.load(f))
+        rubric = json.load(f)
+        row["num_rubric_tasks"] = count_rubric_tasks(rubric)
+        row["rubric_requirements"] = rubric.get("requirements")
 
     # Collect all files in the paper directory
     reference_files = []
@@ -77,56 +79,12 @@ def build_manifest(papers_dir: Path, repo_id: str) -> list[dict]:
     return rows
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Upload the PaperBench papers dataset to the Hugging Face Hub.",
-    )
-    parser.add_argument(
-        "repo",
-        help=(
-            "Target dataset repository. Accepts either a full '<namespace>/<name>' "
-            "or just the repository name (defaults to your user namespace)."
-        ),
-    )
-    parser.add_argument(
-        "--private",
-        action="store_true",
-        help="Create the Hugging Face dataset repository as private.",
-    )
-    parser.add_argument(
-        "--branch",
-        default="main",
-        help="Branch or revision to push to (default: main).",
-    )
-    parser.add_argument(
-        "--commit-message",
-        default="Upload PaperBench papers dataset",
-        help="Custom commit message for the dataset upload.",
-    )
-    return parser.parse_args()
-
-
-def main() -> None:
-    args = parse_args()
-    # TODO: call login here
-
-    api = HfApi()
-    user_info = api.whoami()
-    username = user_info["name"]
-    repo_id = f"{username}/{args.repo}"
-
-    try:
-        api.repo_info(repo_id, repo_type="dataset")
-        logger.info(f"Repository {repo_id} already exists")
-    except:  # noqa: E722
-        create_repo(
-            repo_id=repo_id,
-            repo_type="dataset",
-            private=args.private,
-            exist_ok=True,
-        )
-        logger.info(f"Created repository: {repo_id}")
-
+def build_and_upload_data_parquet(
+    api: HfApi,
+    repo_id: str,
+    branch: str,
+    commit_message: str,
+) -> None:
     # Build manifest for dataset viewer
     logger.info("Building dataset manifest...")
     manifest_rows = build_manifest(DEFAULT_PAPERS_DIR, repo_id)
@@ -158,13 +116,15 @@ def main() -> None:
                 folder_path=str(temp_path),
                 repo_id=repo_id,
                 repo_type="dataset",
-                revision=args.branch,
-                commit_message=args.commit_message,
+                revision=branch,
+                commit_message=commit_message,
             )
         except Exception as exc:  # noqa: BLE001
             logger.error(f"Failed to upload dataset folder: {exc}")
             sys.exit(1)
 
+
+def upload_dataset_card(repo_id: str, branch: str, commit_message: str) -> None:
     # Upload README card
     logger.info("Uploading README.md...")
     readme_content = DEFAULT_CARD_PATH.read_text(encoding="utf-8")
@@ -174,8 +134,8 @@ def main() -> None:
         path_in_repo="README.md",
         repo_id=repo_id,
         repo_type="dataset",
-        revision=args.branch,
-        commit_message=args.commit_message,
+        revision=branch,
+        commit_message=commit_message,
     )
     logger.info("README.md uploaded successfully")
 
@@ -185,17 +145,13 @@ def main() -> None:
         path_in_repo="dataset_card.yaml",
         repo_id=repo_id,
         repo_type="dataset",
-        revision=args.branch,
-        commit_message=args.commit_message,
+        revision=branch,
+        commit_message=commit_message,
     )
     logger.info("dataset_card.yaml uploaded successfully")
 
-    logger.info("Dataset upload complete.")
-    logger.info(f"View at: https://huggingface.co/datasets/{repo_id}")
-    ensure_upload(repo_id)
 
-
-def ensure_upload(repo_id: str = "josancamon/paperbench", paper_idx: int = 0):
+def ensure_upload(repo_id: str, paper_idx: int) -> None:
     logger.info("Ensuring upload...")
     dataset = load_dataset(repo_id)
     api = HfApi()
@@ -207,6 +163,59 @@ def ensure_upload(repo_id: str = "josancamon/paperbench", paper_idx: int = 0):
 
     paper_path = Path(downloaded_paths[0]).parent
     logger.info(f"Downloaded paper and rubric for {paper_id} successfully to: {paper_path}")
+
+
+def main() -> None:
+    args = parse_args()
+    api = HfApi()
+    user_info = api.whoami()
+    if not user_info:
+        login()
+    username = user_info["name"]
+    repo_id = f"{username}/{args.repo}"
+
+    try:
+        api.repo_info(repo_id, repo_type="dataset")
+        logger.info(f"Repository {repo_id} already exists")
+    except:  # noqa: E722
+        create_repo(repo_id=repo_id, repo_type="dataset", private=args.private, exist_ok=True)
+        logger.info(f"Created repository: {repo_id}")
+
+    build_and_upload_data_parquet(api, repo_id, args.branch, args.commit_message)
+    upload_dataset_card(repo_id, args.branch, args.commit_message)
+
+    logger.info("Dataset upload complete.")
+    logger.info(f"View at: https://huggingface.co/datasets/{repo_id}")
+    ensure_upload(repo_id, paper_idx=0)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Upload the PaperBench papers dataset to the Hugging Face Hub.",
+    )
+    parser.add_argument(
+        "repo",
+        help=(
+            "Target dataset repository. Accepts either a full '<namespace>/<name>' "
+            "or just the repository name (defaults to your user namespace)."
+        ),
+    )
+    parser.add_argument(
+        "--private",
+        action="store_true",
+        help="Create the Hugging Face dataset repository as private.",
+    )
+    parser.add_argument(
+        "--branch",
+        default="main",
+        help="Branch or revision to push to (default: main).",
+    )
+    parser.add_argument(
+        "--commit-message",
+        default="Upload PaperBench papers dataset",
+        help="Custom commit message for the dataset upload.",
+    )
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

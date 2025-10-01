@@ -47,6 +47,7 @@ typeCheckingMode = "off" # we use mypy
 
 [dependency-groups]
 dev = [
+    "datasets>=4.1.1",
     "huggingface-hub>=0.35.3",
     "mypy>=1.15.0",
     "poethepoet>=0.34.0",

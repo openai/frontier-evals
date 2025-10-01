@@ -38,7 +38,9 @@ def extract_paper_metadata(paper_dir: Path, repo_id: str) -> dict:
         row["title"] = config.get("title", "")
 
     with open(paper_dir / "blacklist.txt") as f:
-        row["blacklisted_sites"] = [line.strip() for line in f if line.strip()]
+        row["blacklisted_sites"] = [
+            line.strip() for line in f if line.strip() if line.strip() != "none"
+        ]
 
     with open(paper_dir / "rubric.json") as f:
         row["num_rubric_tasks"] = count_rubric_tasks(json.load(f))

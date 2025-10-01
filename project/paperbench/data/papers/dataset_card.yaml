@@ -49,12 +49,20 @@ dataset_info:
       dtype: string
     - name: title
       dtype: string
-    - name: num_assets
-      dtype: int64
     - name: blacklisted_sites
-      dtype: int64
+      dtype:
+        list: string
     - name: num_rubric_tasks
       dtype: int64
+    - name: reference_files
+      dtype:
+        list: string
+    - name: reference_file_urls
+      dtype:
+        list: string
+    - name: reference_file_hf_uris
+      dtype:
+        list: string
   splits:
     - name: train
       num_examples: 20

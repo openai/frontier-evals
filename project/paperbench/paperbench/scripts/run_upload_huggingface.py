@@ -10,7 +10,7 @@ from pathlib import Path
 
 import structlog.stdlib
 import yaml
-from datasets import Dataset
+from datasets import Dataset, load_dataset
 from huggingface_hub import HfApi, create_repo, upload_file
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -28,7 +28,7 @@ def count_rubric_tasks(rubric: dict) -> int:
     return count
 
 
-def extract_paper_metadata(paper_dir: Path) -> dict:
+def extract_paper_metadata(paper_dir: Path, repo_id: str) -> dict:
     paper_id = paper_dir.name
     row = {}
 
@@ -37,24 +37,41 @@ def extract_paper_metadata(paper_dir: Path) -> dict:
         row["id"] = config.get("id", paper_id)
         row["title"] = config.get("title", "")
 
-    assets_dir = paper_dir / "assets"
-    row["num_assets"] = len(list(assets_dir.iterdir())) if assets_dir.exists() else 0
-
     with open(paper_dir / "blacklist.txt") as f:
-        lines = [line.strip() for line in f if line.strip()]
-        row["blacklisted_sites"] = len(lines)
+        row["blacklisted_sites"] = [line.strip() for line in f if line.strip()]
 
     with open(paper_dir / "rubric.json") as f:
         row["num_rubric_tasks"] = count_rubric_tasks(json.load(f))
+
+    # Collect all files in the paper directory
+    reference_files = []
+    reference_file_urls = []
+    reference_file_hf_uris = []
+
+    for file_path in sorted(paper_dir.rglob("*")):
+        if file_path.is_file():
+            relative_path = file_path.relative_to(paper_dir.parent)
+            relative_path_str = str(relative_path)
+
+            reference_files.append(relative_path_str)
+            reference_file_urls.append(
+                f"https://huggingface.co/datasets/{repo_id}/resolve/main/{relative_path_str}"
+            )
+            reference_file_hf_uris.append(f"hf://datasets/{repo_id}@main/{relative_path_str}")
+
+    row["reference_files"] = reference_files
+    row["reference_file_urls"] = reference_file_urls
+    row["reference_file_hf_uris"] = reference_file_hf_uris
+
     return row
 
 
-def build_manifest(papers_dir: Path) -> list[dict]:
+def build_manifest(papers_dir: Path, repo_id: str) -> list[dict]:
     rows = []
     for paper_dir in sorted(papers_dir.iterdir()):
         if not paper_dir.is_dir() or paper_dir.name.startswith("."):
             continue
-        rows.append(extract_paper_metadata(paper_dir))
+        rows.append(extract_paper_metadata(paper_dir, repo_id))
     return rows
 
 
@@ -110,7 +127,7 @@ def main() -> None:
 
     # Build manifest for dataset viewer
     logger.info("Building dataset manifest...")
-    manifest_rows = build_manifest(DEFAULT_PAPERS_DIR)
+    manifest_rows = build_manifest(DEFAULT_PAPERS_DIR, repo_id)
     logger.info(f"Found {len(manifest_rows)} papers")
 
     # Create temporary directory for upload preparation
@@ -175,7 +192,19 @@ def main() -> None:
 
     logger.info("Dataset upload complete.")
     logger.info(f"View at: https://huggingface.co/datasets/{repo_id}")
+    ensure_upload(repo_id)
 
+
+def ensure_upload(repo_id: str = "josancamon/paperbench"):
+    logger.info("Ensuring upload...")
+    dataset = load_dataset(repo_id)
+    api = HfApi()
+    paper_id = dataset["train"][0]["id"]
+    paper_hf_path = paper_id + "/paper.md"
+    rubric_hf_path = paper_id + "/rubric.json"
+    api.hf_hub_download(repo_id=repo_id, filename=paper_hf_path, repo_type="dataset")
+    api.hf_hub_download(repo_id=repo_id, filename=rubric_hf_path, repo_type="dataset")
+    logger.info(f"Downloaded paper and rubric for {paper_id} successfully.")
 
 
 if __name__ == "__main__":

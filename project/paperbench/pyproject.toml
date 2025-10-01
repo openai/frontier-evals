@@ -47,6 +47,7 @@ typeCheckingMode = "off" # we use mypy
 
 [dependency-groups]
 dev = [
+    "huggingface-hub>=0.35.3",
     "mypy>=1.15.0",
     "poethepoet>=0.34.0",
     "pre-commit>=4.2.0",

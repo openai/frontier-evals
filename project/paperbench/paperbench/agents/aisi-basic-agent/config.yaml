@@ -18,6 +18,14 @@ aisi-basic-agent-openai-dev:
     MAX_TIME_IN_HOURS: 0.1
     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
+aisi-basic-agent-openai-gpt-5-nano:
+  <<: *common_settings
+  env_vars:
+    <<: *env-config-vars
+    MODEL: openai/gpt-5-nano
+    MAX_TIME_IN_HOURS: 0.1
+    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
 aisi-basic-agent-anthropic-dev:
   <<: *common_settings
   env_vars:

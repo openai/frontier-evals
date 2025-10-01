@@ -130,7 +130,6 @@ def main() -> None:
     manifest_rows = build_manifest(DEFAULT_PAPERS_DIR, repo_id)
     logger.info(f"Found {len(manifest_rows)} papers")
 
-    # Create temporary directory for upload preparation
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
 
@@ -140,7 +139,6 @@ def main() -> None:
             if paper_dir.is_dir() and not paper_dir.name.startswith("."):
                 shutil.copytree(paper_dir, temp_path / paper_dir.name)
 
-        # Create data directory for parquet files (Hub dataset viewer expects this)
         data_dir = temp_path / "data"
         data_dir.mkdir(exist_ok=True)
 
@@ -195,16 +193,18 @@ def main() -> None:
     ensure_upload(repo_id)
 
 
-def ensure_upload(repo_id: str = "josancamon/paperbench"):
+def ensure_upload(repo_id: str = "josancamon/paperbench", paper_idx: int = 0):
     logger.info("Ensuring upload...")
     dataset = load_dataset(repo_id)
     api = HfApi()
-    paper_id = dataset["train"][0]["id"]
-    paper_hf_path = paper_id + "/paper.md"
-    rubric_hf_path = paper_id + "/rubric.json"
-    api.hf_hub_download(repo_id=repo_id, filename=paper_hf_path, repo_type="dataset")
-    api.hf_hub_download(repo_id=repo_id, filename=rubric_hf_path, repo_type="dataset")
-    logger.info(f"Downloaded paper and rubric for {paper_id} successfully.")
+    paper_id = dataset["train"][paper_idx]["id"]
+    downloaded_paths = []
+    for file in dataset["train"][paper_idx]["reference_files"]:
+        local_path = api.hf_hub_download(repo_id=repo_id, filename=file, repo_type="dataset")
+        downloaded_paths.append(local_path)
+
+    paper_path = Path(downloaded_paths[0]).parent
+    logger.info(f"Downloaded paper and rubric for {paper_id} successfully to: {paper_path}")
 
 
 if __name__ == "__main__":

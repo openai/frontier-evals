@@ -28,6 +28,32 @@ def count_rubric_tasks(rubric: dict) -> int:
     return count
 
 
+def count_rubric_leaf_nodes(rubric: dict) -> int:
+    """Count the number of leaf nodes (nodes with no subtasks) in the rubric."""
+    if not rubric.get("sub_tasks", []):
+        return 1
+
+    count = 0
+    for subtask in rubric["sub_tasks"]:
+        count += count_rubric_leaf_nodes(subtask)
+    return count
+
+
+def count_rubric_by_category(rubric: dict) -> dict[str, int]:
+    counts = {"Code Development": 0, "Code Execution": 0, "Result Analysis": 0}
+    if not rubric.get("sub_tasks", []) and rubric.get("task_category"):
+        category = rubric["task_category"]
+        if category in counts:
+            counts[category] += 1
+
+    for subtask in rubric.get("sub_tasks", []):
+        subcounts = count_rubric_by_category(subtask)
+        for category, count in subcounts.items():
+            counts[category] += count
+
+    return counts
+
+
 def extract_paper_metadata(paper_dir: Path, repo_id: str) -> dict:
     paper_id = paper_dir.name
     row = {}
@@ -44,10 +70,15 @@ def extract_paper_metadata(paper_dir: Path, repo_id: str) -> dict:
 
     with open(paper_dir / "rubric.json") as f:
         rubric = json.load(f)
-        row["num_rubric_tasks"] = count_rubric_tasks(rubric)
         row["rubric_requirements"] = rubric.get("requirements")
+        row["rubric_total_nodes"] = count_rubric_tasks(rubric)
+        row["rubric_leaf_nodes"] = count_rubric_leaf_nodes(rubric)
 
-    # Collect all files in the paper directory
+        category_counts = count_rubric_by_category(rubric)
+        row["rubric_code_development"] = category_counts["Code Development"]
+        row["rubric_code_execution"] = category_counts["Code Execution"]
+        row["rubric_result_analysis"] = category_counts["Result Analysis"]
+
     reference_files = []
     reference_file_urls = []
     reference_file_hf_uris = []

@@ -383,7 +383,6 @@ class PBTask(ComputerTask):
                 metadata = replace(metadata, executed_submission=reproduce_output_path)
                 return metadata
 
-        # Reproduce on alcatraz and collect metadata
         try:
             metadata = await reproduce_on_computer_with_salvaging(
                 cluster_config=self.reproduction.cluster_config,

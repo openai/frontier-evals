@@ -3,7 +3,7 @@ name: Run tests on preparedness_turn_completer
 on:
   pull_request:
     paths:
-      - 'project/preparedness_turn_completer/**'
+      - 'project/common/preparedness_turn_completer/**'
     branches:
       - '**'
     types: [opened, synchronize, reopened, ready_for_review]
@@ -30,13 +30,13 @@ jobs:
       uses: astral-sh/setup-uv@v5
 
     - name: Install dependencies
-      working-directory: ./project/preparedness_turn_completer
+      working-directory: ./project/common/preparedness_turn_completer
       env:
         UV_GIT_LFS: 1
       run: |
         uv sync
 
     - name: run tests
-      working-directory: ./project/preparedness_turn_completer
+      working-directory: ./project/common/preparedness_turn_completer
       run: |
         uv run pytest -n auto tests/ -v --tb=short

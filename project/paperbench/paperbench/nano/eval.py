@@ -11,7 +11,6 @@ import structlog.stdlib
 from dotenv import load_dotenv
 
 load_dotenv()
-from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
 from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
 from typing_extensions import override
 
@@ -43,6 +42,7 @@ from paperbench.nano.structs import (
 from paperbench.nano.task import PBTask
 from paperbench.nano.utils import SPLIT_TO_EXPECTED_PAPERS, gather_eval_runs
 from paperbench.paper_registry import paper_registry
+from paperbench.scripts.alcatraz_services import start_alcatraz_computer
 from paperbench.utils import (
     create_run_dir,
     create_run_id,
@@ -57,6 +57,7 @@ from paperbench.utils import (
 
 MIN_UPLOAD_INTERVAL_MESSAGES = 5
 MIN_UPLOAD_INTERVAL_SECONDS = 1800
+MAX_CLUSTER_START_ATTEMPTS = 5
 
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
@@ -166,8 +167,11 @@ class ExternalPythonCodingSolver(PythonCodingSolver):
             is_nvidia_gpu_env=self.is_nvidia_gpu_env,
         )
 
-        async with alcatraz_config.build() as cluster:
-            yield AlcatrazComputerInterface(cluster_value=cluster)
+        async with start_alcatraz_computer(
+            cluster_config=alcatraz_config,
+            max_attempts=MAX_CLUSTER_START_ATTEMPTS,
+        ) as computer:
+            yield computer
 
     @override
     async def run(self, task: ComputerTask) -> AsyncGenerator[Step | FinalResult, None]:

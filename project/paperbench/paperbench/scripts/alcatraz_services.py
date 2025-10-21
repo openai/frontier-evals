@@ -4,7 +4,9 @@ from typing import AsyncGenerator
 import structlog
 from dotenv import load_dotenv
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
+from tenacity import RetryCallState, Retrying, retry_if_exception_type, stop_after_attempt
 
+from alcatraz.clusters.interface import AlcatrazException
 from alcatraz.clusters.local import ClusterConfig
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
 from paperbench.infra.alcatraz import put_file_in_computer
@@ -58,7 +60,24 @@ async def put_submission_in_computer(
 @asynccontextmanager
 async def start_alcatraz_computer(
     cluster_config: ClusterConfig,
+    max_attempts: int = 5,
 ) -> AsyncGenerator[ComputerInterface, None]:
     """Helper method for starting an AlcatrazComputerInterface given a ClusterConfig."""
-    async with cluster_config.build() as cluster:
-        yield AlcatrazComputerInterface(cluster_value=cluster)
+
+    def before_sleep(state: RetryCallState) -> None:
+        exception = state.outcome.exception() if state.outcome else None
+        logger.warning(
+            f"Cluster start failed on attempt {state.attempt_number} out of {max_attempts}; "
+            f"retrying due to '{exception}'"
+        )
+
+    retrying = Retrying(
+        stop=stop_after_attempt(max_attempts),
+        retry=retry_if_exception_type(AlcatrazException),
+        before_sleep=before_sleep,
+    )
+
+    for attempt in retrying:
+        with attempt:
+            async with cluster_config.build() as cluster:
+                yield AlcatrazComputerInterface(cluster_value=cluster)

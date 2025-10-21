@@ -8,7 +8,7 @@ repos:
       # picks up config from [tool.ruff] in pyproject.toml
       - id: ruff-format
         name: ruff-format (black-style)
-        files: (?x)^project/(paperbench|swelancer|compatibility_api|compatibility_api_preparedness|preparedness_turn_completer)/
+        files: (?x)^project/(paperbench|swelancer|common/compatibility_api|common/compatibility_api_preparedness|common/preparedness_turn_completer)/
 
       # Lenient hook: runs auto‑fix on all files using a lenient config.
       - id: ruff
@@ -25,7 +25,7 @@ repos:
           - --fix
           - --fix-only
           - --exit-non-zero-on-fix
-        files: (?x)^project/(alcatraz|nanoeval|paperbench|swelancer|compatibility_api|compatibility_api_preparedness|preparedness_turn_completer)/
+        files: (?x)^project/(common/alcatraz|common/nanoeval|paperbench|swelancer|common/compatibility_api|common/compatibility_api_preparedness|common/preparedness_turn_completer)/
 
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
@@ -37,8 +37,8 @@ repos:
         files: (?x)^project/paperbench/
       - id: uv-lock
         name: uv-lock-preparedness_turn_completer
-        args: [--project, project/preparedness_turn_completer]
-        files: (?x)^project/preparedness_turn_completer/
+        args: [--project, project/common/preparedness_turn_completer]
+        files: (?x)^project/common/preparedness_turn_completer/
       - id: uv-lock
         name: uv-lock-swelancer
         args: [--project, project/swelancer]

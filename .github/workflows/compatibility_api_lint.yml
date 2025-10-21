@@ -3,8 +3,8 @@ name: Run linting on compatibility_api
 on:
   pull_request:
     paths:
-      - 'project/compatibility_api/**'
-      - 'project/nanoeval/**'
+      - 'project/common/compatibility_api/**'
+      - 'project/common/nanoeval/**'
     branches:
       - '**'
     types:
@@ -33,18 +33,18 @@ jobs:
       uses: astral-sh/setup-uv@v5
 
     - name: Install dependencies
-      working-directory: ./project/compatibility_api
+      working-directory: ./project/common/compatibility_api
       env:
         UV_GIT_LFS: 1
       run: |
         uv sync
 
     - name: run mypy
-      working-directory: ./project/compatibility_api
+      working-directory: ./project/common/compatibility_api
       run: |
         uv run mypy compatibility_api
 
     - name: run ruff-strict
-      working-directory: ./project/compatibility_api
+      working-directory: ./project/common/compatibility_api
       run: |
         uv run ruff check --output-format=github --no-fix

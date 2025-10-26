@@ -32,7 +32,6 @@ dependencies = [
 packages = [
     "alcatraz",
     "alcatraz.clusters",
-    "alcatraz.clusters.local",
 ]
 
 [project.optional-dependencies]

@@ -29,7 +29,11 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["alcatraz"]
+packages = [
+    "alcatraz",
+    "alcatraz.clusters",
+    "alcatraz.clusters.local",
+]
 
 [project.optional-dependencies]
 formatters = ["black>=23.3", "isort>=5.13"]

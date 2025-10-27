@@ -30,12 +30,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = [
-    "nanoeval",
-    "nanoeval.solvers",
-    "nanoeval.solvers.computer_tasks",
-]
-include-package-data = true
+packages = { find = { include = ["nanoeval", "nanoeval.*"] } }
 
 [build-system]
 requires = ["setuptools<78.0.0", "wheel"]

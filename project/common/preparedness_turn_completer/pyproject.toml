@@ -21,7 +21,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["preparedness_turn_completer"]
+packages = { find = { include = ["preparedness_turn_completer", "preparedness_turn_completer.*"] } }
 
 [tool.pyright]
 typeCheckingMode = "off"                                   # we use mypy

@@ -19,7 +19,7 @@ alcatraz = { path = "../alcatraz", editable = true }
 preparedness-turn-completer = { path = "../preparedness_turn_completer", editable = true }
 
 [tool.setuptools]
-packages = ["compatibility_api"]
+packages = { find = { include = ["compatibility_api", "compatibility_api.*"] } }
 
 [build-system]
 requires = ["setuptools<78.0.0", "wheel"]

@@ -22,6 +22,25 @@ logger = structlog.stdlib.get_logger(component=__name__)
 P = ParamSpec("P")
 R = TypeVar("R")
 
+DATA_DIR_ENV_VAR = "PAPERBENCH_DATA_DIR"
+
+
+class PaperbenchDataNotFoundError(FileNotFoundError):
+    """Raised when we cannot locate the PaperBench data directory."""
+
+    def __init__(self, candidate: Path):
+        message = (
+            "Unable to locate the PaperBench data directory.\n"
+            f"Checked: {candidate}\n"
+            "If you installed PaperBench from a git dependency, the dataset is not pulled "
+            "automatically. Set the PAPERBENCH_DATA_DIR environment variable to point to a "
+            "clone of `frontier-evals` where you've run `git lfs fetch --include "
+            '"project/paperbench/data/**"` (and `git lfs checkout`), or hydrate the data in '
+            "another location and point PAPERBENCH_DATA_DIR at it."
+        )
+        super().__init__(message)
+        self.candidate = candidate
+
 
 def in_ci() -> bool:
     """Checks if the tests are running in CI."""
@@ -72,10 +91,31 @@ def get_root() -> Path:
     return path
 
 
-def get_paperbench_data_dir() -> Path:
-    """Returns an absolute path to the paperbench data directory."""
+def get_paperbench_data_dir(*, require_exists: bool = True) -> Path:
+    """Returns an absolute path to the PaperBench data directory.
 
-    return get_root().parent / "data"
+    Args:
+        require_exists: When True (default) we raise a PaperbenchDataNotFoundError if the
+            resolved directory is missing. When False we return the candidate directory and
+            create it if an explicit override was provided.
+    """
+
+    override = os.environ.get(DATA_DIR_ENV_VAR)
+    if override:
+        override_path = Path(override).expanduser()
+        if override_path.exists():
+            return override_path
+        if not require_exists:
+            override_path.mkdir(parents=True, exist_ok=True)
+            return override_path
+        raise PaperbenchDataNotFoundError(override_path)
+
+    default_path = get_root().parent / "data"
+    if default_path.exists():
+        return default_path
+    if require_exists:
+        raise PaperbenchDataNotFoundError(default_path)
+    return default_path
 
 
 def build_canonical_sub_path(run_dir: Path | str, timestamp: str) -> str:

@@ -43,23 +43,34 @@ All commands in this README should be run from the [root](./) of the PaperBench 
 
 ### Installation
 
-Install PaperBench with [uv](https://docs.astral.sh/uv/)[^1]
+Install PaperBench with [uv](https://docs.astral.sh/uv/)
 
 ```console
-UV_GIT_LFS=1 uv sync
+uv sync
 ```
-
-[^1]:
-    If you get an LFS error here, try cleaning your uv cache: `uv cache clean` and then re-running the command. See
-    [this issue comment](https://github.com/astral-sh/uv/issues/12938#issuecomment-2816186433)
 
 ### Get the data
 
-The dataset is stored using [Git-LFS](https://git-lfs.com/). Download and install LFS, then run:
+The dataset is stored using [Git-LFS](https://git-lfs.com/) and is intentionally not fetched during the install
+step above. Hydrate it manually and point PaperBench at the hydrated directory:
 
 ```console
-git lfs fetch --all
-git lfs pull
+git clone https://github.com/openai/frontier-evals.git --filter=blob:none
+cd frontier-evals
+git lfs fetch --include "project/paperbench/data/**"
+git lfs checkout project/paperbench/data
+export PAPERBENCH_DATA_DIR="$(pwd)/project/paperbench/data"  # add to your shell profile
+```
+
+If you are already working from a full `frontier-evals` clone, you can run the `git lfs fetch` / `git lfs checkout`
+commands from the repository root and skip setting `PAPERBENCH_DATA_DIR` (the default path resolves to
+`<repo>/project/paperbench/data`). When the data is stored elsewhere, set the environment variable to the location
+you hydrated.
+
+The JudgeEval tarballs that cannot be redistributed automatically can still be created with:
+
+```console
+PAPERBENCH_DATA_DIR=/path/to/data uv run python -m paperbench.judge.judge_eval.download_data
 ```
 
 ### Environment variables

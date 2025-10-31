@@ -108,7 +108,7 @@ def process_benchmark(repo_url: str, commit_hash: str, output_dir: str) -> bool:
 
 
 def main() -> None:
-    data_dir = get_paperbench_data_dir()
+    data_dir = get_paperbench_data_dir(require_exists=False)
 
     for benchmark, config in REPOS.items():
         print(f"\nProcessing {benchmark}...")

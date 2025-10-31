@@ -1,0 +1,70 @@
+language:
+  - en
+
+license: mit
+
+size_categories:
+  - n<1K
+
+task_categories:
+  - other
+
+pretty_name: PaperBench
+
+tags:
+  - ai-research
+  - code-generation
+  - agent-evaluation
+  - machine-learning
+  - research-replication
+  - benchmark
+  - ai-agents
+  - code-completion
+
+annotations_creators:
+  - expert-generated
+
+language_creators:
+  - found
+
+source_datasets:
+  - original
+
+multilinguality:
+  - monolingual
+
+task_ids: []
+
+paperswithcode_id: paperbench
+
+configs:
+  - config_name: default
+    data_files:
+      - split: train
+        path: data/train-*
+
+dataset_info:
+  features:
+    - name: id
+      dtype: string
+    - name: title
+      dtype: string
+    - name: blacklisted_sites
+      dtype:
+        list: string
+    - name: num_rubric_tasks
+      dtype: int64
+    - name: reference_files
+      dtype:
+        list: string
+    - name: reference_file_urls
+      dtype:
+        list: string
+    - name: reference_file_hf_uris
+      dtype:
+        list: string
+  splits:
+    - name: train
+      num_examples: 20
+  download_size: 0
+  dataset_size: 0

@@ -57,7 +57,7 @@ step above. Hydrate it manually and point PaperBench at the hydrated directory:
 ```console
 git clone https://github.com/openai/frontier-evals.git --filter=blob:none
 cd frontier-evals
-git lfs fetch --include "project/paperbench/data/**"
+git lfs fetch --include "project/paperbench/data/**" --exclude ""
 git lfs checkout project/paperbench/data
 export PAPERBENCH_DATA_DIR="$(pwd)/project/paperbench/data"  # add to your shell profile
 ```

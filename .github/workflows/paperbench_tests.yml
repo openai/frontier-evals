@@ -33,7 +33,7 @@ jobs:
 
     - name: Hydrate PaperBench data
       run: |
-        git lfs fetch --include "project/paperbench/data/**"
+        git lfs fetch --include "project/paperbench/data/**" --exclude ""
         git lfs checkout project/paperbench/data
 
     - name: Install uv

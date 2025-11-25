@@ -35,7 +35,7 @@ class PaperbenchDataNotFoundError(FileNotFoundError):
             "If you installed PaperBench from a git dependency, the dataset is not pulled "
             "automatically. Set the PAPERBENCH_DATA_DIR environment variable to point to a "
             "clone of `frontier-evals` where you've run `git lfs fetch --include "
-            '"project/paperbench/data/**"` (and `git lfs checkout`), or hydrate the data in '
+            '"project/paperbench/data/**" --exclude ""` (and `git lfs checkout`), or hydrate the data in '
             "another location and point PAPERBENCH_DATA_DIR at it."
         )
         super().__init__(message)

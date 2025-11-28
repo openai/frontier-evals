@@ -54,17 +54,17 @@ from openai.types.responses.response_output_text import Annotation as ResponseAn
 from openai.types.responses.response_output_text import (
     AnnotationURLCitation as ResponsesAnnotationURLCitation,
 )
-from preparedness_turn_completer.oai_responses_turn_completer.type_helpers import (
+from preparedness_turn_completer.turn_completer import TurnCompleter
+from preparedness_turn_completer.type_helpers import (
     ChatCompletionContent,
-    is_assistant_message,
+    is_chat_completion_assistant_message_param,
+    is_chat_completion_tool_message_param,
     is_content_array_list,
     is_content_part_list,
     is_custom_tool_call_param,
     is_function_tool_call_param,
     is_text_parts_list,
-    is_tool_message,
 )
-from preparedness_turn_completer.turn_completer import TurnCompleter
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -140,19 +140,22 @@ def _user_completion_to_response_input_items(
 def _assistant_completion_to_response_input_items(
     message: ChatCompletionMessageParam,
 ) -> list[ResponseInputItemParam]:
-    content = message["content"]
     role: Literal["assistant"] = "assistant"
     input_items: list[ResponseInputItemParam] = []
-    assert is_assistant_message(message)
-    assert isinstance(content, str) or is_content_array_list(content), (
-        f"Expected content to be str or list of content arrays, got {content!r}"
-    )
-    if isinstance(content, str):
-        input_items.append(EasyInputMessageParam(content=content, role=role, type="message"))
-    elif is_content_array_list(content):
-        input_items.extend(_content_array_list_to_response_input_items(content))
-    else:
-        raise ValueError(f"Expected content to be str or list of content arrays, got {content!r}")
+    assert is_chat_completion_assistant_message_param(message)
+    if message.get("content") is not None:
+        content = message["content"]
+        assert isinstance(content, str) or is_content_array_list(content), (
+            f"Expected content to be str or list of content arrays, got {content!r}"
+        )
+        if isinstance(content, str):
+            input_items.append(EasyInputMessageParam(content=content, role=role, type="message"))
+        elif is_content_array_list(content):
+            input_items.extend(_content_array_list_to_response_input_items(content))
+        else:
+            raise ValueError(
+                f"Expected content to be str or list of content arrays, got {content!r}"
+            )
 
     refusal = message.get("refusal", None)
     if isinstance(refusal, str):
@@ -225,7 +228,7 @@ def _content_array_list_to_response_input_items(
 def _tool_completion_to_response_input_items(
     message: ChatCompletionMessageParam,
 ) -> list[ResponseInputItemParam]:
-    assert is_tool_message(message)
+    assert is_chat_completion_tool_message_param(message)
     content = message["content"]
     output_str: str
     if isinstance(content, str):
@@ -235,11 +238,7 @@ def _tool_completion_to_response_input_items(
 
     return [
         FunctionCallOutput(
-            call_id=message["tool_call_id"],
-            output=output_str,
-            type="function_call_output",
-            id=uuid.uuid4().hex,
-            status="completed",
+            call_id=message["tool_call_id"], output=output_str, type="function_call_output"
         )
     ]
 

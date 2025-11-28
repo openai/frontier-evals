@@ -1,410 +1,47 @@
-import asyncio
-import json
 import os
-import time
-from collections.abc import AsyncGenerator, Sequence
-from contextlib import asynccontextmanager
-from typing import Any, Literal
+from typing import Any, Literal, Sequence
 
 import blobfile as bf
 import structlog.stdlib
 from dotenv import load_dotenv
 
 load_dotenv()
-from nanoeval_alcatraz.task_to_alcatraz_config import task_to_alcatraz_config
 from typing_extensions import override
 
 import chz
-from alcatraz.clusters.local import ClusterConfig, LocalConfig
+from alcatraz.clusters.local import LocalConfig
 from nanoeval.eval import RolloutSystemError
-from nanoeval.recorder import get_recorder
 from nanoeval.solvers.computer_tasks.code_execution_interface import (
-    ComputerInterface,
     NetworkMode,
-    RuntimeConfig,
 )
-from nanoeval.solvers.computer_tasks.solver import PythonCodingEval, PythonCodingSolver
-from nanoeval.solvers.computer_tasks.steps import FinalResult, Step
+from nanoeval.solvers.computer_tasks.solver import PythonCodingEval
+from nanoeval.solvers.computer_tasks.steps import FinalResult
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from paperbench.agents.registry import registry as agent_registry
-from paperbench.agents.run import (
-    prepare_computer,
-    run_agent_in_computer,
-)
-from paperbench.agents.utils import AgentDirConfig, AgentOutput, prepare_agent_dir_config
 from paperbench.metrics import compute_agg_stats, per_paper_results
 from paperbench.nano.structs import (
     JudgeConfig,
     PaperBenchGrade,
-    PaperBenchResult,
     ReproductionConfig,
 )
 from paperbench.nano.task import PBTask
 from paperbench.nano.utils import SPLIT_TO_EXPECTED_PAPERS, gather_eval_runs
-from paperbench.paper_registry import paper_registry
-from paperbench.scripts.alcatraz_services import start_alcatraz_computer
 from paperbench.utils import (
     create_run_dir,
     create_run_id,
     get_default_runs_dir,
     get_experiments_dir,
     get_paperbench_data_dir,
+    get_root,
     get_timestamp,
     is_docker_running,
     purple,
     safe_mean,
 )
 
-MIN_UPLOAD_INTERVAL_MESSAGES = 5
-MIN_UPLOAD_INTERVAL_SECONDS = 1800
-MAX_CLUSTER_START_ATTEMPTS = 5
-
-
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
 
 logger = structlog.stdlib.get_logger(component=__name__)
-
-
-@chz.chz
-class ExternalPythonCodingSolver(PythonCodingSolver):
-    name: str = "PaperBenchSolver"
-    agent_id: str  # dummy, or select ID from project/paperbench/paperbench/agents/aisi-basic-agent/config.yaml
-    is_nvidia_gpu_env: bool = chz.field(
-        default=False, doc="Whether to make the local NVIDIA GPU available to the agent"
-    )
-
-    upload_interval_messages: int | None = chz.field(
-        default=None,
-        doc="Upload interval in agent steps for heavy logs",
-    )
-    upload_interval_seconds: int = chz.field(
-        default=1800,
-        doc="Upload interval in time for heavy logs",
-    )
-
-    # This just sets an upper limit on agent runtime; in practice we rely on agent-side timeouts for actual rollout termination
-    # (e.g. `MAX_TIME_IN_HOURS` in `project/paperbench/paperbench/agents/aisi-basic-agent/config.yaml`)
-    timeout: int = chz.field(
-        default=100 * 3600,
-        doc="Upper limit on agent runtime. In practice, we rely on agent-side timeouts for actual rollout termination.",
-    )
-    agent_dir_config: AgentDirConfig = chz.field(default_factory=prepare_agent_dir_config)
-    privileged: bool = chz.field(default=True)
-    mount_docker_socket: bool = chz.field(default=True)
-    cluster_config: ClusterConfig = chz.field(
-        default_factory=lambda: LocalConfig(
-            image="aisi-basic-agent:latest",
-            pull_from_registry=False,
-        )
-    )
-    runtime_config: RuntimeConfig
-
-    iterative: bool = chz.field(default=False)
-
-    def shortname(self) -> str:
-        return self.agent_id
-
-    @asynccontextmanager
-    async def _start_computer(self, task: PBTask) -> AsyncGenerator[ComputerInterface, None]:
-        ctx_logger = logger.bind(
-            run_group_id=task.run_group_id,
-            run_id=task.run_id,
-            runs_dir=task.runs_dir,
-        )
-
-        if task.reproduction.timeout < self.timeout:
-            ctx_logger.warning(
-                f"Reproduction timeout ({task.reproduction.timeout}) should be at least as large as agent timeout ({self.timeout}), is this a mistake?",
-                destinations=["group", "run"],
-                _print=True,
-            )
-
-        if isinstance(self.cluster_config, LocalConfig):
-            assert isinstance(task.reproduction.cluster_config, LocalConfig), (
-                "Reproduction cluster config must be a LocalConfig if the agent's cluster config is a LocalConfig"
-            )
-
-        ctx_logger.info(
-            f"cluster_config: {json.dumps(self.cluster_config, indent=4, sort_keys=True, default=str)}",
-            destinations=["run"],
-        )
-        ctx_logger.info(
-            "Attempting to start a cluster instance. This may take a while...",
-            destinations=["run"],
-        )
-
-        if (
-            self.upload_interval_messages
-            and self.upload_interval_messages <= MIN_UPLOAD_INTERVAL_MESSAGES
-        ):
-            ctx_logger.warning(
-                "Uploading artifacts every five messages or less is untested. "
-                "Consider setting `upload_interval_messages` to a higher value.",
-                destinations=["run"],
-            )
-
-        if (
-            self.upload_interval_seconds
-            and self.upload_interval_seconds < MIN_UPLOAD_INTERVAL_SECONDS
-        ):
-            ctx_logger.warning(
-                "Uploading artifacts more frequently than every"
-                f" {MIN_UPLOAD_INTERVAL_SECONDS} seconds is untested. "
-                "Consider setting `upload_interval_seconds` to a higher value.",
-                destinations=["run"],
-            )
-
-        agent = agent_registry.get_agent(self.agent_id)
-        alcatraz_config = task_to_alcatraz_config(task, self.cluster_config)
-
-        # TODO: Move this to the `get_instances` method in `PaperBench`.
-        alcatraz_config = prepare_computer(
-            alcatraz_config=alcatraz_config,
-            env_vars=agent.env_vars,
-            privileged=agent.privileged,
-            mount_docker_socket=self.mount_docker_socket,
-            is_nvidia_gpu_env=self.is_nvidia_gpu_env,
-        )
-
-        async with start_alcatraz_computer(
-            cluster_config=alcatraz_config,
-            max_attempts=MAX_CLUSTER_START_ATTEMPTS,
-        ) as computer:
-            yield computer
-
-    @override
-    async def run(self, task: ComputerTask) -> AsyncGenerator[Step | FinalResult, None]:
-        assert isinstance(task, PBTask)
-
-        try:
-            async with self._start_computer(task) as computer:
-                # 1. Run the task setup
-                await task.setup(computer, self.runtime_config)
-
-                # 2. Run the agent
-                agent_output = await self._run_agent(computer, task)
-
-                # 3. Grade the submission
-                grade: PaperBenchGrade = await task.grade(computer, self.runtime_config)
-                if grade.paperbench_result.judge_output is None:
-                    grade = PaperBenchGrade(
-                        paperbench_result=PaperBenchResult(
-                            paper_id=task.paper_id,
-                            run_id=task.run_id,
-                            submission_exists=grade.paperbench_result.submission_exists,
-                            skipped_reproduction=task.reproduction.skip_reproduction,
-                            code_only=task.judge.code_only,
-                            resources_provided=task.judge.resources_provided,
-                            judge_output=None,
-                            reproduction_metadata=None,
-                            monitor_result=grade.paperbench_result.monitor_result,
-                            monitor_ran=grade.paperbench_result.monitor_ran,
-                        ),
-                        score=0.0,
-                        grader_log="",
-                    )
-                grade.paperbench_result.agent_output = agent_output
-
-            yield FinalResult(grade=grade)
-        except Exception as e:
-            raise RolloutSystemError(f"Run failed with error: {str(e)}") from e
-
-    async def _run_agent(self, computer: ComputerInterface, task: PBTask) -> AgentOutput:
-        ctx_logger = logger.bind(
-            run_group_id=task.run_group_id,
-            run_id=task.run_id,
-            runs_dir=task.runs_dir,
-        )
-
-        ctx_logger.info(
-            f"Agent `{self.agent_id}` is attempting to replicate the `{task.paper_id}` paper...",
-            destinations=["group", "run"],
-            _print=True,
-        )
-
-        ctx_logger.info(
-            purple(
-                f"Writing logs for run to {bf.join(task.runs_dir, task.run_group_id, task.run_id, 'run.log')}"
-            ),
-            destinations=["group"],
-            _print=True,
-        )
-
-        if self.agent_id == "human":
-            get_recorder().record_extra(
-                {
-                    "run_group_id": task.run_group_id,
-                    "run_id": task.run_id,
-                    "rollout_metadata": {},
-                }
-            )
-
-            get_recorder().record_match(correct=True)
-
-            return AgentOutput(
-                run_id=task.run_id,
-                time_start=time.time(),
-                time_end=time.time(),
-                runtime_in_seconds=0,
-                error_msg=None,
-                status_exists=False,  # Humans don't produce status.json files :)
-            )
-
-        ctx_logger.info(
-            f"Starting evaluation for task {task.question_id}.{task.attempt_id}",
-            destinations=["run"],
-        )
-
-        get_recorder().record_sampling(
-            prompt="",
-            sampled=f"Rolling out task {task.question_id}.{task.attempt_id}",
-        )
-
-        # If agent logs already exist, we can skip running the agent
-        pattern = bf.join(task.run_dir, "**/*.tar.gz")
-        num_tars = len(list(bf.glob(pattern)))
-
-        status_path = bf.join(task.run_dir, "status.json")
-        status_exists = bf.exists(status_path)
-
-        # we expect at least one tar if the run was successful: one gets uploaded at the start,
-        # and one more at the end (you would have more at every half-hour checkpoint in between)
-        if status_exists and num_tars >= 1:
-            with bf.BlobFile(status_path, "r") as f:
-                status = json.loads(f.read())
-
-            ctx_logger.info(
-                f"Agent logs already exist, skipping rollouts for {task.run_id}",
-                destinations=["run"],
-            )
-
-            ctx_logger.info(f"status: {status}", destinations=["run"])
-            start_time = status.get("created_at", time.time())
-            if status.get("agent_finished_at"):
-                end_time = status.get("agent_finished_at")
-            elif status.get("last_updated"):
-                end_time = status.get("last_updated")
-            else:
-                end_time = time.time()
-            runtime = end_time - start_time
-            agent_output = AgentOutput(
-                run_id=task.run_id,
-                time_start=start_time,
-                time_end=end_time,
-                runtime_in_seconds=runtime,
-                error_msg=None,  # No error if we have status.json and tars
-                status_exists=True,  # We already checked status_exists
-            )
-            task.skipped_rollout = True
-
-            get_recorder().record_extra(
-                {
-                    "run_group_id": task.run_group_id,
-                    "run_id": task.run_id,
-                    "agent_output": agent_output.to_dict(),
-                    "status": status,
-                }
-            )
-
-            return agent_output
-
-        # Run the agent
-        agent = agent_registry.get_agent(self.agent_id)
-        paper = paper_registry.get_paper(task.paper_id)
-        start = time.time()
-
-        try:
-            agent_output = await run_agent_in_computer(
-                computer=computer,
-                task=task,
-                paper=paper,
-                agent=agent,
-                run_dir=task.run_dir,
-                agent_dir_config=self.agent_dir_config,
-                timeout=self.timeout,
-                upload_interval_messages=self.upload_interval_messages,
-                upload_interval_seconds=self.upload_interval_seconds,
-                save_cluster_output_to_host=task.save_cluster_output_to_host,
-            )
-        except (asyncio.TimeoutError, asyncio.CancelledError) as e:
-            end = time.time()
-            ctx_logger.exception(
-                f"Agent timed out for task {task.question_id}.{task.attempt_id}",
-                destinations=["group", "run"],
-                _print=True,
-            )
-            get_recorder().record_match(correct=False)
-
-            return AgentOutput(
-                run_id=task.run_id,
-                time_start=start,
-                time_end=end,
-                runtime_in_seconds=end - start,
-                error_msg=str(e),
-                status_exists=bf.exists(status_path),
-            )
-
-        ctx_logger.info(
-            f"Agent `{self.agent_id}` finished running for `{task.question_id}.{task.attempt_id}`!",
-            destinations=["group", "run"],
-            _print=True,
-        )
-
-        with bf.BlobFile(bf.join(task.run_dir, "metadata.json"), "w") as f:
-            json.dump(agent_output.to_dict(), f, indent=4)
-
-        # Now the result should exist
-        pattern = bf.join(task.run_dir, "**/*.tar.gz")
-        num_tars = len(list(bf.glob(pattern)))
-        ctx_logger.info(f"Found {num_tars} tars for {task.run_id}", destinations=["run"])
-
-        if num_tars < 1:
-            ctx_logger.exception(
-                f"Rollout failed to produce at least one tar for {task.run_id}",
-                destinations=["group", "run"],
-                _print=True,
-            )
-
-            get_recorder().record_extra(
-                {
-                    "run_group_id": task.run_group_id,
-                    "run_id": task.run_id,
-                    "agent_output": agent_output.to_dict(),
-                }
-            )
-
-            return agent_output
-
-        if not agent_output.status_exists:
-            ctx_logger.exception(
-                f"Rollout failed to produce status.json for {task.run_id}",
-                destinations=["group", "run"],
-                _print=True,
-            )
-            get_recorder().record_extra(
-                {
-                    "run_group_id": task.run_group_id,
-                    "run_id": task.run_id,
-                    "agent_output": agent_output.to_dict(),
-                }
-            )
-
-            return agent_output
-
-        with bf.BlobFile(status_path, "r") as f:
-            status = json.loads(f.read())
-
-        get_recorder().record_extra(
-            {
-                "run_group_id": task.run_group_id,
-                "run_id": task.run_id,
-                "agent_output": agent_output.to_dict(),
-                "status": status,
-            }
-        )
-
-        return agent_output
 
 
 @chz.chz
@@ -477,16 +114,10 @@ class PaperBench(PythonCodingEval):
         if self.resume_run_group_id is not None:
             existing_run_ids = await self.get_existing_run_ids(self.run_group_id)
 
-        agents_dir = agent_registry.get_agents_dir()
-
         if self.judge.code_only:
-            instructions = agents_dir / "instructions" / "code_only_instructions.txt"
-        elif "iterative" in self.run_group_id:
-            # TODO: This is a hack to load the iterative instructions. We should refactor this
-            #  such that it occurs agent-side e.g., update the agent start.py to use the instructions needed.
-            instructions = agents_dir / "instructions" / "instructions_iterative.txt"
+            instructions = get_root() / "instructions" / "code_only_instructions.txt"
         else:
-            instructions = agents_dir / "instructions" / "instructions.txt"
+            instructions = get_root() / "instructions" / "instructions.txt"
 
         # populate tasks with all the run_ids
         tasks = []
@@ -654,7 +285,7 @@ class PaperBench(PythonCodingEval):
     def uses_local_config(self) -> bool:
         """Return True if any cluster config uses LocalConfig."""
 
-        # PythonCodingSolver may not have a cluster_config, just ExternalPythonCodingSolver does for now
+        # PythonCodingSolver may not have a cluster_config
         if hasattr(self.solver, "cluster_config"):
             if isinstance(self.solver.cluster_config, LocalConfig):
                 return True

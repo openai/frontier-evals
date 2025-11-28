@@ -7,7 +7,7 @@ from typing import Any
 import structlog.stdlib
 import yaml
 
-from paperbench.agents.utils import parse_env_var_values
+from paperbench.utils import parse_env_var_values
 
 logger = structlog.stdlib.get_logger(component=__name__)
 

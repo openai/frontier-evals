@@ -13,7 +13,6 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
     ComputerInterface,
     ExecutionResult,
 )
-from paperbench.constants import LOGS_DIR
 from paperbench.utils import build_canonical_sub_path
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -168,38 +167,6 @@ async def upload_sources(
     await computer.check_shell_command(f"rm -rf {container_tar_path}")
 
 
-async def count_aisi_basic_agent_messages(
-    computer: ComputerInterface,
-    agent_log_path: str = "/home/logs/agent.log",  # TODO use .env
-) -> int:
-    """
-    Counts the number of occurences of "╭─ Assistant" in the agent log.
-    """
-    result = await computer.send_shell_command(f"grep -c '╭─ Assistant' {agent_log_path}")
-    if result.exit_code != 0 or not result.output:
-        return -1
-    count = int(result.output.decode("utf-8").strip())
-    return count
-
-
-async def compute_aisi_basic_agent_runtime(
-    computer: ComputerInterface,
-    inspect_log_path: str = f"{LOGS_DIR}/inspect.log",
-) -> tuple[float | None, float | None, float | None]:
-    """
-    Parses the inspect.log file to extract the total runtime, productive runtime, and retry time.
-    """
-    cmd = f"grep 'total runtime: ' {inspect_log_path} | tail -n1 | awk '{{print $8 $12 $16}}'"
-    result = await computer.send_shell_command(cmd)
-    if result.exit_code != 0 or not result.output:
-        return None, None, None
-    try:
-        runtime_str, productive_str, retry_str = result.output.decode("utf-8").strip().split(",")
-        return float(runtime_str), float(productive_str), float(retry_str)
-    except (ValueError, IndexError):
-        return None, None, None
-
-
 async def tar_and_extract_from_computer(
     computer: ComputerInterface,
     dir_path_on_computer: Path,
@@ -283,7 +250,7 @@ class WalkDirEntry(TypedDict):
 
 
 async def walk_dir_with_mtimes_on_computer(
-    computer: "ComputerInterface",
+    computer: ComputerInterface,
     dir_path: Path,
     warn_threshold: int = 1_000_000,  # One million entries
 ) -> AsyncGenerator[tuple[str, list[str], list[str], list[float]], None]:

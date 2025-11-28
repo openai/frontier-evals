@@ -5,14 +5,13 @@ FROM ubuntu:24.04
 ENV WORKSPACE_BASE=/home
 ENV SUBMISSION_DIR=/home/submission
 ENV LOGS_DIR=/home/logs
-ENV CODE_DIR=/home/code
 ENV AGENT_DIR=/home/agent
 
 ENV CONDA_ENV_NAME=agent
 ENV REQUIREMENTS=/home/agent/requirements.txt
 ENV PYTHON_VERSION=3.12
 
-RUN mkdir -p ${LOGS_DIR} ${AGENT_DIR} ${CODE_DIR} ${SUBMISSION_DIR}
+RUN mkdir -p ${LOGS_DIR} ${AGENT_DIR} ${SUBMISSION_DIR}
 RUN mkdir -p ${WORKSPACE_BASE}/paper
 
 RUN mkdir ${WORKSPACE_BASE}/.vscode

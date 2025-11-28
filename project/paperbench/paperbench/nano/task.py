@@ -13,8 +13,6 @@ from typing import Any, AsyncGenerator
 import blobfile as bf
 from dotenv import load_dotenv
 
-from paperbench.monitor.monitor import MonitorResult
-
 load_dotenv()
 import structlog.stdlib
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
@@ -33,10 +31,16 @@ from paperbench.agents.upload import (
     upload_heavy_logs,
     upload_status,
 )
-from paperbench.agents.utils import prepare_agent_dir_config
-from paperbench.constants import AGENT_DIR, CODE_DIR, LOGS_DIR, SUBMISSION_DIR, WORKSPACE_BASE
+from paperbench.constants import (
+    AGENT_DIR,
+    AGENT_DIR_CONFIG,
+    LOGS_DIR,
+    SUBMISSION_DIR,
+    WORKSPACE_BASE,
+)
 from paperbench.grade import JudgeOutput, grade_submission
 from paperbench.monitor.create_monitor import create_monitor
+from paperbench.monitor.monitor import MonitorResult
 from paperbench.nano.structs import (
     JudgeConfig,
     PaperBenchGrade,
@@ -90,7 +94,6 @@ class PBTask(ComputerTask):
                     "OPENROUTER_API_KEY": os.getenv("OPENROUTER_API_KEY", None),
                     "SUBMISSION_DIR": SUBMISSION_DIR,
                     "LOGS_DIR": LOGS_DIR,
-                    "CODE_DIR": CODE_DIR,
                     "AGENT_DIR": AGENT_DIR,
                 },
             }
@@ -154,7 +157,7 @@ class PBTask(ComputerTask):
             with open(asset, "rb") as f:
                 await computer.upload(f.read(), f"{WORKSPACE_BASE}/paper/assets/{asset.name}")
 
-        for dir in [SUBMISSION_DIR, CODE_DIR]:
+        for dir in [SUBMISSION_DIR]:
             await computer.check_shell_command(f"mkdir -p {dir}")
 
     async def _ensure_files_available_for_grading(self, computer: ComputerInterface) -> None:
@@ -169,7 +172,7 @@ class PBTask(ComputerTask):
                 await upload_heavy_logs(
                     computer=computer,
                     agent_start_time=int(time.time()),
-                    agent_dir_config=prepare_agent_dir_config(),
+                    agent_dir_config=AGENT_DIR_CONFIG,
                     run_dir=self.run_dir,
                     run_group_id=self.run_group_id,
                     runs_dir=self.runs_dir,
@@ -355,9 +358,7 @@ class PBTask(ComputerTask):
     async def _run_reproduce(self, submission: str) -> ReproductionMetadata | None:
         """Runs the reproduction process for the submission associated with the PBTask."""
         ctx_logger = logger.bind(
-            run_group_id=self.run_group_id,
-            run_id=self.run_id,
-            runs_dir=self.runs_dir,
+            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir
         )
         ctx_logger.info(
             f"Starting the reproduction process for `{self.run_id}`...",
@@ -446,9 +447,7 @@ class PBTask(ComputerTask):
     ) -> JudgeOutput | None:
         """Runs the judge on the given submission for the PBTask."""
         ctx_logger = logger.bind(
-            run_group_id=self.run_group_id,
-            run_id=self.run_id,
-            runs_dir=self.runs_dir,
+            run_group_id=self.run_group_id, run_id=self.run_id, runs_dir=self.runs_dir
         )
         ctx_logger.info(
             f"Grading the submission for {self.question_id}.{self.attempt_id}"

@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 import structlog
 from dotenv import load_dotenv
 from nanoeval_alcatraz.alcatraz_computer_interface import AlcatrazComputerInterface
-from tenacity import RetryCallState, Retrying, retry_if_exception_type, stop_after_attempt
+from tenacity import AsyncRetrying, RetryCallState, retry_if_exception_type, stop_after_attempt
 
 from alcatraz.clusters.interface import AlcatrazException
 from alcatraz.clusters.local import ClusterConfig
@@ -71,13 +71,11 @@ async def start_alcatraz_computer(
             f"retrying due to '{exception}'"
         )
 
-    retrying = Retrying(
+    async for attempt in AsyncRetrying(
         stop=stop_after_attempt(max_attempts),
         retry=retry_if_exception_type(AlcatrazException),
         before_sleep=before_sleep,
-    )
-
-    for attempt in retrying:
+    ):
         with attempt:
             async with cluster_config.build() as cluster:
                 yield AlcatrazComputerInterface(cluster_value=cluster)

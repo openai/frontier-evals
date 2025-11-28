@@ -1,10 +1,10 @@
-from preparedness_turn_completer.oai_responses_turn_completer.type_helpers import (
-    is_assistant_message,
+from preparedness_turn_completer.type_helpers import (
+    is_chat_completion_assistant_message_param,
+    is_chat_completion_tool_message_param,
     is_content_part,
     is_content_part_list,
     is_text_part,
     is_text_parts_list,
-    is_tool_message,
 )
 
 
@@ -37,13 +37,16 @@ def test_is_content_part_list() -> None:
 
 
 def test_is_assistant_message() -> None:
-    assert is_assistant_message({"role": "assistant"})
-    assert not is_assistant_message({"role": "user"})
+    assert is_chat_completion_assistant_message_param({"role": "assistant", "content": "hi"})
+    assert not is_chat_completion_assistant_message_param({"role": "assistant"})
+    assert not is_chat_completion_assistant_message_param({"role": "user"})
 
 
 def test_is_tool_message() -> None:
-    assert is_tool_message({"role": "tool", "tool_call_id": "123"})
-    assert not is_tool_message({"role": "tool"})
+    assert is_chat_completion_tool_message_param(
+        {"role": "tool", "tool_call_id": "123", "content": "hi"}
+    )
+    assert not is_chat_completion_tool_message_param({"role": "tool"})
 
 
 def test_is_content_part_image_and_audio() -> None:

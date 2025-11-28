@@ -13,7 +13,7 @@ import blobfile as bf
 import pytest
 import structlog.stdlib
 from configs import (
-    LOCAL_AISI_SOLVER_CONFIG,
+    LOCAL_BASICAGENT_SOLVER_CONFIG,
     LOCAL_DUMMY_SOLVER_CONFIG,
     LOCAL_JUDGE_CONFIG,
     LOCAL_REPRODUCTION_CONFIG,
@@ -322,14 +322,14 @@ async def test_dummy_agents_docker_log_contains_hello_from_docker(
     "solver_config, reproduction_config, judge_config, runs_dir",
     [
         (
-            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_BASICAGENT_SOLVER_CONFIG,
             LOCAL_REPRODUCTION_CONFIG,
             LOCAL_JUDGE_CONFIG,
             LOCAL_RUNS_DIR,
         ),
     ],
 )
-async def test_aisi_agent_generates_expected_files(
+async def test_basicagent_generates_expected_files(
     solver_config: PythonCodingSolver,
     reproduction_config: ReproductionConfig,
     judge_config: JudgeConfig,
@@ -351,10 +351,9 @@ async def test_aisi_agent_generates_expected_files(
     # Then
     assert bf.exists(bf.join(rollout.run_group, "group.log"))
     assert bf.exists(bf.join(rollout.run, "run.log"))
+    assert bf.exists(bf.join(rollout.run, "agent.log"))
     assert rollout.most_recent_submission is not None
-    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "agent.log"))
     assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "docker.log"))
-    assert bf.exists(bf.join(rollout.most_recent_submission, "logs", "inspect.log"))
 
 
 @pytest.mark.asyncio
@@ -369,7 +368,7 @@ async def test_aisi_agent_generates_expected_files(
             LOCAL_RUNS_DIR,
         ),
         pytest.param(
-            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_BASICAGENT_SOLVER_CONFIG,
             LOCAL_REPRODUCTION_CONFIG,
             LOCAL_JUDGE_CONFIG,
             LOCAL_RUNS_DIR,
@@ -417,7 +416,7 @@ async def test_agent_group_log_does_not_contain_errors(
             LOCAL_RUNS_DIR,
         ),
         pytest.param(
-            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_BASICAGENT_SOLVER_CONFIG,
             LOCAL_REPRODUCTION_CONFIG,
             LOCAL_JUDGE_CONFIG,
             LOCAL_RUNS_DIR,
@@ -527,7 +526,7 @@ async def test_reproduced_rollout_produces_valid_execution_metadata(
             LOCAL_RUNS_DIR,
         ),
         pytest.param(
-            LOCAL_AISI_SOLVER_CONFIG,
+            LOCAL_BASICAGENT_SOLVER_CONFIG,
             LOCAL_REPRODUCTION_WITHOUT_SKIP_CONFIG,
             LOCAL_JUDGE_CONFIG,
             LOCAL_RUNS_DIR,

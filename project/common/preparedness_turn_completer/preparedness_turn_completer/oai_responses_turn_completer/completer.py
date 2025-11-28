@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Iterable, Unpack
+from typing import Any, Literal, Unpack
 
 import openai
 import structlog
@@ -19,14 +19,21 @@ from preparedness_turn_completer.oai_responses_turn_completer.converters import 
 )
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from preparedness_turn_completer.utils import (
-    DEFAULT_RETRY_CONFIG,
     RetryConfig,
     get_model_context_window_length,
     warn_about_non_empty_params,
 )
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 logger = structlog.stdlib.get_logger(component=__name__)
+
+
+class ReasoningConfig(BaseModel):
+    """chz-friendly wrapper around openai.types.shared_params.reasoning:Reasoning"""
+
+    effort: Literal["minimal", "low", "medium", "high"] | None = None
+    generate_summary: Literal["auto", "concise", "detailed"] | None = None
+    summary: Literal["auto", "concise", "detailed"] | None = None
 
 
 class OpenAIResponsesTurnCompleter(TurnCompleter):
@@ -35,11 +42,11 @@ class OpenAIResponsesTurnCompleter(TurnCompleter):
         model: str,
         reasoning: Reasoning | None | NotGiven = NOT_GIVEN,
         text_format: type[BaseModel] | NotGiven = NOT_GIVEN,
-        tools: Iterable[ParseableToolParam] | NotGiven = NOT_GIVEN,
+        tools: list[ParseableToolParam] | NotGiven = NOT_GIVEN,
         temperature: float | None | NotGiven = NOT_GIVEN,
         max_output_tokens: int | None | NotGiven = NOT_GIVEN,
         top_p: float | None | NotGiven = NOT_GIVEN,
-        retry_config: RetryConfig = DEFAULT_RETRY_CONFIG,
+        retry_config: RetryConfig | None = None,
     ):
         self.model = model
         self.reasoning = reasoning
@@ -49,7 +56,7 @@ class OpenAIResponsesTurnCompleter(TurnCompleter):
         self.max_output_tokens = max_output_tokens
         self.top_p = top_p
         self.encoding_name: str
-        self.retry_config = retry_config
+        self.retry_config = retry_config or RetryConfig()
         try:
             self.encoding_name = tiktoken.encoding_name_for_model(model)
         except KeyError:
@@ -71,18 +78,28 @@ class OpenAIResponsesTurnCompleter(TurnCompleter):
         )
 
         model: str
-        reasoning: Reasoning | None | NotGiven = NOT_GIVEN
+        reasoning: ReasoningConfig | None | NotGiven = NOT_GIVEN
         text_format: type[BaseModel] | NotGiven = NOT_GIVEN
-        tools: Iterable[ParseableToolParam] | NotGiven = NOT_GIVEN
+        tools: list[ParseableToolParam] | NotGiven = NOT_GIVEN
         temperature: float | None | NotGiven = NOT_GIVEN
         max_output_tokens: int | None | NotGiven = NOT_GIVEN
         top_p: float | None | NotGiven = NOT_GIVEN
-        retry_config: RetryConfig = DEFAULT_RETRY_CONFIG
+        retry_config: RetryConfig = Field(default_factory=RetryConfig)
 
         def build(self) -> OpenAIResponsesTurnCompleter:
+            reasoning_param: Reasoning | None | NotGiven
+            if isinstance(self.reasoning, ReasoningConfig):
+                reasoning_param = Reasoning(
+                    effort=self.reasoning.effort,
+                    generate_summary=self.reasoning.generate_summary,
+                    summary=self.reasoning.summary,
+                )
+            else:
+                reasoning_param = self.reasoning
+
             return OpenAIResponsesTurnCompleter(
                 model=self.model,
-                reasoning=self.reasoning,
+                reasoning=reasoning_param,
                 text_format=self.text_format,
                 tools=self.tools,
                 temperature=self.temperature,

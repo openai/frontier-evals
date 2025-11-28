@@ -7,7 +7,18 @@ from typing import Unpack
 import openai
 import structlog.stdlib
 import tenacity
+from openai.types.chat import (
+    ChatCompletionMessageParam,
+)
 from preparedness_turn_completer.turn_completer import TurnCompleter
+from preparedness_turn_completer.type_helpers import (
+    is_chat_completion_assistant_message_param,
+    is_chat_completion_dev_message_param,
+    is_chat_completion_function_message_param,
+    is_chat_completion_sys_message_param,
+    is_chat_completion_tool_message_param,
+    is_chat_completion_user_message_param,
+)
 from pydantic import BaseModel
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -89,7 +100,43 @@ class RetryConfig(BaseModel):
         )
 
 
-DEFAULT_RETRY_CONFIG = RetryConfig()
+def text_from_completion(message: ChatCompletionMessageParam) -> str | list[str]:
+    """
+    Gets the text content from a chat completion message.
+    If a particular message content(part) does not have text context, an empty string is
+    returned for that message content(part).
+    Useful for any truncation operations that require the text content of a message.
+    """
+    if "content" not in message or message["content"] is None:
+        return ""
+    elif (
+        is_chat_completion_sys_message_param(message)
+        or is_chat_completion_dev_message_param(message)
+        or is_chat_completion_tool_message_param(message)
+        or is_chat_completion_function_message_param(message)
+    ):
+        return (
+            message["content"]
+            if isinstance(message["content"], str)
+            else [part["text"] for part in message["content"]]
+        )
+    elif is_chat_completion_user_message_param(message):
+        return (
+            message["content"]
+            if isinstance(message["content"], str)
+            else [part["text"] if part["type"] == "text" else "" for part in message["content"]]
+        )
+    elif is_chat_completion_assistant_message_param(message):
+        return (
+            message["content"]
+            if isinstance(message["content"], str)
+            else [
+                part["text"] if part["type"] == "text" else part["refusal"]
+                for part in message["content"]
+            ]
+        )
+    else:
+        raise ValueError(f"Unknown message role: {message['role']}")
 
 
 def warn_about_non_empty_params(

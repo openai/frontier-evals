@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Iterable, Literal, Unpack
+from typing import Any, Literal, Unpack
 
 import openai
 import structlog
@@ -15,12 +15,11 @@ from openai.types.chat import (
 from openai.types.completion_usage import CompletionUsage
 from preparedness_turn_completer.turn_completer import TurnCompleter
 from preparedness_turn_completer.utils import (
-    DEFAULT_RETRY_CONFIG,
     RetryConfig,
     get_model_context_window_length,
     warn_about_non_empty_params,
 )
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -34,9 +33,9 @@ class OpenAICompletionsTurnCompleter(TurnCompleter):
         temperature: float | None | NotGiven = NOT_GIVEN,
         max_tokens: int | None | NotGiven = NOT_GIVEN,
         top_p: float | None | NotGiven = NOT_GIVEN,
-        tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN,
+        tools: list[ChatCompletionToolParam] | NotGiven = NOT_GIVEN,
         tool_choice: ChatCompletionToolChoiceOptionParam | NotGiven = NOT_GIVEN,
-        retry_config: RetryConfig = DEFAULT_RETRY_CONFIG,
+        retry_config: RetryConfig | None = None,
     ):
         self.model = model
         self.reasoning_effort = reasoning_effort
@@ -47,7 +46,7 @@ class OpenAICompletionsTurnCompleter(TurnCompleter):
         self.tools = tools
         self.tool_choice = tool_choice
         self.encoding_name: str
-        self.retry_config = retry_config
+        self.retry_config = retry_config or RetryConfig()
         try:
             self.encoding_name = tiktoken.encoding_name_for_model(model)
         except KeyError:
@@ -74,9 +73,9 @@ class OpenAICompletionsTurnCompleter(TurnCompleter):
         temperature: float | None | NotGiven = NOT_GIVEN
         max_tokens: int | None | NotGiven = NOT_GIVEN
         top_p: float | None | NotGiven = NOT_GIVEN
-        tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN
+        tools: list[ChatCompletionToolParam] | NotGiven = NOT_GIVEN
         tool_choice: ChatCompletionToolChoiceOptionParam | NotGiven = NOT_GIVEN
-        retry_config: RetryConfig = DEFAULT_RETRY_CONFIG
+        retry_config: RetryConfig = Field(default_factory=RetryConfig)
 
         def build(self) -> OpenAICompletionsTurnCompleter:
             return OpenAICompletionsTurnCompleter(

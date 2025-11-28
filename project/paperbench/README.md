@@ -113,10 +113,10 @@ PaperBench requires the following Docker images to be built before it can run:
 - [paperbench/Dockerfile.base](paperbench/Dockerfile.base): The base environment for agents which contains basic packages like `curl`, `git`, `python`, etc. and a Conda environment that can be used to run the agents. We re-use this docker image if users request grading to occur on a computer with `paperbench.judge.grade_locally=false`
 - [paperbench/reproducer.Dockerfile](paperbench/reproducer.Dockerfile): The environment in which the submission is reproduced.
 
-You will need to build the images for each agent that you want to run. We provide the following agents out-of-the-box:
+We provide the following agents out-of-the-box:
 
-- [paperbench/solvers/dummy/solver.py](paperbench/solvers/dummy/solver.py): A agent for that creates a dummy submission, useful for testing the eval end-to-end.
-- [paperbench/agents/aisi-basic-agent/Dockerfile](paperbench/agents/aisi-basic-agent/Dockerfile): Simple ReAct style agents with tools available to them.
+- [paperbench/agents/dummy/solver.py](paperbench/agents/dummy/solver.py): A agent for that creates a dummy submission, useful for testing the eval end-to-end.
+- [paperbench/agents/basicagent/solver.py](paperbench/agents/basicagent/solver.py): Simple ReAct style agents with tools available to them.
 
 For convenience, we've provided a [script](paperbench/scripts/build-docker-images.sh) that builds all the above images:
 
@@ -136,12 +136,10 @@ To see all configurable options for PaperBench, run:
 uv run python -m paperbench.nano.entrypoint --help
 ```
 
-To use our default solver (`ExternalPythonCodingSolver`), you must set:
-
-- `paperbench.solver=paperbench.nano.eval:ExternalPythonCodingSolver`, specifying to use the `ExternalPythonCodingSolver` solver.
-- `paperbench.solver.agent_id` to the id of the agent you want to run.
+To use our default solver (`BasicAgentSolver`), you must set:
+- `paperbench.solver=paperbench.agents.basicagent.solver:BasicAgentSolver`, specifying to use the `BasicAgentSolver` solver.
 - `paperbench.solver.cluster_config` to `alcatraz.clusters.local:LocalConfig`, to use LocalCluster for managing the agent's container.
-- `paperbench.solver.cluster_config.image` to the Docker image that corresponds to the agent you want to run.
+- `paperbench.solver.cluster_config.image` to the Docker image that corresponds base environment mentioned above.
 - `paperbench.solver.is_nvidia_gpu_env=True` if you have a local available NVIDIA gpu and would like the agent to have access to it.
 - `runner.recorder` to `nanoeval.json_recorder:json_recorder` to save the results of the nanoeval run to a JSON file.
 
@@ -150,27 +148,59 @@ To test that things are set up correctly, run the dummy agent with the dummy jud
 ```bash
 uv run python -m paperbench.nano.entrypoint \
     paperbench.paper_split=debug \
-    paperbench.solver=paperbench.solvers.dummy.solver:PaperBenchDummySolver \
+    paperbench.solver=paperbench.agents.dummy.solver:PaperBenchDummySolver \
     paperbench.solver.cluster_config=alcatraz.clusters.local:LocalConfig \
     paperbench.solver.cluster_config.image=pb-env:latest \
     paperbench.judge.scaffold=dummy \
     runner.recorder=nanoeval.json_recorder:json_recorder
 ```
 
-To run a development configuration of BasicAgent that uses `gpt-4o-mini` and runs for 5 minutes, use `paperbench.solver.agent_id=aisi-basic-agent-openai-dev`. To run that agent on the full PaperBench dataset, execute:
+To run BasicAgent, use `paperbench.solver=paperbench.agents.basicagent.solver:BasicAgentSolver`. By default, this will run for 5 minutes and use `gpt-4.1-mini`.
+
+Below, we present a command that you can use for development, which runs the
+above configuration on on the dev split of PaperBench, with short timeouts and
+cheap models.
 
 ```bash
 uv run python -m paperbench.nano.entrypoint \
-    paperbench.solver=paperbench.nano.eval:ExternalPythonCodingSolver \
-    paperbench.solver.agent_id=aisi-basic-agent-openai-dev \
+    paperbench.solver=paperbench.agents.basicagent.solver:BasicAgentSolver \
     paperbench.solver.cluster_config=alcatraz.clusters.local:LocalConfig \
-    paperbench.solver.cluster_config.image=aisi-basic-agent:latest \
+    paperbench.solver.cluster_config.image=pb-env:latest \
+    paperbench.paper_split=dev \
+    paperbench.judge.completer_config=preparedness_turn_completer.oai_completions_turn_completer:OpenAICompletionsTurnCompleter.Config \
+    paperbench.judge.completer_config.model='gpt-4.1-mini' \
+    paperbench.reproduction.timeout=60 \
+    runner.max_retries=0 \
     runner.recorder=nanoeval.json_recorder:json_recorder
 ```
 
 **Note** that we set the default concurrency to 5, you may want to adjust this based on your setup.
 To set the concurrency, simply specify `runner.concurrency=<int>` in the command.
 **Note** You may use a custom solver: set `paperbench.solver` to point to your custom solver class. This solver should be a `PythonCodingSolver` class.
+
+### Canonical command
+
+To run PaperBench with BasicAgent gpt-5 for 24 hours on the full set of papers, use the
+following command:
+
+```bash
+uv run python -m paperbench.nano.entrypoint \
+    paperbench.paper_split=all \
+    paperbench.solver=paperbench.agents.basicagent.solver:BasicAgentSolver \
+    paperbench.solver.completer_config=paperbench.agents.basicagent.completer:OpenAIResponsesTurnCompleterConfig \
+    paperbench.solver.completer_config.model='gpt-5-2025-08-07' \
+    paperbench.solver.completer_config.tools="[{'type':'web_search'}]" \
+    paperbench.solver.completer_config.reasoning=preparedness_turn_completer.oai_responses_turn_completer.completer:ReasoningConfig \
+    paperbench.solver.completer_config.reasoning.effort='high' \
+    paperbench.solver.completer_config.reasoning.summary='auto' \
+    paperbench.solver.time_limit=86400 \
+    paperbench.solver.cluster_config=alcatraz.clusters.local:LocalConfig \
+    paperbench.solver.cluster_config.image=pb-env:latest \
+    paperbench.reproduction.timeout=86400 \
+    runner.max_retries=0 \
+    runner.concurrency=20 \
+    runner.recorder=nanoeval.json_recorder:json_recorder
+```
 
 ### I have submissions and just want to run grading
 
@@ -198,7 +228,7 @@ Then run the paperbench like above but with appropriately configured `PBDirectSu
 ```bash
 uv run python -m paperbench.nano.entrypoint \
     paperbench.paper_split=debug \
-    paperbench.solver=paperbench.solvers.direct_submission.solver:PBDirectSubmissionSolver \
+    paperbench.solver=paperbench.agents.direct_submission.solver:PBDirectSubmissionSolver \
     paperbench.solver.submissions_dir=path/to/foo/ \
     paperbench.solver.cluster_config=alcatraz.clusters.local:LocalConfig \
     paperbench.solver.cluster_config.image=pb-env:latest \
@@ -213,12 +243,11 @@ A run group is created for each launch of PaperBench. A run group contains multi
 In each run group directory, there is a `group.log` file that contains the logs for that run group.
 
 In each run directory there is:
-
+- `agent.log`: (optional) Rollout log from the solver. If present, the monitoring step will run and the run's grade will be marked with `"monitor_ran": true`.
+- `grade.json`: The grading result for that run.
+- `metadata.json`: Metadata for that run.
 - `run.log`: The log for that run.
 - `status.json`: The status of that run.
-- `metadata.json`: Metadata for that run.
-- `grade.json`: The grading result for that run.
-- `agent.log`: (optional) Rollout log from the solver. If present, the monitoring step will run and the run's grade will be marked with `"monitor_ran": true`.
 - A submissions directory, containing multiple timestamped submission directories (e.g., `2025-03-28T10-34-35-UTC`), each with:
   - `log.json`: Logs from this submission attempt
   - `submission.tar.gz`: The archived submission files
@@ -236,11 +265,11 @@ runs/
 ├── <run_group_id>/
 │   ├── group.log
 │   ├── <run_id>/
-│   │   ├── metadata.json
-│   │   ├── grade.json
-│   │   ├── status.json
-│   │   ├── run.log
 │   │   ├── agent.log
+│   │   ├── grade.json
+│   │   ├── metadata.json
+│   │   └── run.log
+│   │   ├── status.json
 │   │   ├── submissions/
 │   │   │   ├── <timestamp-1>/
 │   │   │   │   ├── log.json

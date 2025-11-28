@@ -143,6 +143,35 @@ def get_timestamp() -> str:
     return time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
 
 
+def _get_env_var_name(value: str) -> str | None:
+    """Extract `${{ secrets.NAME }}` -> `NAME`; return None if not matching."""
+    if not isinstance(value, str):
+        return None
+    import re
+
+    env_var_pattern = r"\$\{\{\s*secrets\.(\w+)\s*\}\}"
+    match = re.match(env_var_pattern, value)
+    if not match:
+        return None
+    return match.group(1)
+
+
+def parse_env_var_values(dictionary: dict[str, str]) -> dict[str, str]:
+    """Replace values matching `${{ secrets.NAME }}` with `os.environ[NAME]`.
+
+    Mutates and returns the same dict for convenience.
+    """
+    for key, value in dictionary.items():
+        env_var = _get_env_var_name(value)
+        if not env_var:
+            continue
+        env_val = os.getenv(env_var)
+        if env_val is None:
+            raise ValueError(f"Environment variable `{env_var}` is not set!")
+        dictionary[key] = env_val
+    return dictionary
+
+
 def safe_mean(values: Sequence[float | int], default: float = np.nan) -> float:
     """Return the mean or a default when no values are provided."""
 

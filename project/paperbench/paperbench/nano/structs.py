@@ -6,8 +6,6 @@ from typing import Any, Self
 
 from dotenv import load_dotenv
 
-from paperbench.monitor.monitor import MonitorResult
-
 load_dotenv()
 import structlog.stdlib
 from preparedness_turn_completer.oai_completions_turn_completer import (
@@ -18,10 +16,8 @@ from pydantic import BaseModel, model_validator
 
 from alcatraz.clusters.local import LocalConfig
 from nanoeval.solvers.computer_tasks.task import Grade
-from paperbench.agents.utils import (
-    AgentOutput,
-)
 from paperbench.grade import JudgeOutput
+from paperbench.monitor.monitor import MonitorResult
 from paperbench.scripts.run_reproduce import ReproductionMetadata
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
@@ -59,7 +55,7 @@ class PaperBenchResult:
         }
 
         if self.agent_output:
-            data["agent_output"] = self.agent_output.to_dict()
+            data["agent_output"] = self.agent_output.model_dump()
 
         if self.judge_output:
             data["judge_output"] = self.judge_output.to_dict()
@@ -71,6 +67,17 @@ class PaperBenchResult:
             data["monitor_result"] = self.monitor_result.to_dict()
 
         return data
+
+
+class AgentOutput(BaseModel):
+    """Summary of an agent rollout for a single run."""
+
+    run_id: str
+    time_start: float
+    time_end: float
+    error_msg: str | None = None
+    runtime_in_seconds: float
+    status_exists: bool
 
 
 class ReproductionConfig(BaseModel):
@@ -122,3 +129,9 @@ class PaperBenchGrade(Grade):
             "score": self.score,
             "grader_log": self.grader_log,
         }
+
+
+@dataclass
+class AgentDirConfig:
+    agent_dir: str
+    directories_to_save: list[str]

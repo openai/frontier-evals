@@ -3,7 +3,7 @@ name = "preparedness_turn_completer"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    "openai",
+    "openai==1.99.9",
     "tenacity",
     "chz",
     "structlog",

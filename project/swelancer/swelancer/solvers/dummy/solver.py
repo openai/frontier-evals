@@ -131,26 +131,15 @@ class DummySolver(PythonCodingSolver):
             ) as computer:
                 await computer.check_shell_command(f"mkdir -p {self.log_dir}")
 
-                # 1. Run the task setup
-                async with asyncio.timeout(2400):
-                    try:
-                        await task.setup(computer, self.runtime_config)
-                    except Exception as e:
-                        raise RolloutSystemError(f"Error during task setup: {e}") from e
-                ctx_logger.info(
-                    "Setup complete",
-                    destinations=["run"],
-                )
-
-                # 2. Run dummy checks
+                # 1. Run dummy checks
                 if self.test_user_tool:
                     await self._test_user_tool(computer, task)
 
-                # 3. Optionally apply the gold solution
+                # 2. Optionally apply the gold solution
                 if self.apply_gold_solution:
                     await self._apply_gold_solution(computer, task)
 
-                # 4. Grade and yield the final result
+                # 3. Grade and yield the final result
                 try:
                     grade = await task.grade(computer, self.runtime_config)
                 except Exception as e:

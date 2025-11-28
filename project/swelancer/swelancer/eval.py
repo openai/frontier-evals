@@ -122,54 +122,63 @@ class SWELancerTask(ComputerTask):
         ctx_logger = logger.bind(
             run_group_id=self.run_group_id, runs_dir=self.runs_dir, run_id=self.run_id
         )
+        async with asyncio.timeout(2400):
+            try:
+                # Assert various things about the environment
+                ctx_logger.info("SETUP", destinations=["run"])
+                if isinstance(computer, JupyterComputerInterface):
+                    await computer.check_execute(
+                        """import os; assert os.environ.get('CONDA_DEFAULT_ENV') == 'testbed', os.environ.get('CONDA_DEFAULT_ENV')""",
+                    )
+                    ctx_logger.info("Correct Jupyter environment is loaded.", destinations=["run"])
 
-        # Assert various things about the environment
-        ctx_logger.info("SETUP", destinations=["run"])
-        if isinstance(computer, JupyterComputerInterface):
-            await computer.check_execute(
-                """import os; assert os.environ.get('CONDA_DEFAULT_ENV') == 'testbed', os.environ.get('CONDA_DEFAULT_ENV')""",
-            )
-            ctx_logger.info("Correct Jupyter environment is loaded.", destinations=["run"])
+                if self.variant == "swe_manager":
+                    # reset to the broken commit
+                    await computer.check_shell_command(
+                        f"bash -c 'git reset --hard {self.manager_commit}^'"
+                    )
+                else:
+                    # instead of a time based check, check until the SETUP_DONE environment variable is set
+                    ctx_logger.info("Waiting for setup to be done", destinations=["run"])
+                    while True:
+                        res = await computer.send_shell_command("cat /setup_done.txt")
+                        if res.output.decode("utf-8").strip() == "done":
+                            ctx_logger.info("Setup is done", destinations=["run"])
+                            break
+                        await asyncio.sleep(15)
 
-        if self.variant == "swe_manager":
-            # reset to the broken commit
-            await computer.check_shell_command(f"bash -c 'git reset --hard {self.manager_commit}^'")
-        else:
-            # instead of a time based check, check until the SETUP_DONE environment variable is set
-            ctx_logger.info("Waiting for setup to be done", destinations=["run"])
-            while True:
-                res = await computer.send_shell_command("cat /setup_done.txt")
-                if res.output.decode("utf-8").strip() == "done":
-                    ctx_logger.info("Setup is done", destinations=["run"])
-                    break
-                await asyncio.sleep(15)
+                # power user flag: if using a stale image where zip and unzip are not installed
+                if os.getenv("INSTALL_ZIP_UNZIP", "false").lower() == "true":
+                    await computer.check_shell_command(
+                        "apt-get update && apt-get install -y zip unzip"
+                    )
 
-        # power user flag: if using a stale image where zip and unzip are not installed
-        if os.getenv("INSTALL_ZIP_UNZIP", "false").lower() == "true":
-            await computer.check_shell_command("apt-get update && apt-get install -y zip unzip")
+                # Zip the tests directory with a password
+                ctx_logger.info("Zipping tests", destinations=["run"])
+                await computer.check_shell_command(
+                    "cd /app/tests && zip -P 'secretpasswordhere' -r /app/tmp.zip . && mv /app/tmp.zip /app/tests.zip"
+                )
+                # Clear tests directory
+                await computer.send_shell_command("rm -rf /app/tests")
 
-        # Zip the tests directory with a password
-        ctx_logger.info("Zipping tests", destinations=["run"])
-        await computer.check_shell_command(
-            "cd /app/tests && zip -P 'secretpasswordhere' -r /app/tmp.zip . && mv /app/tmp.zip /app/tests.zip"
-        )
-        # Clear tests directory
-        await computer.send_shell_command("rm -rf /app/tests")
+                # Remove existing git repo and create a new one
+                await computer.check_shell_command("rm -rf .git")
+                await computer.check_shell_command("git init")
 
-        # Remove existing git repo and create a new one
-        await computer.check_shell_command("rm -rf .git")
-        await computer.check_shell_command("git init")
+                # Creat a temp commit to mark where the model's changes begin
+                if self.variant == "ic_swe":
+                    await computer.check_shell_command("bash -c 'git add .'")
+                    await computer.send_shell_command(
+                        'bash -c \'git -c user.name="temp" -c user.email="temp@example.com" commit -m "temp"\''
+                    )
+                    ctx_logger.info("Temp commit created", destinations=["run"])
 
-        # Creat a temp commit to mark where the model's changes begin
-        if self.variant == "ic_swe":
-            await computer.check_shell_command("bash -c 'git add .'")
-            await computer.send_shell_command(
-                'bash -c \'git -c user.name="temp" -c user.email="temp@example.com" commit -m "temp"\''
-            )
-            ctx_logger.info("Temp commit created", destinations=["run"])
-
-        if self.disable_internet:
-            await computer.disable_internet()
+                if self.disable_internet:
+                    await computer.disable_internet()
+            except Exception as e:
+                ctx_logger.exception("An error occurred during setup", destinations=["run"])
+                raise RolloutSystemError(f"An error occurred during setup: {e}") from e
+        ctx_logger.info("Setup complete", destinations=["run"])
 
     @override
     async def grade(

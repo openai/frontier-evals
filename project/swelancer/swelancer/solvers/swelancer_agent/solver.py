@@ -218,18 +218,7 @@ class SimpleAgentSolver(PythonCodingSolver):
             async with run_with_startup_timeout(
                 self.computer_runtime, task, STARTUP_TIMEOUT
             ) as computer:
-                # 1. Run the task setup
-                async with asyncio.timeout(2400):
-                    try:
-                        await task.setup(computer, self.runtime_config)
-                    except Exception as e:
-                        raise RolloutSystemError(f"Error during task setup: {e}") from e
-                ctx_logger.info(
-                    "Setup complete",
-                    destinations=["run"],
-                )
-
-                # 2. Query the API / some agent
+                # 1. Query the API / some agent
                 messages = []
 
                 assert "content" in task.prompt[0]
@@ -334,7 +323,7 @@ class SimpleAgentSolver(PythonCodingSolver):
                         }
                     )
 
-                # 3. Grade and yield the final result
+                # 2. Grade and yield the final result
                 try:
                     grade = await task.grade(computer, self.runtime_config)
                 except Exception as e:

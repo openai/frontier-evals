@@ -3,13 +3,23 @@ from __future__ import annotations
 import logging
 
 from alcatraz.clusters.local import ClusterConfig
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerConfiguration
+from nanoeval.solvers.computer_tasks.code_execution_interface import (
+    ComputerConfiguration,
+    NetworkMode,
+)
 
 logger = logging.getLogger(__name__)
+
+SUPPORTED_NETWORK_MODES = [NetworkMode.NONE, NetworkMode.UNPROXIED]
 
 
 def task_to_alcatraz_config(task: ComputerConfiguration, config: ClusterConfig) -> ClusterConfig:
     # TODO, we should really just have a ClusterConfig as part of the task itself
+
+    if task.network_mode not in SUPPORTED_NETWORK_MODES:
+        raise ValueError(
+            f"The {task.network_mode} network mode is not supported on Alcatraz, and will never be. Please change it, or stop using Alcatraz."
+        )
 
     if task.azure_vm_sku:
         logger.info("Using custom azure_vm_sku: %s", task.azure_vm_sku)
@@ -35,11 +45,22 @@ def task_to_alcatraz_config(task: ComputerConfiguration, config: ClusterConfig) 
     if task.alcatraz_limits:
         logger.info("Using custom limits: %s", task.alcatraz_limits)
         config = config.model_copy(update={"limits": task.alcatraz_limits})
-
+    merged_volumes_config = {}
     if task.volumes_config:
         logger.info("Using custom volumes_config: %s", task.volumes_config)
-        config = config.model_copy(update={"volumes_config": task.volumes_config})
-
+        merged_volumes_config.update(task.volumes_config)
+    if task.volume_mounts:
+        volumes_config = {
+            str(i): {
+                "bind_source": volume_mount.host_path,
+                "bind_dest": volume_mount.container_path,
+            }
+            for i, volume_mount in enumerate(task.volume_mounts)
+        }
+        logger.info("Using custom volumes_mount: %s", volumes_config)
+        merged_volumes_config.update(volumes_config)
+    if merged_volumes_config:
+        config = config.model_copy(update={"volumes_config": merged_volumes_config})
     if task.shm_size:
         logger.info("Using custom shm size: %s", task.shm_size)
         config = config.model_copy(update={"shm_size": task.shm_size})

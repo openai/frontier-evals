@@ -1,5 +1,0 @@
-openai
-anthropic
-google-generativeai
-tenacity
-tiktoken>=0.9.0

@@ -12,9 +12,9 @@ import structlog.stdlib
 
 from alcatraz.clusters.local import ClusterConfig
 from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
-from paperbench.agents.registry import get_agents_env_vars, registry
 from paperbench.infra.alcatraz import tar_and_extract_from_computer
 from paperbench.scripts.alcatraz_services import put_submission_in_computer, start_alcatraz_computer
+from paperbench.utils import get_agents_env_vars
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -236,7 +236,7 @@ async def reproduce_on_computer(
     """
     # we're ensuring the env variables defined in agent.env are set on the computer
     cluster_config = cluster_config.model_copy(
-        update={"environment": {**cluster_config.environment, **get_agents_env_vars(registry)}}
+        update={"environment": {**cluster_config.environment, **get_agents_env_vars()}}
     )
     ctx_logger = logger.bind(
         run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]

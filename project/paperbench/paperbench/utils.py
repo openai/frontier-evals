@@ -1,8 +1,6 @@
-import io
 import logging
 import os
 import subprocess
-import tarfile
 import time
 import uuid
 from pathlib import Path
@@ -118,6 +116,26 @@ def get_paperbench_data_dir(*, require_exists: bool = True) -> Path:
     return default_path
 
 
+def get_agents_dir() -> Path:
+    """Returns an absolute path to the paperbench/agents directory."""
+    return get_root() / "agents"
+
+
+def get_agents_env_vars() -> dict[str, str]:
+    """Parses agents' agent.env (KEY=VALUE per line) into a dictionary."""
+    agent_env_path = get_agents_dir() / "agent.env"
+    if not agent_env_path.exists():
+        logger.warning(f"agent.env not found in {agent_env_path}")
+        return {}
+    env_vars: dict[str, str] = {}
+    with open(agent_env_path, "r") as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                key, value = line.strip().split("=", 1)
+                env_vars[key] = value
+    return env_vars
+
+
 def build_canonical_sub_path(run_dir: Path | str, timestamp: str) -> str:
     """
     The canonical place where we expect submission.tar.gz to be for repro and grading
@@ -141,35 +159,6 @@ def get_timestamp() -> str:
     """Returns the current timestamp in the format `YYYY-MM-DDTHH-MM-SS-Z`."""
 
     return time.strftime("%Y-%m-%dT%H-%M-%S-%Z", time.gmtime())
-
-
-def _get_env_var_name(value: str) -> str | None:
-    """Extract `${{ secrets.NAME }}` -> `NAME`; return None if not matching."""
-    if not isinstance(value, str):
-        return None
-    import re
-
-    env_var_pattern = r"\$\{\{\s*secrets\.(\w+)\s*\}\}"
-    match = re.match(env_var_pattern, value)
-    if not match:
-        return None
-    return match.group(1)
-
-
-def parse_env_var_values(dictionary: dict[str, str]) -> dict[str, str]:
-    """Replace values matching `${{ secrets.NAME }}` with `os.environ[NAME]`.
-
-    Mutates and returns the same dict for convenience.
-    """
-    for key, value in dictionary.items():
-        env_var = _get_env_var_name(value)
-        if not env_var:
-            continue
-        env_val = os.getenv(env_var)
-        if env_val is None:
-            raise ValueError(f"Environment variable `{env_var}` is not set!")
-        dictionary[key] = env_val
-    return dictionary
 
 
 def safe_mean(values: Sequence[float | int], default: float = np.nan) -> float:
@@ -219,15 +208,6 @@ def get_default_runs_dir() -> str:
     """Returns an absolute path to the directory storing runs."""
 
     return str(get_root().parent / "runs")
-
-
-def path_to_tar(source_path: Path, arcname: str) -> io.BytesIO:
-    """Tars a file or directory and returns the tar stream."""
-    tar_stream = io.BytesIO()
-    with tarfile.open(fileobj=tar_stream, mode="w") as tar:
-        tar.add(source_path, arcname=arcname)
-    tar_stream.seek(0)
-    return tar_stream
 
 
 OPENAI_TIMEOUT_EXCEPTIONS = (

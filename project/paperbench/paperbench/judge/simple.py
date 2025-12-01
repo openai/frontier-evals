@@ -349,41 +349,6 @@ class SimpleJudge(Judge):
             return TreePrepOutcome(tree_structure=tree_structure, within_token_budget=False)
         return TreePrepOutcome(tree_structure=tree_structure, within_token_budget=True)
 
-    def _truncate_files(
-        self, tree_structure: str, all_file_names: str, available_context: int
-    ) -> tuple[str, str]:
-        """
-        Truncates both tree structure and file names to fit within available context.
-        Distributes the available context roughly equally between the two strings.
-        Available context is in terms of tokens, not characters.
-        """
-        all_file_names_toks = self.token_encoder.encode(all_file_names, disallowed_special=())
-        tree_structure_toks = self.token_encoder.encode(tree_structure, disallowed_special=())
-
-        all_file_names_len = len(all_file_names_toks)
-        tree_structure_len = len(tree_structure_toks)
-        total_len = all_file_names_len + tree_structure_len
-
-        # If total length is already within context, return as is
-        if total_len <= available_context:
-            return all_file_names, tree_structure
-
-        # Calculate proportional lengths to maintain relative sizes
-        proportion = all_file_names_len / total_len
-        target_file_names_len = int(available_context * proportion)
-        target_tree_len = available_context - target_file_names_len
-
-        truncated_file_names_toks = all_file_names_toks[:target_file_names_len]
-        truncated_tree_toks = tree_structure_toks[:target_tree_len]
-
-        # preserve complete lines when decoding where possible by dropping the last line
-        truncated_file_names = self.token_encoder.decode(truncated_file_names_toks).rsplit("\n", 1)[
-            0
-        ]
-        truncated_tree = self.token_encoder.decode(truncated_tree_toks).rsplit("\n", 1)[0]
-
-        return truncated_file_names, truncated_tree
-
     async def _prepare_tree_structure(self, task_category: str) -> str:
         """
         Prepares the relevant tree directory structure for a given task category.

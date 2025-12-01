@@ -26,7 +26,6 @@ from nanoeval.solvers.computer_tasks.code_execution_interface import (
     RuntimeConfig,
 )
 from nanoeval.solvers.computer_tasks.task import ComputerTask
-from paperbench.agents.registry import registry as agent_registry
 from paperbench.agents.upload import (
     upload_heavy_logs,
     upload_status,
@@ -53,7 +52,7 @@ from paperbench.scripts.run_reproduce import (
     ReproductionMetadata,
     reproduce_on_computer_with_salvaging,
 )
-from paperbench.utils import purple
+from paperbench.utils import get_agents_dir, purple
 
 GRADER_OPENAI_API_KEY = os.getenv("GRADER_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
@@ -141,7 +140,7 @@ class PBTask(ComputerTask):
                 with open(src, "rb") as f:
                     await computer.upload(f.read(), dst)
 
-            agent_env_path = agent_registry.get_agents_dir() / "agent.env"
+            agent_env_path = get_agents_dir() / "agent.env"
             if agent_env_path.exists():
                 with open(agent_env_path, "rb") as f:
                     await computer.upload(f.read(), f"{WORKSPACE_BASE}/agent.env")

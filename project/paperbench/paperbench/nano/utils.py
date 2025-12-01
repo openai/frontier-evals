@@ -5,8 +5,6 @@ from datetime import datetime, timedelta
 import structlog.stdlib
 
 from alcatraz.clusters.local import ClusterConfig, VolumesConfig
-from nanoeval.solvers.computer_tasks.code_execution_interface import ComputerInterface
-from paperbench.constants import SUBMISSION_DIR
 from paperbench.metrics import EvaluationRun, PaperEvaluation
 from paperbench.nano.structs import PaperBenchResult
 from paperbench.utils import get_experiments_dir
@@ -64,24 +62,6 @@ def gather_eval_runs(results: list[PaperBenchResult], n_runs: int) -> list[Evalu
         seed_to_eval_run[seed].paper_evaluations[paper_id] = paper_eval
 
     return list(seed_to_eval_run.values())
-
-
-async def check_submission_exists(
-    computer: ComputerInterface, run_group_id: str, runs_dir: str, run_id: str
-) -> bool:
-    """Checks if there is at least one file in the submission directory in the cluster."""
-
-    ctx_logger = logger.bind(
-        run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
-    )
-    result = await computer.send_shell_command(f"ls -A {SUBMISSION_DIR} | wc -l")
-    num_files = int(result.output.decode("utf-8").strip())
-    submission_exists = result.exit_code == 0 and num_files > 0
-
-    if not submission_exists:
-        ctx_logger.error("No files found in submission directory!")
-
-    return submission_exists
 
 
 def get_file_at_duration(files: list[str], duration_hr: int) -> dict[str, timedelta | str]:

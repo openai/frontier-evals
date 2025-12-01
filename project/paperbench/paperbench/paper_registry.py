@@ -51,7 +51,7 @@ class Paper:
                 blacklist=data["blacklist"],
             )
         except KeyError as e:
-            raise ValueError("Missing key in paper config!") from e
+            raise ValueError(f"Missing key in paper config! {e}") from e
 
 
 class PaperRegistry:

@@ -1,3 +1,4 @@
+import uuid
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -27,30 +28,27 @@ async def put_submission_in_computer(
         run_group_id=run_group_id, runs_dir=runs_dir, run_id=run_id, destinations=["run"]
     )
     ctx_logger.info(f"Placing submission in computer from: {submission_path}")
+    tar_gz_on_computer = "/tmp/logs.tar.gz"
     # Put the tar.gz to the container
     await put_file_in_computer(
         computer=computer,
         blobfile_path=submission_path,
-        dest_path="/tmp/logs.tar.gz",
+        dest_path=tar_gz_on_computer,
         run_group_id=run_group_id,
         runs_dir=runs_dir,
         run_id=run_id,
     )
 
-    # Extract tar.gz
-    cmd = "tar -xzf /tmp/logs.tar.gz -C /tmp"
+    # Extract tar.gz into a unique temp dir to avoid collisions.
+    extract_dir = f"/tmp/pb_extract_{uuid.uuid4().hex}"
+    cmd = f"mkdir -p {extract_dir} && tar -xzf {tar_gz_on_computer} -C {extract_dir}"
     ctx_logger.info(f"Extracting submission: {cmd}")
     result = await computer.check_shell_command(cmd)
 
-    # Move submission subdir to /submission
-    # TODO: this is a hack because sometimes the submission dir is nested several levels deep
-    # (e.g. from the agent's tar.gz, you get `{unzip_location}/{timestamp}/submission/` and
-    # from the reproducer, you just get `{unzip_location}/submission/`), so we have to `find`
-    # the submission dir and move it to /submission. We should fix this by always uploading
-    # `submission` at the top level in the tar
-    cmd = "find /tmp/ -type d -name submission -print0 | xargs -0 -I{} mv {} /"
-    ctx_logger.info(f"Moving submission to /submission: {cmd}")
-    result = await computer.check_shell_command(cmd)
+    # Move the submission directory into /submission deterministically
+    cmd = f"rm -rf /submission && mv {extract_dir}/submission /submission"
+    ctx_logger.info(f"Placing submission to /submission: {cmd}")
+    await computer.check_shell_command(cmd)
 
     # list files in /submission
     result = await computer.check_shell_command("ls -la /submission")

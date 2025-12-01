@@ -64,7 +64,6 @@ class ExampleRunRegistry:
 
     def get_default_dataset_dir(self) -> Path:
         """Returns the default dataset directory."""
-        # TODO change this to a more appropriate default (e.g. ~/.cache/hp/judge_eval/) at release (when we will not be e.g. committing/directly redistributing the code)
         return get_paperbench_data_dir() / "judge_eval"
 
     def get_examples_dir(self) -> Path:

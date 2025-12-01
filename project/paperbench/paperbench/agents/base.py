@@ -2,6 +2,8 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
+from typing import Awaitable, Callable, ParamSpec, TypeVar
 
 import blobfile as bf
 import structlog
@@ -25,6 +27,15 @@ from paperbench.nano.utils import prepare_computer
 from paperbench.scripts.alcatraz_services import start_alcatraz_computer
 
 logger = structlog.stdlib.get_logger(component=__name__)
+
+T = TypeVar("T")
+P = ParamSpec("P")
+
+
+@dataclass(frozen=True)
+class SetupOutcome:
+    success: bool
+    err_msg: str = ""
 
 
 @chz.chz
@@ -99,26 +110,87 @@ class BasePBSolver(PythonCodingSolver, ABC):
                 _print=True,
             )
 
-    async def _setup(self, computer: ComputerInterface, task: PBTask) -> None:
+    async def _try_system_operation(
+        self,
+        operation: Callable[P, Awaitable[T]],
+        task: PBTask,
+        operation_desc: str,
+        *operation_args: P.args,
+        **operation_kwargs: P.kwargs,
+    ) -> T:
+        """
+        Wraps an operation (e.g. task.setup or task.grade) in a try/except block
+        Raises RolloutSystemError on failure
+        """
+        ctx_logger = logger.bind(
+            run_group_id=task.run_group_id, run_id=task.run_id, runs_dir=task.runs_dir
+        )
+
+        try:
+            return await operation(*operation_args, **operation_kwargs)
+        except Exception as e:
+            error_msg = f"{operation_desc} failed with error: {str(e)}"
+            ctx_logger.exception(error_msg, destinations=["run"])
+            raise RolloutSystemError(error_msg) from e
+
+    async def _setup(self, computer: ComputerInterface, task: PBTask) -> SetupOutcome:
         """Wrapper around setup functions, for readability."""
-        await task.setup(computer, self.runtime_config)
-        await self._setup_computer(computer, task)
+        ctx_logger = logger.bind(
+            run_group_id=task.run_group_id, run_id=task.run_id, runs_dir=task.runs_dir
+        )
+        try:
+            await self._try_system_operation(
+                operation=task.setup,
+                operation_desc="Task setup",
+                task=task,
+                computer=computer,
+                runtime_config=self.runtime_config,
+            )
+            # solver-specific setup
+            await self._setup_computer(computer, task)
+        except RolloutSystemError:
+            raise
+        except Exception as e:
+            exception_msg = f"Solver-specific computer setup failed: {str(e)}"
+            ctx_logger.exception(exception_msg, destinations=["run"])
+            return SetupOutcome(success=False, err_msg=exception_msg)
+        return SetupOutcome(success=True)
 
-    async def _run_save_and_check(self, computer: ComputerInterface, task: PBTask) -> AgentOutput:
+    async def _run_save_and_check(
+        self, computer: ComputerInterface, task: PBTask
+    ) -> AgentOutput | None:
         """Wrapper around _run_agent that also saves metadata.json and runs sanity checks."""
-        agent_output = await self._run_agent(computer, task)
+        ctx_logger = logger.bind(
+            run_group_id=task.run_group_id, run_id=task.run_id, runs_dir=task.runs_dir
+        )
 
-        with bf.BlobFile(bf.join(task.run_dir, "metadata.json"), "w") as f:
-            json.dump(agent_output.model_dump(), f, indent=4)
-        await self._sanity_check_submission(task)
+        agent_output: AgentOutput | None = None
+        try:
+            agent_output = await self._run_agent(computer, task)
+
+            with bf.BlobFile(bf.join(task.run_dir, "metadata.json"), "w") as f:
+                json.dump(agent_output.model_dump(), f, indent=4)
+            await self._sanity_check_submission(task)
+        except Exception as e:
+            # we catch the exception and log it
+            # so we can still try grading whatever we got
+            ctx_logger.info(
+                f"An error occurred while running the agent: {str(e)}", destinations=["run"]
+            )
 
         return agent_output
 
     async def _grade(
-        self, computer: ComputerInterface, task: PBTask, agent_output: AgentOutput
+        self, computer: ComputerInterface, task: PBTask, agent_output: AgentOutput | None
     ) -> PaperBenchGrade:
         """Wrapper around task.grade with additional handling, for readability."""
-        grade: PaperBenchGrade = await task.grade(computer, self.runtime_config)
+        grade: PaperBenchGrade = await self._try_system_operation(
+            task.grade,
+            operation_desc="Task grading",
+            task=task,
+            computer=computer,
+            runtime_config=self.runtime_config,
+        )
         if grade.paperbench_result.judge_output is None:
             grade = PaperBenchGrade(
                 paperbench_result=PaperBenchResult(
@@ -140,25 +212,18 @@ class BasePBSolver(PythonCodingSolver, ABC):
     @override
     async def run(self, task: ComputerTask) -> AsyncGenerator[Step | FinalResult, None]:
         assert isinstance(task, PBTask), f"Task must be a PBTask, got {type(task)}"
-        ctx_logger = logger.bind(
-            run_group_id=task.run_group_id,
-            run_id=task.run_id,
-            runs_dir=task.runs_dir,
-            destinations=["run"],
-        )
 
-        try:
-            async with self._start_computer(task) as computer:
-                # 1. Run the task and solver setup
-                await self._setup(computer, task)
-                # 2. Run the agent, serialize the output to metadata.json
-                agent_output = await self._run_save_and_check(computer, task)
-                # 3. Grade the submission
-                grade = await self._grade(computer, task, agent_output)
-            yield FinalResult(grade=grade)
-        except Exception as e:
-            # TODO rolloutsystem errors only on actual system errors;
-            # agent errors should be handled and/or reported as a FinalResult with error.
-            error_msg = f"Run failed with error: {str(e)}"
-            ctx_logger.exception(error_msg)
-            raise RolloutSystemError(error_msg) from e
+        async with self._start_computer(task) as computer:
+            # 1. Run the task and solver setup;
+            setup_outcome = await self._setup(computer, task)
+            # if setup failed, we exit early, yielding a score of 0
+            if not setup_outcome.success:
+                yield FinalResult(grade=task.early_exit_grade(grader_log=setup_outcome.err_msg))
+                return
+
+            # 2. Run the agent, serialize the output to metadata.json
+            agent_output = await self._run_save_and_check(computer, task)
+
+            # 3. Grade the submission
+            grade = await self._grade(computer, task, agent_output)
+        yield FinalResult(grade=grade)

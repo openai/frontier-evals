@@ -83,7 +83,10 @@ async def check_for_existing_run(task: PBTask) -> AgentOutput | None:
 
 
 def log_messages_to_file(
-    messages: list[ChatCompletionMessageParam], file_path: str, width: int = 100
+    messages: list[ChatCompletionMessageParam],
+    file_path: str,
+    width: int = 100,
+    max_lines_per_message: int = 600,
 ) -> None:
     """
     Write a human-readable log of messages to file_path.
@@ -118,7 +121,14 @@ def log_messages_to_file(
             )
             lines.extend(wrapped)
 
-        # TODO truncate content if it's too long
+        if len(lines) > max_lines_per_message:
+            head = max_lines_per_message // 2
+            tail = max_lines_per_message - head - 1
+            omitted = len(lines) - (head + tail)
+            sentinel = (
+                f"...[logs truncated for readability and portability: {omitted} lines omitted]..."
+            )
+            lines = lines[:head] + [sentinel] + (lines[-tail:] if tail > 0 else [])
 
         return [line.ljust(inner_width) for line in lines]
 

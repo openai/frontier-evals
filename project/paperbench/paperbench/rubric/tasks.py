@@ -15,7 +15,7 @@ VALID_TASK_CATEGORIES = {
     "Code Development",
     "Code Execution",
     "Result Analysis",
-    "Subtree",
+    "Subtree",  # Used dynamically for experimental non-leaf grading
 }
 
 VALID_FINEGRAINED_TASK_CATEGORIES = {
@@ -61,19 +61,19 @@ class TaskNode:
             raise ValueError("Weight must be non-negative.")
 
         if self.task_category and self.task_category not in VALID_TASK_CATEGORIES:
-            logger.warning(f"Invalid task category: {self.task_category}")
+            raise ValueError(f"Invalid task category: {self.task_category}")
 
         if (
             self.finegrained_task_category
             and self.finegrained_task_category not in VALID_FINEGRAINED_TASK_CATEGORIES
         ):
-            logger.warning(f"Invalid finegrained task category: {self.finegrained_task_category}")
+            raise ValueError(f"Invalid finegrained task category: {self.finegrained_task_category}")
 
         if not self.is_leaf() and self.task_category:
             raise ValueError(f"Non-leaf node '{self.id}' cannot have a task category.")
 
         if self.is_leaf() and not self.task_category:
-            logger.warning(f"Leaf node '{self.id}' doesn't have a task category.")
+            raise ValueError(f"Leaf node '{self.id}' doesn't have a task category.")
 
     def is_leaf(self) -> bool:
         """Check if the node is a leaf node (has no sub-tasks)."""

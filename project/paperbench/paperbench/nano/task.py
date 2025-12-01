@@ -188,7 +188,7 @@ class PBTask(ComputerTask):
                     f"Exception uploading final logs before grading: {e}", destinations=["run"]
                 )
 
-    def _early_exit_grade(
+    def early_exit_grade(
         self,
         grader_log: str,
         monitor_ran: bool = False,
@@ -263,7 +263,7 @@ class PBTask(ComputerTask):
         checkpoint = await self._select_checkpoint()
         if not checkpoint:
             ctx_logger.exception("No checkpoint exists, skipping grading!", destinations=["run"])
-            return self._early_exit_grade("No checkpoint exists, skipping grading!")
+            return self.early_exit_grade("No checkpoint exists, skipping grading!")
         path_to_submission, _ = checkpoint
         path_to_executed_submission = path_to_submission.replace(".tar.gz", "_executed.tar.gz")
 
@@ -280,7 +280,7 @@ class PBTask(ComputerTask):
                     f"Submission for {self.run_id} flagged by monitor",
                     destinations=["group", "run"],
                 )
-                return self._early_exit_grade(
+                return self.early_exit_grade(
                     "Submission flagged by monitor", monitor_ran=mon_ran, monitor_result=mon_result
                 )
 

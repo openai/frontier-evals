@@ -199,14 +199,8 @@ def _get_rollout(runs_dir: str) -> Rollout:
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with tarfile.open(local_submission, "r:gz") as tf:
-                for member in tf.getmembers():
-                    assert member.name.startswith(latest), (
-                        f"Expected one extracted folder called {latest} in submission.tar.gz file, "
-                        f"but found {member.name}!"
-                    )
-
-                    member.name = member.name[len(latest) + 1 :]
-                    tf.extract(member, path=tmpdir)
+                # archives extract directly with top-level 'submission/' (and optionally 'logs/')
+                tf.extractall(path=tmpdir)
 
             for root, _, files in os.walk(tmpdir):
                 for fname in files:

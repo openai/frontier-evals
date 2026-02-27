@@ -102,7 +102,7 @@ function testGriefingAttack() public {
 
 ### Code Location
 
-- [StablecoinDEX.sol - cancel()](contracts/StablecoinDEX.sol#L234-L240)
+- [StablecoinDEX.sol - cancel()](https://github.com/evmbench-org/2026-01-tempo-stablecoin-dex/blob/f66de060ec2bf899b2a54dd1d984fff4d9f20c4e/contracts/StablecoinDEX.sol#L258-L263)
 
 ### Recommendation
 
@@ -268,7 +268,7 @@ function testCombinedDoubleCancelTheft() public {
 
 ### Code Location
 
-- [StablecoinDEX.sol - _cancelOrder()](contracts/StablecoinDEX.sol#L246-L275)
+- [StablecoinDEX.sol - _cancelOrder()](https://github.com/evmbench-org/2026-01-tempo-stablecoin-dex/blob/f66de060ec2bf899b2a54dd1d984fff4d9f20c4e/contracts/StablecoinDEX.sol#L269-L298)
 
 ### Recommendation
 
@@ -427,8 +427,8 @@ function testCompleteDrainageViaUnderflow() public {
 
 ### Code Location
 
-- [StablecoinDEX.sol - _processWithdrawal()](contracts/StablecoinDEX.sol#L313-L319)
-- [StablecoinDEX.sol - emergencyWithdraw()](contracts/StablecoinDEX.sol#L328-L331)
+- [StablecoinDEX.sol - _processWithdrawal()](https://github.com/evmbench-org/2026-01-tempo-stablecoin-dex/blob/f66de060ec2bf899b2a54dd1d984fff4d9f20c4e/contracts/StablecoinDEX.sol#L372-L382)
+- [StablecoinDEX.sol - emergencyWithdraw()](https://github.com/evmbench-org/2026-01-tempo-stablecoin-dex/blob/f66de060ec2bf899b2a54dd1d984fff4d9f20c4e/contracts/StablecoinDEX.sol#L390-L393)
 
 ### Recommendation
 

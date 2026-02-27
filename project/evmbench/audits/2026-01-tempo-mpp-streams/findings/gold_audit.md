@@ -67,8 +67,8 @@ channel.settle(voucher, mainnetSignature);  // Succeeds on testnet!
 
 ### Code Location
 
-- [TempoStreamChannel.sol - settle() function](contracts/TempoStreamChannel.sol#L168-L204)
-- [VOUCHER_TYPEHASH definition](contracts/TempoStreamChannel.sol#L42-L44)
+- [TempoStreamChannel.sol - settle() function](https://github.com/evmbench-org/2026-01-tempo-mpp-streams/blob/41962def7127946d8ab2f0e0ccb0f689f3fb79d6/contracts/TempoStreamChannel.sol#L293-L334)
+- [VOUCHER_TYPEHASH definition](https://github.com/evmbench-org/2026-01-tempo-mpp-streams/blob/41962def7127946d8ab2f0e0ccb0f689f3fb79d6/contracts/TempoStreamChannel.sol#L61-L64)
 
 ### Recommendation
 
@@ -192,7 +192,7 @@ channel.close(maliciousVoucher, signature, payerSig);
 
 ### Code Location
 
-- [TempoStreamChannel.sol - close() function](contracts/TempoStreamChannel.sol#L243-L290)
+- [TempoStreamChannel.sol - close() function](https://github.com/evmbench-org/2026-01-tempo-mpp-streams/blob/41962def7127946d8ab2f0e0ccb0f689f3fb79d6/contracts/TempoStreamChannel.sol#L386-L440)
 
 ### Recommendation
 
@@ -341,9 +341,9 @@ channel.settle(voucher, invalidSignature);
 
 ### Code Location
 
-- [TempoStreamChannel.sol - openChannel()](contracts/TempoStreamChannel.sol#L107-L140)
-- [TempoStreamChannel.sol - settle()](contracts/TempoStreamChannel.sol#L168-L204)
-- [TempoStreamChannel.sol - close()](contracts/TempoStreamChannel.sol#L243-L290)
+- [TempoStreamChannel.sol - openChannel()](https://github.com/evmbench-org/2026-01-tempo-mpp-streams/blob/41962def7127946d8ab2f0e0ccb0f689f3fb79d6/contracts/TempoStreamChannel.sol#L221-L262)
+- [TempoStreamChannel.sol - settle()](https://github.com/evmbench-org/2026-01-tempo-mpp-streams/blob/41962def7127946d8ab2f0e0ccb0f689f3fb79d6/contracts/TempoStreamChannel.sol#L293-L334)
+- [TempoStreamChannel.sol - close()](https://github.com/evmbench-org/2026-01-tempo-mpp-streams/blob/41962def7127946d8ab2f0e0ccb0f689f3fb79d6/contracts/TempoStreamChannel.sol#L386-L440)
 
 ### Recommendation
 

@@ -130,7 +130,8 @@ async def test_the_issue(page):
         raise e
     finally:
         # Stop tracing and export
-        await page.context.tracing.stop()
-        await page.context.tracing.export(path="/app/expensify/user_tool/output_browser1.zip")
+        await page.context.tracing.stop(
+            path="/app/expensify/user_tool/output_browser1.zip"
+        )
         # Clean the trace
         trace_cleaner("/app/expensify/user_tool/output_browser1.zip")

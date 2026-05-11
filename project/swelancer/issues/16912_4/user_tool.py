@@ -73,7 +73,6 @@ def test_unknown_user_profile_load_offline():
         raise e
     finally:
         # Ensure the trace is stopped and exported, even if the test fails
-        context.tracing.stop()
-        context.tracing.export(trace_path)
+        context.tracing.stop(path=trace_path)
         # Call the trace cleaner on the saved trace
         trace_cleaner(trace_path)

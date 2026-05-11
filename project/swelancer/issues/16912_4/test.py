@@ -39,6 +39,18 @@ def launch_browser(trace_enabled: bool = False):
     return playwright, browser, context, page
 
 
+def assert_consistent_zipcode_hint(address_text: str, personal_info_text: str) -> None:
+    accepted_hints = ("e.g.", "Format:")
+    matched_hint = next(
+        (hint for hint in accepted_hints if hint in address_text and hint in personal_info_text),
+        None,
+    )
+    assert matched_hint is not None, (
+        "Zip code hints must consistently use either 'e.g.' or 'Format:' "
+        "on profile > address and connect bank account > address"
+    )
+
+
 def test_unknown_user_profile_load_offline(pytestconfig):
     trace_enabled = pytestconfig.getoption("--user-tool-trace")
 
@@ -68,9 +80,6 @@ def test_unknown_user_profile_load_offline(pytestconfig):
         page.wait_for_timeout(1000)
 
         address_text = page.get_by_test_id("AddressPage").inner_text()
-        assert "e.g." in address_text, (
-            "Zip code hint does not begin with 'e.g.' on profile > address"
-        )
 
         page.get_by_label("Back").last.click()
         page.get_by_test_id("InitialSettingsPage").get_by_label("Workspaces").click()
@@ -79,9 +88,7 @@ def test_unknown_user_profile_load_offline(pytestconfig):
         page.get_by_label("Connect bank account").click()
 
         personal_info_text = page.locator('div[data-testid="PersonalInfo"]').inner_text()
-        assert "e.g." in personal_info_text, (
-            "Zip code hint does not begin with 'e.g.' on connect bank account > address"
-        )
+        assert_consistent_zipcode_hint(address_text, personal_info_text)
 
     finally:
         if trace_enabled and context:

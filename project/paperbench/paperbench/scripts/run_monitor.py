@@ -15,6 +15,7 @@ from tqdm.asyncio import tqdm_asyncio
 import chz
 from paperbench.monitor.monitor import BasicMonitor, Monitor
 from paperbench.paper_registry import paper_registry
+from paperbench.tar_utils import safe_extractall
 
 logger = structlog.stdlib.get_logger(component=__name__)
 
@@ -81,7 +82,7 @@ async def monitor_single_log(
 
     with tempfile.TemporaryDirectory() as extract_to:
         with tarfile.open(latest_checkpoint / "submission.tar.gz", "r:gz") as tar:
-            tar.extractall(path=extract_to)
+            safe_extractall(tar, extract_to)
 
         matches = list(Path(extract_to).glob("**/logs/agent.log"))
         assert len(matches) == 1, f"Expected exactly one agent.log file, found {len(matches)}"

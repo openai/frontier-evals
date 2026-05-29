@@ -20,6 +20,7 @@ from paperbench.judge.graded_task_node import GradedTaskNode
 from paperbench.judge.token_usage import TokenUsage, get_total_token_usage
 from paperbench.paper_registry import paper_registry
 from paperbench.rubric.tasks import TaskNode
+from paperbench.tar_utils import safe_extractall
 from paperbench.utils import get_timestamp
 
 logger = structlog.stdlib.get_logger(component=__name__)
@@ -177,7 +178,7 @@ async def grade_submission(
             else:
                 with bf.BlobFile(submission_path, "rb") as f:
                     with tarfile.open(fileobj=f, mode="r") as tar:
-                        tar.extractall(path=submission_dir)
+                        safe_extractall(tar, submission_dir)
             ctx_logger.info(f"Unzipped submission for judge to {submission_dir}")
 
             # Step 2: Run the judge

@@ -77,10 +77,9 @@ def test_expensify_17387():
             # Optionally log the error if needed
             print(f"An error occurred: {e}")
         finally:
-            # Stop tracing and export
-            context.tracing.stop()
+            # Stop tracing and write the trace archive in one supported Playwright call.
             trace_path = "/app/expensify/user_tool/output_browser1.zip"
-            context.tracing.export(path=trace_path)
+            context.tracing.stop(path=trace_path)
             # Clean the trace
             trace_cleaner(trace_path)
 

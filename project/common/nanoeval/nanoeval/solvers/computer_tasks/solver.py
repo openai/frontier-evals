@@ -82,9 +82,10 @@ def strip_all_metadata(
     if allowed_metadata_fields is None:
         allowed_metadata_fields = []
     convo = convo.model_copy(
+        deep=True,
         update={
             "metadata": {k: v for k, v in convo.metadata.items() if k in allowed_metadata_fields}  # type: ignore
-        }
+        },
     )
     for msg in convo.messages:  # type: ignore
         msg.metadata = {k: v for k, v in msg.metadata.items() if k in allowed_metadata_fields}

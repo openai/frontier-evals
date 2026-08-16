@@ -50,10 +50,19 @@ class ParsedEntry:
     """Contains parsed JSONL entry data"""
 
     agent_id: str
+    run_group_id: str
     paper_id: str
     paper_run_id: str
     timestamp: float
     graded_task_tree: GradedTaskNode
+
+
+@dataclass
+class RunGroupRecords:
+    """Paper evaluations belonging to one actual nanoeval run group."""
+
+    timestamp: float
+    paper_evaluations: dict[str, tuple[PaperEvaluation, float]]
 
 
 def compute_ars(
@@ -163,6 +172,27 @@ def parse_disqualified_runs(disqualification_data_path: Path) -> set[str]:
         return {line.strip() for line in f}
 
 
+def _build_evaluation_runs(
+    run_groups: dict[str, RunGroupRecords], seeds_to_keep: int | None
+) -> list[EvaluationRun]:
+    sorted_run_groups = sorted(
+        run_groups.items(), key=lambda item: item[1].timestamp, reverse=True
+    )
+    if seeds_to_keep is not None:
+        sorted_run_groups = sorted_run_groups[:seeds_to_keep]
+
+    return [
+        EvaluationRun(
+            seed=run_group_id,
+            paper_evaluations={
+                paper_id: paper_eval
+                for paper_id, (paper_eval, _timestamp) in records.paper_evaluations.items()
+            },
+        )
+        for run_group_id, records in sorted_run_groups
+    ]
+
+
 def parse_run_data(
     run_data_path: Path,
     disqualification_data_path: Path | None = None,
@@ -182,7 +212,7 @@ def parse_run_data(
         Dictionary mapping agent IDs to lists of EvaluationRun objects
         where each EvaluationRun contains 1 seed of paper evaluations
     """
-    agent_runs: dict[str, dict[str, list[dict[str, Any]]]] = {}
+    agent_runs: dict[str, dict[str, RunGroupRecords]] = {}
 
     # Helper function since we accidentally changed the format of nanoeval records
     def detect_format(entry: dict[str, Any]) -> Literal["old", "new"] | None:
@@ -237,6 +267,7 @@ def parse_run_data(
 
         return ParsedEntry(
             agent_id=agent_id,
+            run_group_id=run_group_id,
             paper_id=paper_id,
             paper_run_id=paper_run_id,
             timestamp=timestamp,
@@ -259,10 +290,6 @@ def parse_run_data(
                 if parsed_entry is None:
                     continue
 
-                # Initialize agent and seed data structures if needed
-                if parsed_entry.agent_id not in agent_runs:
-                    agent_runs[parsed_entry.agent_id] = {}
-
                 paper_eval = PaperEvaluation(
                     paper_run_id=parsed_entry.paper_run_id,
                     paper_id=parsed_entry.paper_id,
@@ -270,37 +297,24 @@ def parse_run_data(
                 )
                 paper_eval = check_disqualification(paper_eval, disqualified_paper_runs)
 
-                if parsed_entry.paper_id not in agent_runs[parsed_entry.agent_id]:
-                    agent_runs[parsed_entry.agent_id][parsed_entry.paper_id] = []
-
-                agent_runs[parsed_entry.agent_id][parsed_entry.paper_id].append(
-                    {"paper_eval": paper_eval, "timestamp": parsed_entry.timestamp}
+                run_groups = agent_runs.setdefault(parsed_entry.agent_id, {})
+                run_group = run_groups.setdefault(
+                    parsed_entry.run_group_id,
+                    RunGroupRecords(timestamp=parsed_entry.timestamp, paper_evaluations={}),
                 )
+                run_group.timestamp = max(run_group.timestamp, parsed_entry.timestamp)
 
-    # Convert to final format, keeping only the N most recent seeds
-    agent_to_eval_runs: dict[str, list[EvaluationRun]] = {agent: [] for agent in agent_runs.keys()}
+                previous = run_group.paper_evaluations.get(parsed_entry.paper_id)
+                if previous is None or parsed_entry.timestamp >= previous[1]:
+                    run_group.paper_evaluations[parsed_entry.paper_id] = (
+                        paper_eval,
+                        parsed_entry.timestamp,
+                    )
 
-    for agent, paper_data in agent_runs.items():
-        # keep only N most recent seeds
-        filtered_paper_data = {}
-        for paper_id, data in paper_data.items():
-            sorted_data = sorted(data, key=lambda x: x["timestamp"], reverse=True)
-            filtered_paper_data[paper_id] = sorted_data[:seeds_to_keep]
-
-        # then, create the N EvaluationRun objects
-        max_num_seeds = max([len(data) for data in filtered_paper_data.values()])
-        for seed in range(max_num_seeds):
-            eval_run = EvaluationRun(seed=seed, paper_evaluations={})
-            for data in filtered_paper_data.values():
-                # some evaluation runs may not have all papers evaluated
-                if seed == len(data):
-                    continue
-                paper_eval = data[seed]["paper_eval"]
-                eval_run.paper_evaluations[paper_eval.paper_id] = paper_eval
-
-            agent_to_eval_runs[agent].append(eval_run)
-
-    return agent_to_eval_runs
+    return {
+        agent: _build_evaluation_runs(run_groups, seeds_to_keep)
+        for agent, run_groups in agent_runs.items()
+    }
 
 
 if __name__ == "__main__":

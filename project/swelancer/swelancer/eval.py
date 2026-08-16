@@ -477,6 +477,7 @@ class SWELancerEval(PythonCodingEval):
         )
         tasks = pd.read_csv(PATH_TO_SWE_LANCER_TASKS)
         tasks["proposals"] = tasks["proposals"].fillna("")  # pandas reads empty as float nan
+
         if self.split != "all":
             tasks = tasks[tasks["set"] == self.split]
 

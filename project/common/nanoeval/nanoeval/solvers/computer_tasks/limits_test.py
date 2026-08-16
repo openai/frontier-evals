@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from nanoeval.solvers.computer_tasks.limits import LimitsHelper
+from nanoeval.solvers.computer_tasks.limits import ActionLimitExceededError, LimitsHelper
 from nanoeval.solvers.computer_tasks.pausable_timer import NamedTimeoutError
 
 
@@ -21,3 +21,14 @@ async def test_unrelated_timeouts() -> None:
         async with limits.enforce_timeout("test", 0.01):
             async with asyncio.timeout(0.5):
                 await asyncio.sleep(1)
+
+
+@pytest.mark.asyncio
+async def test_rollout_action_limit_allows_exact_maximum() -> None:
+    limits = LimitsHelper(max_actions=2)
+
+    async with limits.enforce_rollout_limits() as increment_actions:
+        increment_actions()
+        increment_actions()
+        with pytest.raises(ActionLimitExceededError, match="Exceeded max actions = 2"):
+            increment_actions()

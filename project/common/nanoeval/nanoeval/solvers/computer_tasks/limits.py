@@ -82,7 +82,7 @@ class LimitsHelper:
                 nonlocal num_actions
                 num_actions += 1
 
-                if num_actions >= self.max_actions:
+                if num_actions > self.max_actions:
                     raise ActionLimitExceededError("Exceeded max actions = %d!" % self.max_actions)
 
             yield increment_actions

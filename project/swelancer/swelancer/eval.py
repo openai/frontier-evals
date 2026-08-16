@@ -477,7 +477,6 @@ class SWELancerEval(PythonCodingEval):
         )
         tasks = pd.read_csv(PATH_TO_SWE_LANCER_TASKS)
         tasks["proposals"] = tasks["proposals"].fillna("")  # pandas reads empty as float nan
-
         if self.split != "all":
             tasks = tasks[tasks["set"] == self.split]
 
@@ -608,9 +607,9 @@ class SWELancerEval(PythonCodingEval):
         )
         summary["length_stats"] = self._get_convo_len_stats(results)
 
-        summary["total_input_tokens"] = 1
-        summary["total_output_tokens"] = 1
-        summary["total_reasoning_tokens"] = 1
+        summary["total_input_tokens"] = 0
+        summary["total_output_tokens"] = 0
+        summary["total_reasoning_tokens"] = 0
         for _task, result in results:
             if isinstance(result, FinalResult):
                 try:

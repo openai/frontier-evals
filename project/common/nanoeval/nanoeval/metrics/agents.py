@@ -13,10 +13,13 @@ def _compute_metrics_plus_outcome_aggregations(samples_df: pd.DataFrame) -> dict
     Compute standard metrics and aggregations for a given DataFrame of samples.
     """
 
-    # Get answer_group_id on samples_df
-    samples_df["answer_group_id"] = samples_df.groupby("instance").cumcount()
-    answer_group_correctness_df = samples_df[["instance", "attempt", "answer_group_id"]]
-    answer_group_correctness_df["is_correct"] = samples_df["correct"]
+    # Binary agent outcomes have two answer groups: incorrect and correct.
+    samples_df["answer_group_id"] = samples_df["correct"].astype(int)
+    answer_group_correctness_df = (
+        samples_df[["instance", "answer_group_id", "correct"]]
+        .drop_duplicates(subset=["instance", "answer_group_id"])
+        .rename(columns={"correct": "is_correct"})
+    )
 
     metrics: dict[str, Any] = {
         **compute_default_metrics(samples_df, answer_group_correctness_df),

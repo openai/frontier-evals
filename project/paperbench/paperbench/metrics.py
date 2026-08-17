@@ -51,6 +51,7 @@ class ParsedEntry:
 
     agent_id: str
     run_group_id: str
+    attempt_id: int | None
     paper_id: str
     paper_run_id: str
     timestamp: float
@@ -59,10 +60,21 @@ class ParsedEntry:
 
 @dataclass
 class RunGroupRecords:
-    """Paper evaluations belonging to one actual nanoeval run group."""
+    """Paper evaluations belonging to one nanoeval attempt within a run group."""
 
     timestamp: float
     paper_evaluations: dict[str, tuple[PaperEvaluation, float]]
+
+
+def _attempt_id_from_recorder_group_id(group_id: Any) -> int | None:
+    """Extract nanoeval's attempt ID from its ``<attempt>.<retry>`` group ID."""
+    if group_id is None:
+        return None
+    attempt_id, _, _retry_idx = str(group_id).partition(".")
+    try:
+        return int(attempt_id)
+    except ValueError:
+        return None
 
 
 def compute_ars(
@@ -173,7 +185,7 @@ def parse_disqualified_runs(disqualification_data_path: Path) -> set[str]:
 
 
 def _build_evaluation_runs(
-    run_groups: dict[str, RunGroupRecords], seeds_to_keep: int | None
+    run_groups: dict[Hashable, RunGroupRecords], seeds_to_keep: int | None
 ) -> list[EvaluationRun]:
     sorted_run_groups = sorted(
         run_groups.items(), key=lambda item: item[1].timestamp, reverse=True
@@ -183,13 +195,13 @@ def _build_evaluation_runs(
 
     return [
         EvaluationRun(
-            seed=run_group_id,
+            seed=run_key,
             paper_evaluations={
                 paper_id: paper_eval
                 for paper_id, (paper_eval, _timestamp) in records.paper_evaluations.items()
             },
         )
-        for run_group_id, records in sorted_run_groups
+        for run_key, records in sorted_run_groups
     ]
 
 
@@ -212,7 +224,7 @@ def parse_run_data(
         Dictionary mapping agent IDs to lists of EvaluationRun objects
         where each EvaluationRun contains 1 seed of paper evaluations
     """
-    agent_runs: dict[str, dict[str, RunGroupRecords]] = {}
+    agent_runs: dict[str, dict[Hashable, RunGroupRecords]] = {}
 
     # Helper function since we accidentally changed the format of nanoeval records
     def detect_format(entry: dict[str, Any]) -> Literal["old", "new"] | None:
@@ -260,6 +272,7 @@ def parse_run_data(
             )
 
         run_group_id = entry["data"]["run_group_id"]
+        attempt_id = _attempt_id_from_recorder_group_id(entry.get("group_id"))
         paper_run_id = entry["data"]["run_id"]
         agent_id = run_group_id.split("_")[-1]
         paper_id = pb_result["paper_id"]
@@ -268,6 +281,7 @@ def parse_run_data(
         return ParsedEntry(
             agent_id=agent_id,
             run_group_id=run_group_id,
+            attempt_id=attempt_id,
             paper_id=paper_id,
             paper_run_id=paper_run_id,
             timestamp=timestamp,
@@ -298,8 +312,13 @@ def parse_run_data(
                 paper_eval = check_disqualification(paper_eval, disqualified_paper_runs)
 
                 run_groups = agent_runs.setdefault(parsed_entry.agent_id, {})
+                run_key: Hashable = (
+                    (parsed_entry.run_group_id, parsed_entry.attempt_id)
+                    if parsed_entry.attempt_id is not None
+                    else parsed_entry.run_group_id
+                )
                 run_group = run_groups.setdefault(
-                    parsed_entry.run_group_id,
+                    run_key,
                     RunGroupRecords(timestamp=parsed_entry.timestamp, paper_evaluations={}),
                 )
                 run_group.timestamp = max(run_group.timestamp, parsed_entry.timestamp)

@@ -53,6 +53,8 @@ class Vulnerability:
     @property
     def text_content(self) -> str:
         findings_path = get_audits_dir() / self.audit_id / "findings"
+        if self.findings_subdir:
+            findings_path = findings_path / "incorrect" / self.findings_subdir
         return (findings_path / f"{self.id}.md").read_text()
 
 @dataclass(frozen=True)

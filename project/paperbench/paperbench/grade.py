@@ -5,7 +5,7 @@ import tarfile
 import tempfile
 import time
 from contextlib import nullcontext
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -80,6 +80,14 @@ class JudgeOutput:
         return self.num_invalid_leaf_nodes < self.num_leaf_nodes
 
 
+def _code_only_task_tree(task_tree: TaskNode) -> TaskNode:
+    code_only_tree = task_tree.code_only()
+    if code_only_tree is not None:
+        return code_only_tree
+
+    return replace(task_tree, sub_tasks=[], task_category="Code Development")
+
+
 async def run_judge(
     submission_path: Path,
     paper_id: str,
@@ -107,9 +115,7 @@ async def run_judge(
     with open(rubric_path, "r") as f:
         task_tree = TaskNode.from_dict(json.load(f))
     if code_only:
-        task_tree = task_tree.code_only() or task_tree.set_task_category(
-            "Code Development"
-        ).set_sub_tasks([])
+        task_tree = _code_only_task_tree(task_tree)
     if resources_provided:
         task_tree = task_tree.resources_provided()
 

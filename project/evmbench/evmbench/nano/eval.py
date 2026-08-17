@@ -181,7 +181,6 @@ class EVMbench(PythonCodingEval):
     ) -> dict[str, Any]:
         ctx_logger = logger.bind(run_group_id=self.run_group_id, runs_dir=self.runs_dir)
 
-        tasks = [t for t, _ in results]
         final_results = [
             r.grade.evmbench_result
             for _, r in results
@@ -240,7 +239,7 @@ class EVMbench(PythonCodingEval):
             "params": params,
             "run_health": run_health,
             "metrics": metrics,
-            "run_group_id": getattr(tasks[0], "run_group_id", "undefined"),
+            "run_group_id": self.run_group_id,
         }
 
         ctx_logger.info(

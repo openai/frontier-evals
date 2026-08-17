@@ -136,9 +136,9 @@ async def open_run_set_db(
                 """
                 INSERT INTO metadata (key, value)
                 VALUES (?, ?)
-                ON CONFLICT(key) DO UPDATE SET value = ?
+                ON CONFLICT(key) DO NOTHING
                 """,
-                ("max_concurrency", _INITIAL_MAX_CONCURRENCY, _INITIAL_MAX_CONCURRENCY),
+                ("max_concurrency", _INITIAL_MAX_CONCURRENCY),
             )
             conn.commit()
 

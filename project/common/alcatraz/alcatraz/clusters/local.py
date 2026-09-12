@@ -411,13 +411,14 @@ class BaseAlcatrazCluster(ABC):
                     },
                 ),
             )
+            # Exit stacks unwind in reverse order, so register port cleanup first
+            # to keep the leases until container removal completes.
+            self._exit_stack.push(stack.__exit__)
             if isinstance(self, LocalCluster):
                 # Add the container to the exit stack so it gets removed when we're done.
                 self._exit_stack.push_async_callback(
                     lambda: asyncio.to_thread(ctr.remove, force=True)
                 )
-            # Also free our host port leases when we're done with this container.
-            self._exit_stack.push(stack.__exit__)
             logger.info("Started new container! Container name: %s", ctr.name)
 
             return host_port_leases, ctr

@@ -38,6 +38,11 @@ jobs:
       run: |
         uv sync
 
+    - name: run tests
+      working-directory: ./project/common/alcatraz
+      run: |
+        uv run pytest tests
+
     - name: run mypy
       working-directory: ./project/common/alcatraz
       run: |

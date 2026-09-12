@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 
 _MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
 _WAIT_FOR_TIMEOUT_INTERRUPT = 10
+_MAX_PORT_BIND_ATTEMPTS = 5
 
 # Matches SSH command
 # Do not use dynamic ports here (32_768-65_535) because they are not guaranteed to be open on Linux.
@@ -392,25 +393,25 @@ class BaseAlcatrazCluster(ABC):
         if container_ports is None:
             container_ports = []
         try:
-            host_port_leases = force_host_ports or [
-                stack.enter_context(_allocate_port()) for _ in range(len(container_ports))
-            ]
-
-            logger.info(
-                "Allocated host ports %s -> container ports %s", host_port_leases, container_ports
-            )
-
-            ctr = cast(
-                Container,
-                await asyncio.to_thread(
-                    self.docker_client.containers.run,  # type: ignore
-                    **kwargs,
-                    ports={
-                        f"{ctr_port}/tcp": host_port  # container port on left. host port on right
-                        for ctr_port, host_port in zip(container_ports, host_port_leases)
-                    },
-                ),
-            )
+            if container_ports and not force_host_ports and kwargs.get("detach"):
+                host_port_leases, ctr = await self._start_container_with_port_retries(
+                    container_ports, stack, **kwargs
+                )
+            else:
+                host_port_leases = force_host_ports or [
+                    stack.enter_context(_allocate_port()) for _ in range(len(container_ports))
+                ]
+                ctr = cast(
+                    Container,
+                    await asyncio.to_thread(
+                        self.docker_client.containers.run,  # type: ignore
+                        **kwargs,
+                        ports={
+                            f"{ctr_port}/tcp": host_port
+                            for ctr_port, host_port in zip(container_ports, host_port_leases)
+                        },
+                    ),
+                )
             if isinstance(self, LocalCluster):
                 # Add the container to the exit stack so it gets removed when we're done.
                 self._exit_stack.push_async_callback(
@@ -425,6 +426,76 @@ class BaseAlcatrazCluster(ABC):
             # Free the ports if we fail to start the container.
             stack.__exit__(*sys.exc_info())
             raise
+
+    async def _start_container_with_port_retries(
+        self, container_ports: list[int], stack: ExitStack, **kwargs: Any
+    ) -> tuple[list[int], Container]:
+        # Match containers.run(detach=True, remove=True) when using create/start
+        # separately, so a failed start can be cleaned up by container ID.
+        if kwargs.pop("remove", False):
+            kwargs["auto_remove"] = True
+
+        with ExitStack() as failed_port_leases:
+            for attempt in range(_MAX_PORT_BIND_ATTEMPTS):
+                with ExitStack() as port_leases:
+                    host_ports = [
+                        port_leases.enter_context(_allocate_port()) for _ in container_ports
+                    ]
+                    ports = dict(zip((f"{port}/tcp" for port in container_ports), host_ports))
+                    logger.info(
+                        "Allocated host ports %s -> container ports %s", host_ports, container_ports
+                    )
+                    try:
+                        ctr = await asyncio.to_thread(
+                            self.docker_client.containers.create, **kwargs, ports=ports
+                        )
+                    except docker.errors.ImageNotFound:
+                        # Preserve containers.run's pull-on-missing-image behavior.
+                        await asyncio.to_thread(
+                            self.docker_client.images.pull,
+                            kwargs["image"],
+                            platform=kwargs.get("platform"),
+                        )
+                        ctr = await asyncio.to_thread(
+                            self.docker_client.containers.create, **kwargs, ports=ports
+                        )
+                    try:
+                        await asyncio.to_thread(ctr.start)
+                    except Exception as exc:
+                        try:
+                            await asyncio.to_thread(ctr.remove, force=True)
+                        except NotFound:
+                            pass  # Docker may already have auto-removed it.
+                        if not isinstance(exc, APIError):
+                            raise
+                        explanation = str(exc.explanation).lower()
+                        port_conflict = exc.status_code == 500 and (
+                            "port is already allocated" in explanation
+                            or (
+                                "address already in use" in explanation
+                                and (
+                                    "bind for " in explanation
+                                    or "bind host port " in explanation
+                                    or "userland proxy" in explanation
+                                )
+                            )
+                        )
+                        if (
+                            not port_conflict
+                            or attempt + 1 == _MAX_PORT_BIND_ATTEMPTS
+                            or len(_FREE_PORTS) < len(container_ports)
+                        ):
+                            raise
+                        # Keep rejected candidates out of the pool until this
+                        # operation finishes, so a retry always tries new ports.
+                        failed_port_leases.enter_context(port_leases.pop_all())
+                        logger.warning(
+                            "Docker could not bind host ports %s; trying new ports", host_ports
+                        )
+                        continue
+                    stack.enter_context(port_leases.pop_all())
+                    return host_ports, ctr
+        raise AssertionError("Port binding attempts exhausted without a Docker error")
 
     async def _install_firewall_stub(self, container: docker.models.containers.Container) -> None:
         """

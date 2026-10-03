@@ -361,26 +361,39 @@ def zero_weight_by_category(
     finegrained_task_category: str | None = None,
 ) -> T_Node:
     """
-    Returns a new tree where any node matching the specified category
-    has its weight set to 0.
+    Returns a new tree where matching leaves have weight 0. Internal nodes containing
+    a match also have weight 0 when all of their transformed children have weight 0.
     """
     if (task_category is None) == (finegrained_task_category is None):
         raise ValueError("Must provide exactly one of task_category or finegrained_task_category")
 
+    new_node, _ = _zero_weight_by_category(node, task_category, finegrained_task_category)
+    return new_node
+
+
+def _zero_weight_by_category(
+    node: T_Node,
+    task_category: str | None,
+    finegrained_task_category: str | None,
+) -> tuple[T_Node, bool]:
     if node.is_leaf():
-        if (task_category is not None and node.task_category == task_category) or (
+        category_matches = (task_category is not None and node.task_category == task_category) or (
             finegrained_task_category is not None
             and node.finegrained_task_category == finegrained_task_category
-        ):
-            return node.set_weight(0)
-        return node
+        )
+        return (node.set_weight(0) if category_matches else node), category_matches
 
-    new_sub_tasks = [
-        zero_weight_by_category(sub_task, task_category, finegrained_task_category)
+    transformed_sub_tasks = [
+        _zero_weight_by_category(sub_task, task_category, finegrained_task_category)
         for sub_task in node.sub_tasks
     ]
+    new_sub_tasks = [sub_task for sub_task, _ in transformed_sub_tasks]
+    category_matches = any(matches for _, matches in transformed_sub_tasks)
 
-    return node.set_sub_tasks(new_sub_tasks)
+    new_node = node.set_sub_tasks(new_sub_tasks)
+    if category_matches and all(sub_task.weight == 0 for sub_task in new_sub_tasks):
+        new_node = new_node.set_weight(0)
+    return new_node, category_matches
 
 
 def reduce_to_category(node: T_Node, category: str) -> T_Node | None:

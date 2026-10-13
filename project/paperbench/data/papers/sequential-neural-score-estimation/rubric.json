@@ -423,7 +423,7 @@
                                 },
                                 {
                                     "id": "5a98077f-3db6-462c-85de-da243375ccc9",
-                                    "requirements": "In TSNPSE, in the $r$-th round, the truncation boundary is computed as the $\\epsilon = 5 \\times 10^{-4}$-th percentile of the samples from the approximate posterior. This defines the log-probability rejection threshold for rejection sampling.",
+                                    "requirements": "In TSNPSE, in the $r$-th round, the truncation boundary is computed as the $\\epsilon = 5 \\times 10^{-4}$-th quantile of the samples from the approximate posterior. This defines the log-probability rejection threshold for rejection sampling.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",

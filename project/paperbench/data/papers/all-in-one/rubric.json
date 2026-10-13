@@ -940,7 +940,7 @@
                         },
                         {
                             "id": "5963d717-2765-4535-80d8-8a92a9052a21",
-                            "requirements": "In all Simformers, the random Gaussian Fourier embedding used for diffusion time has 256 dimensions",
+                            "requirements": "In all Simformers, the random Gaussian Fourier embedding used for diffusion time has 128 dimensions",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",

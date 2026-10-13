@@ -179,17 +179,17 @@
                         },
                         {
                             "id": "9252f603-4133-4d84-b588-c82e55468721",
-                            "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 and Pythia model families with and without CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively) for at least 5 of the 9 datasets shown in Table 5. Performance on the benchmark has been noted.",
+                            "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 and Pythia model families without and with CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively) for at least 5 of the 9 datasets shown in Table 5. Performance on the benchmark has been noted.",
                             "weight": 2,
                             "sub_tasks": [
                                 {
                                     "id": "1a8bfa9c-c656-45a2-ac90-a93be05b505a",
-                                    "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 model family with and without CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively) for at least 5 of the 9 datasets shown in Table 5. Performance on the benchmark has been noted.",
+                                    "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 model family without and with CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively) for at least 5 of the 9 datasets shown in Table 5. Performance on the benchmark has been noted.",
                                     "weight": 1,
                                     "sub_tasks": [
                                         {
                                             "id": "5173cc90-71e8-4d36-b056-4c4575037f68",
-                                            "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 model family with and without CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively)",
+                                            "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the GPT2 model family without and with CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively)",
                                             "weight": 1,
                                             "sub_tasks": [],
                                             "task_category": "Code Execution",
@@ -217,12 +217,12 @@
                                 },
                                 {
                                     "id": "36a13f7e-a2a1-418e-a7b1-8a16662a1282",
-                                    "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the Pythia model family with and without CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively) for at least 5 of the 9 datasets shown in Table 5. Performance on the benchmark has been noted.",
+                                    "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the Pythia model family without and with CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively) for at least 5 of the 9 datasets shown in Table 5. Performance on the benchmark has been noted.",
                                     "weight": 1,
                                     "sub_tasks": [
                                         {
                                             "id": "21799ae3-5194-47ff-8bfb-eda26258335d",
-                                            "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the Pythia model family with and without CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively)",
+                                            "requirements": "The zero-shot benchmark outlined in section 3.1 has been run on the Pythia model family without and with CFG (guidance strength \\gamma=1 and \\gamma=1.5 respectively)",
                                             "weight": 1,
                                             "sub_tasks": [],
                                             "task_category": "Code Execution",
@@ -1345,7 +1345,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "b676dea1-b5c0-4bc5-a04f-8dd29b3ee8a3",
-                                    "requirements": "Code to calculate the differences in token log probabilities across the entire vocabulary with CFG at each generation step has been developed as described in Section 5.3, i.e. $P(w_t \\mid w_{<t}) - \\log P(w_T \\mid \\hat{w})$",
+                                    "requirements": "Code to calculate the differences in token log probabilities across the entire vocabulary with CFG at each generation step has been developed as described in Section 5.3, i.e. $\\log P(w_t \\mid w_{<t}) - \\log P(w_T \\mid \\hat{w})$",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",

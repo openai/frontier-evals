@@ -467,7 +467,7 @@
                                 },
                                 {
                                     "id": "cdd126eb-86a2-4c3a-91f1-b217bff9456c",
-                                    "requirements": "The difference in means is computed correctly, as the sum over $x \\in X_t$ of $\\lambda * ||\\mu_i(X_t) - \\mu_i^S|| _2$.",
+                                    "requirements": "The difference in means is computed correctly, as the sum over layers $i=1,\\ldots,N$ of $\\lambda * ||\\mu_i(X_t) - \\mu_i^S|| _2$.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -475,7 +475,7 @@
                                 },
                                 {
                                     "id": "4c1b3e06-ded8-4fb0-866a-0f09af607afe",
-                                    "requirements": "The difference in standard deviations is computed correctly, as the sum over $x \\in X_t$ of $||\\sigma_i(X_t) - \\sigma_i^S||_2$.",
+                                    "requirements": "The difference in standard deviations is computed correctly, as the sum over layers $i=1,\\ldots,N$ of $||\\sigma_i(X_t) - \\sigma_i^S||_2$.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -1508,7 +1508,7 @@
                         },
                         {
                             "id": "design-experiments",
-                            "requirements": "The experiments varying model components, optimizers and loss functions are run on ImageNet-C (Gaussian noise, severity level 5) with ViT-Base, and the results are displayed as in Table 9.",
+                            "requirements": "The experiments varying model components, optimizers and loss functions are run on ImageNet-C (all 15 corruptions, severity level 5) with ViT-Base, and the average accuracy and ECE results are displayed as in Table 9.",
                             "weight": 1,
                             "sub_tasks": [
                                 {
@@ -1667,7 +1667,7 @@
                                     "sub_tasks": [
                                         {
                                             "id": "a7aee4f5-952e-4baa-8925-0ec7fc0266e7",
-                                            "requirements": "FOA outperforms BNAdapt, both in accuracy and ECE.",
+                                            "requirements": "FOA has higher accuracy than BNAdapt (22.6% vs 16.0%) but higher ECE (1.7% vs 1.3%).",
                                             "weight": 1,
                                             "sub_tasks": [],
                                             "task_category": "Result Analysis",
@@ -1737,7 +1737,7 @@
                                 },
                                 {
                                     "id": "mamba-gradient",
-                                    "requirements": "The gradient-based methods (TENT, SAR), NoAdapt, BN Adapt, SGD FOA and FOA are evaluated on VisionMamba on ImageNet-C Gaussian noise level 5.",
+                                    "requirements": "The gradient-based methods (TENT, SAR), NoAdapt, SGD FOA and FOA are evaluated on VisionMamba on ImageNet-C Gaussian noise level 5.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Execution",

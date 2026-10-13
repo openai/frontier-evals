@@ -1312,7 +1312,7 @@
                                 },
                                 {
                                     "id": "b46bad55-1c68-47bb-acbd-e5c9a82e4119",
-                                    "requirements": "Code has been written to compute the F1-score for the fixed-logit based forecasting method with FLAN-T5_{3B} under full fine-tuning using the predicted and ground-truth forgetting indicators $\\hat{z}_{ij}^{test}$ and $z_{ij}^{test}$.",
+                                    "requirements": "Code has been written to compute the F1-score for the fixed-logit based forecasting method with FLAN-T5_{3B} under head-only fine-tuning using the predicted and ground-truth forgetting indicators $\\hat{z}_{ij}^{test}$ and $z_{ij}^{test}$.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -1649,7 +1649,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "e0f644bd-f166-4dcb-9b24-b47ceb2a29e1",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -1747,7 +1747,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "22a21012-ec86-4f86-ab74-d009ea1cba58",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -1853,7 +1853,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "6e17b020-9c97-4b17-bc46-d569a706d097",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -1951,7 +1951,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "e78b32fb-c776-405d-928a-de12caa772fb",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2049,7 +2049,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "8792d15b-25e4-4777-b5e3-61f28f88ed9e",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2204,7 +2204,7 @@
                                 },
                                 {
                                     "id": "efdfced2-6624-4784-9fdc-f8a6330c61e2",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2310,7 +2310,7 @@
                                 },
                                 {
                                     "id": "c3170323-347b-4c25-ae38-482bc26acabb",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2376,7 +2376,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "18cc5bde-766f-47f9-99e1-673a59a88490",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2416,7 +2416,7 @@
                                 },
                                 {
                                     "id": "26b144ee-fb28-4c54-aa2f-9025c33ef5c1",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2482,7 +2482,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "9c2d1ac4-a3f9-40ae-bf49-f25f4e376316",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2530,7 +2530,7 @@
                                 },
                                 {
                                     "id": "c2552ea4-9ade-4b0c-9a1b-696b72d9d163",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2596,7 +2596,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "46cfe617-7dca-4754-bdfa-576abfdf4aff",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2636,7 +2636,7 @@
                                 },
                                 {
                                     "id": "10adb80d-6568-472a-8762-48ee498af4e1",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2702,7 +2702,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "ea96d790-b30c-467b-89d7-cb86564ddc5e",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2742,7 +2742,7 @@
                                 },
                                 {
                                     "id": "702b36ce-16eb-4c64-99d1-0b21256aefb5",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2808,7 +2808,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "5bb66e33-37e7-4f03-8069-3c9164131638",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -2856,7 +2856,7 @@
                                 },
                                 {
                                     "id": "b5968b1c-bd33-4e1b-8cc9-2214bacf8550",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -3111,7 +3111,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "013f84cf-41a5-4eb5-92e9-7fc8aeb84a31",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -3201,7 +3201,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "d0ff95b6-fe8c-41f5-9276-36a87897098b",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -3299,7 +3299,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "0ef5d18e-3018-4d33-b712-55a6c2821352",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{Large} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -3389,7 +3389,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "fb5b99b1-597a-4424-a00e-1b42e614cbe4",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -3479,7 +3479,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "958eba68-515a-4dd7-a2e6-3232071af901",
-                                    "requirements": "Code has been written to generate predictions on the test set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
+                                    "requirements": "Code has been written to generate predictions on the validation set of the MMLU dataset using FLAN-T5_{3B} and graded using the Exact Match score to create the datasets $D_R^{train}$ and $D_R^{test}$, as described in Section 4.1.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -3811,7 +3811,7 @@
                         },
                         {
                             "id": "eb488a54-1b9a-4859-ac97-6679e8b545a3",
-                            "requirements": "Code has been written to compute the average F1-score for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{F1-score}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average F1-score for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{F1-score}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3819,7 +3819,7 @@
                         },
                         {
                             "id": "26324783-507a-4938-ade7-c7f9bf0b8f35",
-                            "requirements": "Code has been written to compute the average precision for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{Precision}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average precision for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{Precision}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3827,7 +3827,7 @@
                         },
                         {
                             "id": "dd9d5e82-8577-43bf-9a03-429837f8bc26",
-                            "requirements": "Code has been written to compute the average recall for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{Recall}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average recall for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{Recall}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3868,7 +3868,7 @@
                         },
                         {
                             "id": "c1ffc8e0-d94f-4ea7-9e34-b5f70bbdfd1e",
-                            "requirements": "Code has been written to compute the average F1-score for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{F1-score}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average F1-score for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{F1-score}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3876,7 +3876,7 @@
                         },
                         {
                             "id": "53bd90ee-9c0f-42fd-be5f-f44acde5aae3",
-                            "requirements": "Code has been written to compute the average precision for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{Precision}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average precision for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{Precision}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3884,7 +3884,7 @@
                         },
                         {
                             "id": "939264d2-05cb-435c-b8f6-dc94a7ba0fe7",
-                            "requirements": "Code has been written to compute the average recall for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{Recall}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average recall for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{Recall}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3909,7 +3909,7 @@
                         },
                         {
                             "id": "f8bbf8fd-b52a-4a96-98fa-b4c5dab38627",
-                            "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                            "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3933,7 +3933,7 @@
                         },
                         {
                             "id": "d4e696f2-996c-432a-89bf-dca0417291d3",
-                            "requirements": "Code has been written to compute the average F1-score for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{F1-score}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average F1-score for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{F1-score}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3941,7 +3941,7 @@
                         },
                         {
                             "id": "e3d1b0cc-36bf-4447-a997-b28ed8444ef5",
-                            "requirements": "Code has been written to compute the average precision for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{Precision}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average precision for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{Precision}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3949,7 +3949,7 @@
                         },
                         {
                             "id": "97bdee8b-084c-4af3-b855-ed15e28b1052",
-                            "requirements": "Code has been written to compute the average recall for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T} \\sum_{t=0}^{T} \\text{Recall}_t$ where $T$ is the current time step.",
+                            "requirements": "Code has been written to compute the average recall for each time step using $\\hat{z}_{ij}^{test}$ and $z^{t}_{ij}^{test}$, and by computing the running average with $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{Recall}_t$ where $T$ is the current time step.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Development",
@@ -3986,7 +3986,7 @@
                 },
                 {
                     "id": "869c0d87-f9a9-42fc-b295-59dc3ddbe32a",
-                    "requirements": "The running average of the F1-score, recall and precision has been computed and recorded for each time step using $z_{ij}^{t,\\text{test}}$ for the frequency-threshold, logit-based and representation-based forecasting methods. For a given time step $T$, the running average is defined as $\\frac{1}{T} \\sum_{t=0}^{T} \\text{Metric}_t$ where $\\text{Metric}_t$.",
+                    "requirements": "The running average of the F1-score, recall and precision has been computed and recorded for each time step using $z_{ij}^{t,\\text{test}}$ for the frequency-threshold, logit-based and representation-based forecasting methods. For a given time step $T$, the running average is defined as $\\frac{1}{T+1} \\sum_{t=0}^{T} \\text{Metric}_t$ where $\\text{Metric}_t$.",
                     "weight": 1,
                     "sub_tasks": [],
                     "task_category": "Code Execution",
@@ -4183,7 +4183,7 @@
                 },
                 {
                     "id": "1aaf8c40-d81d-484a-955d-3b240ae53726",
-                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                     "weight": 1,
                     "sub_tasks": [],
                     "task_category": "Code Development",
@@ -6983,7 +6983,7 @@
                         },
                         {
                             "id": "4096d4f9-df7f-4940-8472-57575a2f066b",
-                            "requirements": "The code to evaluate the replay with fixed-logit based forecasting method on all model, dataset and fine-tuning configurations present in Table 3 has been executed and the Edit Success Rates and Exact Match Drop Ratios have been recorded.",
+                            "requirements": "The code to evaluate the random replay method on all model, dataset and fine-tuning configurations present in Table 3 has been executed and the Edit Success Rates and Exact Match Drop Ratios have been recorded.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Execution",
@@ -8240,7 +8240,7 @@
                                 },
                                 {
                                     "id": "a79c36fb-269b-43bb-8ae4-e84fd970fae8",
-                                    "requirements": "For each copy of FLAN-T5_{Large} fine-tuned on $(x_i, y_i)$, code was also written to fine-tune it on a random mini-batch of 8 examples from $\\hat{D}_{PT}$ which were forecasted to be forgotten according to $z_{ij}^{test}$ every 10 training steps using distillation loss against the base FLAN-T5_{Large} model, thereby 'replaying' examples, as described in Section 4.2 -- Model Refinement.",
+                                    "requirements": "For each copy of FLAN-T5_{Large} fine-tuned on $(x_i, y_i)$, code was also written to fine-tune it on a random mini-batch of 8 examples from $\\hat{D}_{PT}$ which were forecasted to be forgotten according to $\\hat{z}_{ij}^{test}$ every 10 training steps using distillation loss against the base FLAN-T5_{Large} model, thereby 'replaying' examples, as described in Section 4.2 -- Model Refinement.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -8527,7 +8527,7 @@
                                 },
                                 {
                                     "id": "231e403c-3c15-49f0-be75-c314b4697ddb",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -8633,7 +8633,7 @@
                                 },
                                 {
                                     "id": "f5215eb4-3ab8-4e30-9901-47cd95a72670",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -8739,7 +8739,7 @@
                                 },
                                 {
                                     "id": "95a74a85-27d9-4533-9415-a9d36de0a6fb",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -8853,7 +8853,7 @@
                                 },
                                 {
                                     "id": "8529db28-c96a-4674-96e1-a67f25d941fc",
-                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in D_R^{train}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
+                                    "requirements": "Code has been written to compute the bias term $b_j$ for all $(x_j, y_j) \\in \\hat{D}_{PT}$ as described in Section 3.3 -- Forecasting with Frequency Priors.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -9316,7 +9316,7 @@
                         },
                         {
                             "id": "c12ea1e8-5d16-4533-b9b9-5a0ebf2b01cf",
-                            "requirements": "The code to evaluate the replay with fixed-logit based forecasting method on all model, dataset and fine-tuning configurations present in Table 4 has been executed and the Exact Match Drop Ratios have been recorded.",
+                            "requirements": "The code to evaluate the random replay method on all model, dataset and fine-tuning configurations present in Table 4 has been executed and the Exact Match Drop Ratios have been recorded.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Code Execution",
@@ -9357,7 +9357,7 @@
                     "sub_tasks": [
                         {
                             "id": "d59425d1-58ab-491f-8901-2789f369a606",
-                            "requirements": "The recorded Exact Match Drop Ratios show that the ground truth forgetting replay method has the lowest Exact Match Drop Ratio for all evaluated model, dataset and fine-tuning setups.",
+                            "requirements": "The recorded Exact Match Drop Ratios show that the ground truth forgetting replay method has the lowest Exact Match Drop Ratio for BART0 and FLAN-T5 Large setups; for FLAN-T5 3B with LoRA, the representation based forecasting method has the lowest Exact Match Drop Ratio, random replay is second, and ground truth forgetting replay is third.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Result Analysis",
@@ -9365,7 +9365,7 @@
                         },
                         {
                             "id": "2989e54d-5471-468f-a448-4bec0573878b",
-                            "requirements": "The recorded Exact Match Drop Ratios show that the replay with representation based forecasting method has the second lowest Exact Match Drop Ratios for all evaluated model, dataset and fine-tuning setups, second only to the ground truth forgetting replay method.",
+                            "requirements": "The recorded Exact Match Drop Ratios show that the replay with representation based forecasting method has the second lowest Exact Match Drop Ratios for BART0 and FLAN-T5 Large setups, second only to the ground truth forgetting replay method; for FLAN-T5 3B with LoRA, the representation based forecasting method has the lowest Exact Match Drop Ratio, followed by random replay and then ground truth forgetting replay.",
                             "weight": 1,
                             "sub_tasks": [],
                             "task_category": "Result Analysis",

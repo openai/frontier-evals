@@ -564,7 +564,7 @@
                                 },
                                 {
                                     "id": "d3dcd793-2ff9-4ef2-89a2-0e38815a1637",
-                                    "requirements": "Following equation 14, given any index $i$ and a sorted list of N blocks in descending order of salience density, the parameter number is computed as $C_{\\text{top}-i} = (4d_h^\\prime \\cdot n_h^\\prime + 2n_f^\\prime) \\cdot d_m^\\prime$, where $d_h^\\prime$ is the number of heads in the model, $n_h^\\prime$ is the number of the top-$i$ blocks that are added to heads, $n_f^\\prime$ is the number of the top-$i$ blocks that are added to neurons, and $d_m^\\prime$ is the number of the top-$i$ blocks that are added to dimensions",
+                                    "requirements": "Following equation 14, given any index $i$ and a sorted list of N blocks in descending order of salience density, the parameter number is computed as $C_{\\text{top}-i} = (4d_h^\\prime \\cdot n_h^\\prime + 2n_f^\\prime) \\cdot d_m^\\prime$, where $d_h^\\prime$ is the dimension of each attention head, $n_h^\\prime$ is the number of the top-$i$ blocks that are added to heads, $n_f^\\prime$ is the number of the top-$i$ blocks that are added to neurons, and $d_m^\\prime$ is the number of the top-$i$ blocks that are added to dimensions",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",

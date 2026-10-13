@@ -556,7 +556,7 @@
                             "sub_tasks": [
                                 {
                                     "id": "5d45a1c4-bb8f-4fc8-bfee-d3a5107bced4",
-                                    "requirements": "The CIDEr score has been computed and displayed for all five encoders for OF and LLaVA on image captioning, for all the image captioning datasets (COCO and Flickr3k) on clean images, adversarial images with epsilon = 2 / 225, and adversarial images with epsilon = 4 / 255.",
+                                    "requirements": "The CIDEr score has been computed and displayed for all five encoders for OF and LLaVA on image captioning, for all the image captioning datasets (COCO and Flickr3k) on clean images, adversarial images with epsilon = 2 / 255, and adversarial images with epsilon = 4 / 255.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",
@@ -564,7 +564,7 @@
                                 },
                                 {
                                     "id": "d75c44fa-05a8-42cc-8365-cd2e408c790c",
-                                    "requirements": "The VQA accuracy score has been computed and displayed for all five encoders for OF and LLaVA on image captioning, for all the VQA datasets (TextVQA and VQAv2) on clean images, adversarial images with epsilon = 2 / 225, and adversarial images with epsilon = 4 / 255.",
+                                    "requirements": "The VQA accuracy score has been computed and displayed for all five encoders for OF and LLaVA on image captioning, for all the VQA datasets (TextVQA and VQAv2) on clean images, adversarial images with epsilon = 2 / 255, and adversarial images with epsilon = 4 / 255.",
                                     "weight": 1,
                                     "sub_tasks": [],
                                     "task_category": "Code Development",

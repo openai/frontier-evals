@@ -1,9 +1,13 @@
+from collections.abc import Generator
+from contextlib import contextmanager
+
 import blobfile as bf
 import structlog
 from structlog.typing import EventDict
 from typing_extensions import override
 
 from nanoeval.library_config import LibraryConfig, set_library_config
+from nanoeval.recorder_protocol import RecorderProtocol
 from nanoeval.setup import nanoeval_logging
 from paperbench.utils import get_default_runs_dir
 
@@ -52,6 +56,14 @@ class PaperBenchLibraryConfig(LibraryConfig):
     To be called at the eval entrypoint with
     nanoeval.library_config.set_library_config(PaperBenchLibraryConfig())
     """
+
+    @override
+    @contextmanager
+    def set_recorder_context(
+        self, rec: RecorderProtocol, sample_id: str, group_id: str
+    ) -> Generator[None, None, None]:
+        with rec.as_default_recorder(sample_id, group_id):
+            yield
 
     @override
     def setup_logging(self) -> None:

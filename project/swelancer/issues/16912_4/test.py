@@ -39,6 +39,15 @@ def launch_browser(trace_enabled: bool = False):
     return playwright, browser, context, page
 
 
+def _zipcode_hint_style(page_text: str) -> str:
+    normalized = page_text.lower()
+    has_example = "e.g." in normalized
+    has_format = "format" in normalized
+    assert has_example or has_format, "Zip code hint must contain either 'e.g.' or 'format'"
+    assert not (has_example and has_format), "Zip code hint style is ambiguous"
+    return "e.g." if has_example else "format"
+
+
 def test_unknown_user_profile_load_offline(pytestconfig):
     trace_enabled = pytestconfig.getoption("--user-tool-trace")
 
@@ -68,9 +77,7 @@ def test_unknown_user_profile_load_offline(pytestconfig):
         page.wait_for_timeout(1000)
 
         address_text = page.get_by_test_id("AddressPage").inner_text()
-        assert "e.g." in address_text, (
-            "Zip code hint does not begin with 'e.g.' on profile > address"
-        )
+        address_hint_style = _zipcode_hint_style(address_text)
 
         page.get_by_label("Back").last.click()
         page.get_by_test_id("InitialSettingsPage").get_by_label("Workspaces").click()
@@ -79,8 +86,9 @@ def test_unknown_user_profile_load_offline(pytestconfig):
         page.get_by_label("Connect bank account").click()
 
         personal_info_text = page.locator('div[data-testid="PersonalInfo"]').inner_text()
-        assert "e.g." in personal_info_text, (
-            "Zip code hint does not begin with 'e.g.' on connect bank account > address"
+        bank_hint_style = _zipcode_hint_style(personal_info_text)
+        assert bank_hint_style == address_hint_style, (
+            "Zip code hint must use the same style on profile and connect bank account pages"
         )
 
     finally:

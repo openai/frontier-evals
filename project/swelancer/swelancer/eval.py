@@ -357,7 +357,7 @@ class SWELancerTask(ComputerTask):
                 test_results.append(-1.0)
             else:
                 test_results.append(0.0)
-        if not test_results:
+        if not any(result in (0.0, 1.0) for result in test_results):
             raise RolloutSystemError(
                 f"No tests properly ran for {self.question_id}; matching_folder: {matching_folder}"
             )

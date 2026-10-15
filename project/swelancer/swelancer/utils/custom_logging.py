@@ -1,5 +1,4 @@
 import time
-from pathlib import Path
 
 import blobfile as bf
 import structlog
@@ -8,6 +7,7 @@ from typing_extensions import override
 
 from nanoeval.library_config import LibraryConfig, set_library_config
 from nanoeval.setup import nanoeval_logging
+from swelancer.utils.general import get_runs_dir
 
 
 def get_timestamp() -> str:
@@ -17,7 +17,7 @@ def get_timestamp() -> str:
 
 
 def get_default_runs_dir() -> str:
-    return str(Path(__name__).parent / "runs")
+    return str(get_runs_dir())
 
 
 def setup_logging(library_config: LibraryConfig) -> None:

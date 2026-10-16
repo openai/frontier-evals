@@ -43,7 +43,7 @@ class EVMbench(PythonCodingEval):
     remove_forge_artifacts: bool = chz.field(default=True)
     log_to_run_dir: bool = chz.field(default=False)
     hint_level: Literal["none", "low", "med", "high", "max"] = chz.field(default="none")
-    findings_subdir: Literal["", "low", "med", "high"] = chz.field(default="", doc="Incorrectness level for experiments")
+    findings_subdir: Literal["", "low", "medium", "high"] = chz.field(default="", doc="Incorrectness level for experiments")
     codex_auth_path: str | None = chz.field(default=None)
     use_sidecar: bool = chz.field(default=True, doc="Run ploit/veto in a sidecar for agent.")
 

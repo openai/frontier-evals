@@ -50,6 +50,23 @@ def properly_closed_thread_pool(n_threads: int = 10_000) -> Generator[None, None
                 pass
 
 
+def _raise_open_file_limit(target: int = 131_072) -> None:
+    soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
+    if soft_limit == resource.RLIM_INFINITY:
+        return
+
+    target_soft_limit = (
+        target
+        if hard_limit == resource.RLIM_INFINITY
+        else min(target, hard_limit)
+    )
+    if soft_limit < target_soft_limit:
+        resource.setrlimit(
+            resource.RLIMIT_NOFILE,
+            (target_soft_limit, hard_limit),
+        )
+
+
 async def _main_process_async_entrypoint(entry: Coroutine[Any, Any, None]) -> None:
     with properly_closed_thread_pool():
         nanoeval_logging()
@@ -71,10 +88,9 @@ def nanoeval_entrypoint(entry: Coroutine[Any, Any, None]) -> None:
     * default asyncio thread pool executor of 10_000 threads
     """
 
-    # Raise the open file limit (so we don't run out of file descriptors)
-    # We do this by default because the default concurrency is 2048, and we
-    # open a logging file for each attempt by default. So we'll use min
-    # 2048 fds already.
-    resource.setrlimit(resource.RLIMIT_NOFILE, (131_072, 131_072))
+    # Raise the open file limit as far as the host allows, up to the target
+    # needed by nanoeval's default concurrency. Do not attempt to raise the
+    # process hard limit, which is not permitted on many constrained hosts.
+    _raise_open_file_limit()
 
     asyncio.run(_main_process_async_entrypoint(entry))

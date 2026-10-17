@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import shlex
+import textwrap
 import uuid
 from contextlib import AsyncExitStack, asynccontextmanager, suppress
 from typing import Any, AsyncGenerator
@@ -22,6 +24,52 @@ from paperbench.utils import find_dotenv
 load_dotenv(find_dotenv())
 
 logger = structlog.stdlib.get_logger(component=__name__)
+
+
+def _safe_remote_tar_extract_command(tar_path: str, extract_dir: str) -> str:
+    """Build a remote command that extracts a tarball without path traversal."""
+
+    script = textwrap.dedent(
+        r"""
+import inspect
+import os
+import tarfile
+from pathlib import Path
+
+
+def is_within_directory(directory: Path, target: Path) -> bool:
+    return os.path.commonpath([str(directory), str(target)]) == str(directory)
+
+
+def validate_member(member: tarfile.TarInfo, destination: Path) -> None:
+    target = (destination / member.name).resolve()
+    if not is_within_directory(destination, target):
+        raise tarfile.TarError(f"Tar member would extract outside destination: {member.name}")
+
+    if member.isdev():
+        raise tarfile.TarError(f"Refusing to extract special file from tar archive: {member.name}")
+
+    if member.issym() or member.islnk():
+        raise tarfile.TarError(f"Refusing to extract link from tar archive: {member.name}")
+
+
+destination = Path(os.environ["EXTRACT_DIR"]).resolve()
+with tarfile.open(os.environ["TAR_PATH"], "r:gz") as archive:
+    if "filter" in inspect.signature(archive.extractall).parameters:
+        archive.extractall(path=destination, filter="data")
+    else:
+        members = archive.getmembers()
+        for member in members:
+            validate_member(member, destination)
+        archive.extractall(path=destination, members=members)
+"""
+    ).strip()
+    return (
+        f"mkdir -p {shlex.quote(extract_dir)} && \\\n"
+        f"TAR_PATH={shlex.quote(tar_path)} EXTRACT_DIR={shlex.quote(extract_dir)} python3 - <<'PY'\n"
+        f"{script}\n"
+        "PY"
+    )
 
 
 async def put_submission_in_computer(
@@ -48,7 +96,7 @@ async def put_submission_in_computer(
 
     # Extract tar.gz into a unique temp dir to avoid collisions.
     extract_dir = f"/tmp/pb_extract_{uuid.uuid4().hex}"
-    cmd = f"mkdir -p {extract_dir} && tar -xzf {tar_gz_on_computer} -C {extract_dir}"
+    cmd = _safe_remote_tar_extract_command(tar_gz_on_computer, extract_dir)
     ctx_logger.info(f"Extracting submission: {cmd}")
     result = await computer.check_shell_command(cmd)
 

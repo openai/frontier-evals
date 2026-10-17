@@ -78,7 +78,7 @@ class ShortAnswerEval(ABC, Eval[ShortAnswerTask, Answer]):
         res = await self.solver.solve(task)
         await asyncio.to_thread(
             get_recorder().record_match,
-            correct=False,
+            correct=bool(res.is_correct),
             metadata=res.metadata,
         )
         return res

@@ -161,36 +161,40 @@ def _get_recorder_cached(run_id: str) -> RecorderProtocol:
 def _maybe_pull_task_from_queue() -> tuple[EvalSpec, Task, RecorderProtocol] | None:
     # Pull tasks from the monitor queue
     with db.conn() as conn:
-        # Enforce global concurrency limit
-        num_running = conn.execute(
-            """
-            SELECT COUNT(*) FROM task WHERE executor_pid IS NOT NULL and result IS NULL;
-            """
-        ).fetchone()[0]
+        # Keep the global concurrency check and task claim in the same transaction so
+        # multiple workers cannot observe the same available slot concurrently.
+        conn.execute("BEGIN EXCLUSIVE;")
         try:
-            max_concurrency = int(
-                conn.execute(
-                    """
-                select value from metadata where key = 'max_concurrency';
+            # Enforce global concurrency limit
+            num_running = conn.execute(
                 """
-                ).fetchone()[0]
-            )
-        except TypeError:
-            logger.exception("Failed to retrieve max_concurrency from metadata")
-            return None
+                SELECT COUNT(*) FROM task WHERE executor_pid IS NOT NULL and result IS NULL;
+                """
+            ).fetchone()[0]
+            try:
+                max_concurrency = int(
+                    conn.execute(
+                        """
+                    select value from metadata where key = 'max_concurrency';
+                    """
+                    ).fetchone()[0]
+                )
+            except TypeError:
+                conn.execute("ROLLBACK;")
+                logger.exception("Failed to retrieve max_concurrency from metadata")
+                return None
 
-        continue_ok = num_running < max_concurrency
+            continue_ok = num_running < max_concurrency
 
-        if not continue_ok:
-            logger.info(
-                "Max concurrency reached, sleeping. num_running=%s >= max concurrency=%s",
-                num_running,
-                max_concurrency,
-            )
-            return None
+            if not continue_ok:
+                conn.execute("ROLLBACK;")
+                logger.info(
+                    "Max concurrency reached, sleeping. num_running=%s >= max concurrency=%s",
+                    num_running,
+                    max_concurrency,
+                )
+                return None
 
-        conn.execute("BEGIN EXCLUSIVE;")  # Start the transaction
-        try:
             # Step 3: Select the task
             cursor = conn.execute(
                 """

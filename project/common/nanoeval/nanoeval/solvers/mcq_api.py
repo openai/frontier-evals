@@ -25,6 +25,22 @@ MC_PROMPT_FORMAT = """
 """.strip()
 
 
+def _answer_format_instruction(answer_keys: Sequence[str], allow_multiple_choices: bool) -> str:
+    answer_choices = ", ".join(answer_keys)
+    if allow_multiple_choices:
+        final_line_format = "'Answer: $LETTER1, $LETTER2, ...' (without quotes)"
+        choice_instruction = f"where each LETTER is one of {answer_choices}"
+    else:
+        final_line_format = "'Answer: $LETTER' (without quotes)"
+        choice_instruction = f"where LETTER is one of {answer_choices}"
+
+    return (
+        "Answer the following multiple choice question. The last line of your response should be "
+        f"of the following format: {final_line_format} {choice_instruction}. "
+        "Think step by step before answering."
+    )
+
+
 @chz.chz
 class OpenAIAPIMCQSolver(MCQSolver[Answer]):
     model: str
@@ -94,7 +110,9 @@ class OpenAIAPIMCQSolver(MCQSolver[Answer]):
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
-                "content": "Answer the following multiple choice question. The last line of your response should be of the following format: 'Answer: $LETTER' (without quotes) where LETTER is one of {answer_choices}. Think step by step before answering.",
+                "content": _answer_format_instruction(
+                    list(letters_to_answers.keys()), question.allow_multiple_choices
+                ),
             },
             {"role": "user", "content": prompt},
         ]

@@ -193,9 +193,9 @@ class MCQEval(ABC, Eval[MCQTask, Answer]):
 
         def _choice_to_answer_group(picked: int | set[int]) -> int:
             if isinstance(picked, set):
-                assert all(p < 10 for p in picked)
-                # Every answer group is a unique power of 10
-                return sum([10 ** (i + 1) + p for i, p in enumerate(picked)])
+                assert all(0 <= p < 10 for p in picked)
+                # Encode each selected index in its own decimal digit position.
+                return sum(10**p for p in picked)
             return picked
 
         samples_df = pd.DataFrame(

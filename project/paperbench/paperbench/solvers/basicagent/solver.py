@@ -210,7 +210,7 @@ class BasicAgentSolver(BasePBSolver):
         if self.use_real_time_limit and self.time_limit:
             elapsed_time = time.time() - start_time - total_retry_time
             periodic_msg = f"Info: {format_progress_time(elapsed_time)} time elapsed out of {format_progress_time(self.time_limit)}. Remember, you only have to stop working when the time limit has been reached."
-        if self.time_limit:
+        elif self.time_limit:
             elapsed_time = time.time() - start_time
             periodic_msg = f"Info: {format_progress_time(elapsed_time)} time elapsed out of {format_progress_time(self.time_limit)}. Remember, you only have to stop working when the time limit has been reached."
         else:

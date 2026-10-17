@@ -54,16 +54,18 @@ class OpenAIAPIMCQSolver(MCQSolver[Answer]):
             r"Answer[\s\*]*:[\s\*]*[\(\$]*([" + answer_keys_pattern + "])[)$]*"
         )
         multiple_choice_pattern = re.compile(
-            r"Answer[\s\*]*:[\s\*]*([" + answer_keys_pattern + r"\s,]*)"
+            r"Answer[\s\*]*:[\s\*]*([" + answer_keys_pattern + r" \t,]*)"
         )
 
         if allow_multiple_choices:
-            match = multiple_choice_pattern.search(sampled)
-            if match:
+            matches = list(multiple_choice_pattern.finditer(sampled))
+            if matches:
+                match = matches[-1]
                 picked_letters = set(re.findall("[" + answer_keys_pattern + "]", match.group(1)))
         else:
-            match = single_choice_pattern.search(sampled)
-            if match:
+            matches = list(single_choice_pattern.finditer(sampled))
+            if matches:
+                match = matches[-1]
                 picked_letters = {match.group(1)}
 
         return picked_letters.intersection(answer_keys)
@@ -72,6 +74,13 @@ class OpenAIAPIMCQSolver(MCQSolver[Answer]):
     def _random_guess(question: Question) -> Answer:
         # choose a random answer
         integer_picked = random.choice(range(len(question.answers)))
+        if question.allow_multiple_choices:
+            picked = {integer_picked}
+            return Answer(
+                picked=picked,
+                correct=picked == question.correct_indices,
+                metadata={"random_guess": True},
+            )
         return Answer(
             picked=integer_picked,
             correct=integer_picked in question.correct_indices,

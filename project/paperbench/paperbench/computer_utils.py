@@ -78,15 +78,19 @@ async def start_computer_with_retry(
             f"retrying due to '{exception}'"
         )
 
-    async for attempt in AsyncRetrying(
-        stop=stop_after_attempt(max_attempts),
-        retry=retry_if_exception_type(exception_types if exception_types else ()),
-        before_sleep=before_sleep,
-        reraise=True,
-    ):
-        with attempt:
-            async with computer_runtime.run(computer_config) as computer:
-                yield computer
+    async with AsyncExitStack() as stack:
+        computer: ComputerInterface | None = None
+        async for attempt in AsyncRetrying(
+            stop=stop_after_attempt(max_attempts),
+            retry=retry_if_exception_type(exception_types if exception_types else ()),
+            before_sleep=before_sleep,
+            reraise=True,
+        ):
+            with attempt:
+                computer = await stack.enter_async_context(computer_runtime.run(computer_config))
+
+        assert computer is not None
+        yield computer
 
 
 class ReleasableComputer(ComputerInterface):

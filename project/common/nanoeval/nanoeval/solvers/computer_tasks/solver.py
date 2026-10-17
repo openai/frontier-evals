@@ -175,7 +175,6 @@ def _log_results(task: ComputerTask, result: FinalResult) -> None:
     """
     recorder = get_recorder()
 
-    score = result.grade.score
     log = result.grade.grader_log
 
     recorder.record_sampling(
@@ -186,7 +185,7 @@ def _log_results(task: ComputerTask, result: FinalResult) -> None:
     )
 
     recorder.record_match(
-        correct=bool(score),
+        correct=result.correct,
         group_id=str(task.attempt_id),
     )
 

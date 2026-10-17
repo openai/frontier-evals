@@ -203,7 +203,8 @@ class LibraryConfig:
     def set_recorder_context(
         self, rec: RecorderProtocol, sample_id: str, group_id: str
     ) -> Generator[None, None, None]:
-        yield
+        with rec.as_default_recorder(sample_id, group_id):
+            yield
 
     def get_dummy_recorder(self, log: bool) -> RecorderConfig:
         return _DummyRecorderConfig()

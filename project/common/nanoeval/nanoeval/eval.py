@@ -250,7 +250,7 @@ class RunnerArgs:
 
     @chz.validate
     def _validate_multiprocessing_options(self) -> None:
-        if self.num_processes:
+        if self.num_processes is not None:
             assert self.num_processes > 0
             assert self.experimental_use_multiprocessing, (
                 "num_processes requires experimental_use_multiprocessing"

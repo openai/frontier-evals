@@ -62,12 +62,11 @@ class JudgeResult:
 def _get_leaf_node_scores(task: GradedTaskNode, expected_result: GradedTaskNode) -> LeafScores:
     """Extract predicted and true scores from leaf nodes of the task tree."""
 
-    if not task.valid_score:
-        return LeafScores()
-
     if task.is_leaf():
         expected_result_node = expected_result.find(task.id)
-        return LeafScores([task.score], [expected_result_node.score])
+        if expected_result_node is not None:
+            return LeafScores([task.score], [expected_result_node.score])
+        return LeafScores()
 
     leaf_scores = LeafScores()
     for sub_task in task.sub_tasks:
@@ -81,15 +80,14 @@ def _get_leaf_node_scores_stratified(
 ) -> dict[str | None, LeafScores]:
     """Extract predicted and true scores from leaf nodes, broken down by task.task_category."""
     category_scores: dict[str | None, LeafScores] = {}
-    if not task.valid_score:
-        return category_scores
     if task.is_leaf():
         expected_result_node = expected_result.find(task.id)
-        cat = task.task_category
-        if cat not in category_scores:
-            category_scores[cat] = LeafScores()
-        category_scores[cat].y_pred.append(task.score)
-        category_scores[cat].y_true.append(expected_result_node.score)
+        if expected_result_node is not None:
+            cat = task.task_category
+            if cat not in category_scores:
+                category_scores[cat] = LeafScores()
+            category_scores[cat].y_pred.append(task.score)
+            category_scores[cat].y_true.append(expected_result_node.score)
         return category_scores
     for sub_task in task.sub_tasks:
         stratified_child_scores = _get_leaf_node_scores_stratified(sub_task, expected_result)

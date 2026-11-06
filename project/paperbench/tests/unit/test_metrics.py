@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
+import pytest
 from paperbench.metrics import (
     PaperEvaluation,
     RunGroupRecords,
@@ -42,13 +43,14 @@ def _write_result(
     paper_id: str,
     run_id: str,
     score: float,
+    run_group_id: str = "2026_run-group_agent",
 ) -> None:
     entry = {
         "record_type": "extra",
         "group_id": group_id,
         "timestamp": timestamp,
         "data": {
-            "run_group_id": "2026_run-group_agent",
+            "run_group_id": run_group_id,
             "run_id": run_id,
             "pb_result": {
                 "paperbench_result": {
@@ -174,3 +176,67 @@ def test_parse_run_data_preserves_multiple_attempts_in_one_run_group(tmp_path: P
     ]
     assert all(set(run.paper_evaluations) == {"paper-a", "paper-b"} for run in runs)
     assert compute_agg_stats(runs, expected_papers=2).n_runs == 2
+
+
+@pytest.mark.parametrize(
+    ("run_group_id", "expected_agent"),
+    [
+        (
+            "2026-01-01T00-00-00-UTC_run-group_direct_submission_solver",
+            "direct_submission_solver",
+        ),
+        (
+            "2026-01-01T00-00-00-UTC_run-group_direct_submission_solver_run-group_variant",
+            "direct_submission_solver_run-group_variant",
+        ),
+        ("legacy_custom_solver", "solver"),
+    ],
+)
+def test_full_solver_shortname_survives_run_group_parsing(
+    tmp_path: Path, run_group_id: str, expected_agent: str
+) -> None:
+    _write_result(
+        tmp_path / "runs.jsonl",
+        group_id="0.0",
+        timestamp="2026-08-17T00:00:00+00:00",
+        paper_id="paper-a",
+        run_id="run-a",
+        score=1.0,
+        run_group_id=run_group_id,
+    )
+    parsed = parse_run_data(tmp_path)
+    assert list(parsed) == [expected_agent]
+    assert parsed[expected_agent][0].paper_evaluations["paper-a"].paper_run_id == "run-a"
+
+
+def test_uneven_attempt_counts_do_not_borrow_missing_paper_runs(tmp_path: Path) -> None:
+    records = tmp_path / "runs.jsonl"
+    for attempt in range(3):
+        _write_result(
+            records,
+            group_id=f"{attempt}.0",
+            timestamp=f"2026-08-17T00:0{attempt}:00+00:00",
+            paper_id="paper-a",
+            run_id=f"a-{attempt}",
+            score=0.5,
+        )
+    _write_result(
+        records,
+        group_id="0.0",
+        timestamp="2026-08-17T00:00:01+00:00",
+        paper_id="paper-b",
+        run_id="b-0",
+        score=0.5,
+    )
+    runs = parse_run_data(tmp_path)["agent"]
+    assert len(runs) == 3
+    assert [set(run.paper_evaluations) for run in runs] == [
+        {"paper-a"},
+        {"paper-a"},
+        {"paper-a", "paper-b"},
+    ]
+    assert [run.paper_evaluations["paper-a"].paper_run_id for run in runs] == [
+        "a-2",
+        "a-1",
+        "a-0",
+    ]

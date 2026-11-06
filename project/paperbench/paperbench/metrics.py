@@ -6,9 +6,8 @@ from typing import Any, Callable, Hashable, Literal
 import dateutil.parser
 import numpy as np
 import structlog.stdlib
-from tqdm import tqdm
-
 from paperbench.judge.graded_task_node import GradedTaskNode, disqualify
+from tqdm import tqdm
 
 logger = structlog.stdlib.get_logger(component=__name__)
 EXPECTED_PAPERS = 20
@@ -187,9 +186,7 @@ def parse_disqualified_runs(disqualification_data_path: Path) -> set[str]:
 def _build_evaluation_runs(
     run_groups: dict[Hashable, RunGroupRecords], seeds_to_keep: int | None
 ) -> list[EvaluationRun]:
-    sorted_run_groups = sorted(
-        run_groups.items(), key=lambda item: item[1].timestamp, reverse=True
-    )
+    sorted_run_groups = sorted(run_groups.items(), key=lambda item: item[1].timestamp, reverse=True)
     if seeds_to_keep is not None:
         sorted_run_groups = sorted_run_groups[:seeds_to_keep]
 
@@ -274,7 +271,11 @@ def parse_run_data(
         run_group_id = entry["data"]["run_group_id"]
         attempt_id = _attempt_id_from_recorder_group_id(entry.get("group_id"))
         paper_run_id = entry["data"]["run_id"]
-        agent_id = run_group_id.split("_")[-1]
+        agent_id = (
+            run_group_id.split("_run-group_", 1)[1]
+            if "_run-group_" in run_group_id
+            else run_group_id.split("_")[-1]
+        )
         paper_id = pb_result["paper_id"]
         timestamp = dateutil.parser.parse(entry["timestamp"]).timestamp()
 

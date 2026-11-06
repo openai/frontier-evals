@@ -59,9 +59,10 @@ class OpenAIAPIMCQSolver(MCQSolver[Answer]):
 
         if allow_multiple_choices:
             matches = list(multiple_choice_pattern.finditer(sampled))
-            if matches:
-                match = matches[-1]
+            for match in reversed(matches):
                 picked_letters = set(re.findall("[" + answer_keys_pattern + "]", match.group(1)))
+                if picked_letters:
+                    break
         else:
             matches = list(single_choice_pattern.finditer(sampled))
             if matches:

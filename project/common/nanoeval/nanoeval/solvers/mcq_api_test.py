@@ -86,3 +86,19 @@ def test_single_answer_random_guess_keeps_int_contract() -> None:
     assert isinstance(answer.picked, int)
     assert answer.correct == (answer.picked in question.correct_indices)
     assert answer.metadata == {"random_guess": True}
+
+@pytest.mark.parametrize(
+    ("sampled", "expected"),
+    [
+        ("Answer: A, C\nAnswer: ", {"A", "C"}),
+        ("Answer: B, D\nAnswer: ?", {"B", "D"}),
+        ("Answer: A, D\nAnswer: E", {"A", "D"}),
+    ],
+)
+def test_multi_answer_extraction_retains_last_valid_declaration(
+    sampled: str, expected: set[str]
+) -> None:
+    picked = OpenAIAPIMCQSolver._extract_picked_letters(
+        sampled, {"A", "B", "C", "D"}, allow_multiple_choices=True
+    )
+    assert picked == expected

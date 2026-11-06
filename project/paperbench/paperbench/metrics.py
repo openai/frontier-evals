@@ -232,7 +232,7 @@ def parse_run_data(
         run_group_id = entry["data"]["run_group_id"]
         paper_run_id = entry["data"]["run_id"]
         agent_id = (
-            run_group_id.rsplit("_run-group_", 1)[-1]
+            run_group_id.split("_run-group_", 1)[-1]
             if "_run-group_" in run_group_id
             else run_group_id.split("_")[-1]
         )

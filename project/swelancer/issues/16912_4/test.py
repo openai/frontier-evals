@@ -42,7 +42,7 @@ def launch_browser(trace_enabled: bool = False):
 def _zipcode_hint_style(page_text: str) -> str:
     normalized = page_text.lower()
     has_example = "e.g." in normalized
-    has_format = "format" in normalized
+    has_format = re.search(r"\bformat\b", normalized) is not None
     assert has_example or has_format, "Zip code hint must contain either 'e.g.' or 'format'"
     assert not (has_example and has_format), "Zip code hint style is ambiguous"
     return "e.g." if has_example else "format"

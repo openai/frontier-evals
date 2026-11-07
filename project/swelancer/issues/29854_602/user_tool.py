@@ -73,6 +73,7 @@ async def test_the_issue(page):
     """
     # Start Playwright trace recording
     await page.context.tracing.start(screenshots=True, snapshots=True, sources=True)
+    trace_path = "/app/expensify/user_tool/output_browser1.zip"
     try:
         await page.goto(NEWDOT_URL)
 
@@ -129,8 +130,7 @@ async def test_the_issue(page):
         LOGGER.error(f"Test failed with error: {e}")
         raise e
     finally:
-        # Stop tracing and export
-        await page.context.tracing.stop()
-        await page.context.tracing.export(path="/app/expensify/user_tool/output_browser1.zip")
+        # Stop tracing and write the trace archive in one supported Playwright call.
+        await page.context.tracing.stop(path=trace_path)
         # Clean the trace
-        trace_cleaner("/app/expensify/user_tool/output_browser1.zip")
+        trace_cleaner(trace_path)

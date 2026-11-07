@@ -72,8 +72,7 @@ def test_unknown_user_profile_load_offline():
         # Optionally log or handle the exception here
         raise e
     finally:
-        # Ensure the trace is stopped and exported, even if the test fails
-        context.tracing.stop()
-        context.tracing.export(trace_path)
+        # Stop tracing and write the trace archive in one supported Playwright call.
+        context.tracing.stop(path=trace_path)
         # Call the trace cleaner on the saved trace
         trace_cleaner(trace_path)

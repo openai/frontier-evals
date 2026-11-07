@@ -312,7 +312,7 @@ class TaskNode:
                 requirements=self.requirements,
                 weight=self.weight,
                 sub_tasks=[],
-                task_category=self.task_category,
+                task_category=self.task_category or "Subtree",
                 finegrained_task_category=self.finegrained_task_category,
             )
 

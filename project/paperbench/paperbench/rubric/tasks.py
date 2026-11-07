@@ -270,7 +270,7 @@ class TaskNode:
 
         required_nodes = required_nodes[:-1]  # Don't include the target node
         if max_prior_nodes is not None:
-            required_nodes = required_nodes[-max_prior_nodes:]
+            required_nodes = required_nodes[-max_prior_nodes:] if max_prior_nodes > 0 else []
         return required_nodes
 
     def get_descendants_depth_first(self) -> list[Self]:

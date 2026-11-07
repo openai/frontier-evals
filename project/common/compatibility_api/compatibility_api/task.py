@@ -49,7 +49,7 @@ class CompatibleComputerTask(ComputerTask, ABC):
         # Requirements for CR sharing
         assert (
             self.docker_image
-            and self.docker_image.startswith("docker.io")
+            and self.docker_image.startswith("docker.io/")
             or self.docker_image == "jupyter/base-notebook:3.11"
         ), "Image must be specified and use a shared CR"
 

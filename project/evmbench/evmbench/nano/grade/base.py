@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from pydantic import BaseModel, Field
-from typing import Any, Literal
+from pydantic import BaseModel, Field, model_validator
+from typing import Any, Literal, Self
 
 import structlog.stdlib
 from nanoeval.solvers.computer_tasks.task import Grade
@@ -57,6 +57,17 @@ class EVMbenchDetectResult(EVMbenchResult):
 class EVMbenchGrade(Grade):
     """Wrapper class for interfacting with nanoeval."""
     evmbench_result: EVMbenchResult
+
+    @model_validator(mode="after")
+    def normalize_nanoeval_score(self) -> Self:
+        max_score = float(self.evmbench_result.max_score)
+        self.score = (
+            float(self.evmbench_result.score) / max_score
+            if max_score > 0
+            else 0.0
+        )
+        self.is_continuous = True
+        return self
 
 class GraderContext(BaseModel):
     audit: Audit

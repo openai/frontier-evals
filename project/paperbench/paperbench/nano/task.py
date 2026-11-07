@@ -400,7 +400,9 @@ class PBTask(ComputerTask):
             return None
 
         # Get the submission at the target duration if it is set, otherwise get the latest submission
-        target_duration_hr = self.target_duration_hr if self.target_duration_hr else 10000
+        target_duration_hr = (
+            self.target_duration_hr if self.target_duration_hr is not None else 10000
+        )
         checkpoint = get_file_at_duration(submission_checkpoints, target_duration_hr)
 
         path, duration = checkpoint["path"], checkpoint["duration"]

@@ -293,7 +293,7 @@ def parse_run_data(
             eval_run = EvaluationRun(seed=seed, paper_evaluations={})
             for data in filtered_paper_data.values():
                 # some evaluation runs may not have all papers evaluated
-                if seed == len(data):
+                if seed >= len(data):
                     continue
                 paper_eval = data[seed]["paper_eval"]
                 eval_run.paper_evaluations[paper_eval.paper_id] = paper_eval

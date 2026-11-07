@@ -163,7 +163,7 @@ class Judge(ABC):
             weight=task.weight,
             sub_tasks=graded_sub_tasks,
             score=weighted_score,
-            valid_score=True,
+            valid_score=all(child.valid_score for child in graded_sub_tasks),
             explanation="Aggregated score from sub-tasks.",
             judge_metadata=None,
         )

@@ -56,7 +56,7 @@ RUN set -eux; \
     cd /; rm -rf /usr/local/src/codex; \
     codex --version
 
-ENV CLAUDE_CODE_VERSION=2.1.32
+ENV CLAUDE_CODE_VERSION=2.1.80
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
 ENV GEMINI_VERSION=0.25.0

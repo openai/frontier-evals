@@ -357,7 +357,7 @@ class SWELancerTask(ComputerTask):
                 test_results.append(-1.0)
             else:
                 test_results.append(0.0)
-        if not test_results:
+        if not _has_valid_pytest_result(test_results):
             raise RolloutSystemError(
                 f"No tests properly ran for {self.question_id}; matching_folder: {matching_folder}"
             )
@@ -384,6 +384,11 @@ class SWELancerTask(ComputerTask):
             patch_path="",
             grade_report_path="",
         )
+
+
+def _has_valid_pytest_result(results: list[float]) -> bool:
+    """At least one retry must have produced a real pass or failure status."""
+    return any(result in (0.0, 1.0) for result in results)
 
 
 @chz.chz

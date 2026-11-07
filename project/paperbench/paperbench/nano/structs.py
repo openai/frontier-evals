@@ -50,7 +50,9 @@ class ReproductionMetadata:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> ReproductionMetadata:
         try:
-            retried_results = [ReproScriptRunOutcome.from_dict(r) for r in data["retried_results"]]
+            retried_results = [
+                ReproScriptRunOutcome.from_dict(r) for r in data.get("retried_results", [])
+            ]
 
             return cls(
                 is_valid_git_repo=data["is_valid_git_repo"],
@@ -61,9 +63,9 @@ class ReproductionMetadata:
                 timedout=data["timedout"],
                 repro_log=data["repro_log"],
                 retried_results=retried_results,
-                repro_execution_time=data["repro_execution_time"],
-                git_status_after_reproduce=data["git_status_after_reproduce"],
-                executed_submission=data["executed_submission"],
+                repro_execution_time=data.get("repro_execution_time"),
+                git_status_after_reproduce=data.get("git_status_after_reproduce"),
+                executed_submission=data.get("executed_submission"),
             )
         except KeyError as e:
             raise ValueError("Missing required field in reproduction metadata") from e

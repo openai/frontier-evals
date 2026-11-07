@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from typing import Any, Awaitable, Callable, Sequence, cast
 
 import pandas as pd
@@ -147,18 +148,20 @@ async def handle_system_errors_and_compute_metrics(
         )
         for task, result in results
     ]
-    task_ids_including_errors = {
+    rollout_counts_including_errors = Counter(
         task.question_id for task, _ in results_treating_system_errors_as_fails
-    }
+    )
+    task_ids_including_errors = set(rollout_counts_including_errors)
 
     results_excluding_errors = [
         (task, result) for task, result in results if not isinstance(result, RolloutSystemError)
     ]
-    task_ids_excluding_errors = {task.question_id for task, _ in results_excluding_errors}
+    rollout_counts_excluding_errors = Counter(task.question_id for task, _ in results_excluding_errors)
+    task_ids_excluding_errors = set(rollout_counts_excluding_errors)
 
     summary = {
         **(await metrics_fn(results_excluding_errors)),
-        "is_valid": len(task_ids_including_errors) == len(task_ids_excluding_errors),
+        "is_valid": rollout_counts_including_errors == rollout_counts_excluding_errors,
         "num_tasks": len(task_ids_excluding_errors),
     }
 

@@ -163,7 +163,7 @@ class SimpleJudge(Judge):
 
     def _truncate_in_token_space(self, input_str: str, max_length_tokens: int) -> str:
         input_tokens = self.token_encoder.encode(input_str, disallowed_special=())
-        truncated_tokens = input_tokens[:max_length_tokens]
+        truncated_tokens = input_tokens[: max(0, max_length_tokens)]
         return self.token_encoder.decode(truncated_tokens)
 
     def _get_available_context(self, task_category: str) -> int:
@@ -419,9 +419,8 @@ class SimpleJudge(Judge):
         selected_files_tokens = []
         num_files = 0
         total_tokens = 0
-        max_tokens = (
-            self.avail_context_lens[task.task_category or "Subtree"] - 2000
-        )  # Buffer of 2k tokens
+        # Buffer of 2k tokens; never negative, since a negative bound in a slice keeps a prefix
+        max_tokens = max(0, self.avail_context_lens[task.task_category or "Subtree"] - 2000)
 
         file_content_tasks = [
             read_file_content(
